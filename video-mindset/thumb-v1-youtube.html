@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature YouTube v1 · l'écran verrouillé</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  /* concept : l'écran verrouillé à 23 h 47, la notification « Temps d'écran : 5 h par jour » */
+
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --jaune:#F6C21C; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  .dots { background-color:var(--papier); background-image:radial-gradient(#CFC9BE 3px, transparent 3.6px); background-size:36px 36px; }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; color:var(--rouge); letter-spacing:-0.01em; }
+  .ph { position:absolute; border-radius:var(--R); border:var(--b) solid var(--encre); background:#fff; box-shadow:var(--sh) var(--sh) 0 var(--encre); box-sizing:border-box; }
+  .scr { position:absolute; inset:var(--in); border-radius:calc(var(--R) - 20px); background:#1E1E22; overflow:hidden; }
+  .notch { position:absolute; left:50%; top:calc(var(--in) + 14px); width:28%; height:var(--nh); transform:translateX(-50%); border-radius:20px; background:var(--encre); z-index:2; }
+  .time { position:absolute; left:0; right:0; text-align:center; color:#fff; font-weight:800; letter-spacing:-0.05em; line-height:1; }
+  .date { position:absolute; left:0; right:0; text-align:center; color:#A9A39A; font-family:var(--mono); font-weight:600; }
+  .nt { position:absolute; left:var(--np); right:var(--np); border-radius:var(--nr); background:#FFFFFF; border:var(--nb) solid var(--encre); box-sizing:border-box; display:flex; align-items:center; gap:var(--ng); padding:var(--npad); }
+  .nt .ic { flex:none; width:var(--ic); height:var(--ic); border-radius:24%; border:var(--nb) solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
+  .nt .ic svg { width:64%; height:64%; }
+  .nt b { display:block; font-weight:800; letter-spacing:-0.02em; }
+  .nt span { display:block; font-weight:600; color:#3A3732; }
+  .nt small { position:absolute; right:var(--npad); top:var(--npad); font-family:var(--mono); font-weight:700; color:var(--gris); }
+
+  #t { position:relative; width:1280px; height:720px; overflow:hidden; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; color:var(--encre); }
+  .t1 { position:absolute; left:56px; top:120px; font-weight:800; font-size:104px; letter-spacing:-0.05em; line-height:1; }
+  .t2 { position:absolute; left:46px; top:210px; font-size:200px; line-height:1; }
+  .t3 { position:absolute; left:60px; top:470px; padding:12px 24px; border-radius:14px; background:var(--rouge); color:#fff; font-weight:800; font-size:36px; letter-spacing:-0.02em; border:5px solid var(--encre); box-shadow:7px 7px 0 var(--encre); transform:rotate(-2deg); white-space:nowrap; }
+  .ph { left:640px; top:40px; width:380px; height:680px; --R:56px; --b:8px; --sh:12px; --in:14px; --nh:26px; transform:rotate(5deg); }
+  .nt { --np:16px; --nr:24px; --nb:4px; --ng:12px; --npad:14px; --ic:56px; }
+  .nt b { font-size:22px; } .nt span { font-size:19px; margin-top:3px; } .nt small { display:none; }
+  #perso { position:absolute; left:860px; top:200px; width:500px; }
+</style>
+</head>
+<body>
+<div id="t" class="dots">
+  <div class="t1">Arrête de</div>
+  <div class="t2 it">scroller.</div>
+  <div class="t3">21 h par semaine, offertes</div>
+  <div class="ph"><div class="scr">
+    <div class="time" style="top:70px;font-size:104px">23:47</div>
+    <div class="date" style="top:186px;font-size:16px">// encore cinq minutes…</div>
+    <div class="nt" style="top:240px"><div class="ic" style="background:#E0402A"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="#fff" stroke="#141414" stroke-width="9"/><path d="M60 30 L60 60 L80 72" fill="none" stroke="#141414" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><b>Temps d'écran</b><span>5 h par jour cette semaine</span></div><small>maint.</small></div>
+    <div class="nt" style="top:352px"><div class="ic" style="background:#141414"><svg viewBox="0 0 120 120"><path d="M34 18 L100 60 L34 102 Z" fill="#fff" stroke="#141414" stroke-width="8" stroke-linejoin="round"/></svg></div><div><b>TikTok</b><span>Encore une vidéo ?</span></div><small>2 min</small></div>
+  </div><div class="notch"></div></div>
+  <img id="perso" src="assets/thumb-perso.png" alt="" />
+</div>
+</body>
+</html>
