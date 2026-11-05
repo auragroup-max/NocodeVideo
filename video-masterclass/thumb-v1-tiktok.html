@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature TikTok v1 · le clap</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  /* concept : un clap de cinéma posé sur un écran de code, « mes vidéos, je les code » */
+  :root { --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --jaune:#F6C21C; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  #t { position:relative; width:1080px; height:1920px; overflow:hidden; background:#151517; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; color:var(--encre); }
+  #fond { position:absolute; left:40px; top:30px; font:600 34px/1.75 var(--mono); color:#2B2B30; white-space:pre; }
+  .t1 { position:absolute; left:70px; top:150px; font-weight:800; font-size:120px; letter-spacing:-0.045em; color:#fff; line-height:1; }
+  .t2 { position:absolute; left:64px; top:270px; font-family:"Instrument Serif", serif; font-style:italic; font-size:190px; line-height:1; color:var(--jaune); }
+  .clap { position:absolute; left:110px; top:640px; width:760px; transform:rotate(-4deg); filter:drop-shadow(16px 14px 0 #000); }
+  .haut { position:relative; height:110px; border-radius:16px; border:7px solid var(--encre); background:repeating-linear-gradient(-45deg, #141414 0 56px, #fff 56px 112px); transform-origin:12px 100%; transform:rotate(-14deg); }
+  .ardoise { position:relative; margin-top:10px; border-radius:20px; border:7px solid var(--encre); background:#fff; padding:30px 40px; font:800 40px/1.7 var(--mono); }
+  .ardoise .bande { height:70px; margin:-30px -40px 24px; border-radius:12px 12px 0 0; background:repeating-linear-gradient(-45deg, #141414 0 56px, #fff 56px 112px); border-bottom:7px solid var(--encre); }
+  .ardoise span { color:var(--gris); font-weight:600; }
+  .ardoise b { color:var(--rouge); }
+  .tampon { position:absolute; right:40px; top:560px; padding:12px 26px; border:8px solid var(--rouge); border-radius:16px; color:var(--rouge); background:#fff; font-weight:800; font-size:56px; letter-spacing:.04em; transform:rotate(9deg); z-index:3; }
+  #perso { position:absolute; left:250px; top:1080px; width:1000px; }
+</style>
+</head>
+<body>
+<div id="t">
+  <div id="fond">&lt;presentateur expr="malin" /&gt;
+&lt;texte anim="pop"&gt;Masterclass&lt;/texte&gt;
+&lt;son src="whoosh" /&gt;
+render({ fps: 60, w: 1080 })
+// aucune ligne de montage
+&lt;presentateur pose="pointe" /&gt;
+&lt;carte titre="Le script" /&gt;
+&lt;carte titre="La voix" /&gt;
+tl.to("#prix", { scale: 1.1 })
+&lt;son src="ding" /&gt;
+&lt;miniature concept="clap" /&gt;
+render({ fps: 60, w: 1080 })
+// aucune ligne de montage
+&lt;presentateur expr="content" /&gt;
+&lt;texte anim="pop"&gt;10 places&lt;/texte&gt;
+&lt;son src="whoosh" /&gt;
+tl.to("#cta", { y: -20 })
+&lt;presentateur pose="salue" /&gt;
+render({ fps: 60, w: 1080 })
+&lt;carte titre="La miniature" /&gt;
+// aucune ligne de montage
+&lt;son src="ding" /&gt;</div>
+  <div class="t1">Mes vidéos,</div>
+  <div class="t2">je les code.</div>
+  <div class="clap">
+    <div class="haut"></div>
+    <div class="ardoise"><div class="bande"></div>
+      <span>SCÈNE ·</span> MASTERCLASS<br><span>MONTAGE ·</span> <b>0</b><br><span>PAR ·</span> CLAUDE CODE</div>
+  </div>
+  <div class="tampon">10 PLACES</div>
+  <img id="perso" src="assets/thumb-perso.png" alt="">
+</div>
+</body>
+</html>
