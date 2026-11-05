@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature TikTok</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  /* concept : un tableau de bord de boutique à « 0 vente », tamponné « 3 ERREURS », le présentateur sceptique bras croisés */
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --jaune:#F6C21C; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  .dots { background-color:var(--papier); background-image:radial-gradient(#CFC9BE 3px, transparent 3.6px); background-size:36px 36px; }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; color:var(--rouge); letter-spacing:-0.01em; }
+  .ink { position:absolute; isolation:isolate; }
+  .ink::before { content:""; position:absolute; inset:0; border-radius:inherit; transform:translate(16px, 12px); z-index:-1; background:radial-gradient(circle, #161616 2.4px, transparent 3px) 0 0 / 9px 9px; }
+  .ink::after { content:""; position:absolute; inset:0; border-radius:inherit; background:#fff; border:7px solid var(--encre); z-index:-1; }
+  #t { position:relative; width:1080px; height:1920px; overflow:hidden; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; color:var(--encre); }
+  .tag { position:absolute; left:0; right:0; top:140px; text-align:center; font:600 40px/1 var(--mono); letter-spacing:.06em; color:var(--gris); }
+  .t1 { position:absolute; left:0; right:0; top:210px; text-align:center; font-weight:800; font-size:118px; letter-spacing:-0.05em; line-height:1.02; }
+  #shop { left:110px; top:520px; width:860px; height:440px; border-radius:44px; transform:rotate(-3deg); }
+  #shop .bar { position:absolute; left:0; right:0; top:0; height:86px; border-bottom:6px solid var(--encre); display:flex; align-items:center; gap:16px; padding:0 34px; box-sizing:border-box; }
+  #shop .bar i { width:24px; height:24px; border-radius:50%; border:5px solid var(--encre); box-sizing:border-box; display:block; }
+  #shop .bar i:first-child { background:var(--rouge); }
+  #shop .bar span { margin-left:20px; font:600 30px/1 var(--mono); color:var(--gris); }
+  #shop .lbl { position:absolute; left:60px; top:130px; font:600 32px/1 var(--mono); color:var(--gris); }
+  #shop .zero { position:absolute; left:52px; top:170px; font-weight:800; font-size:240px; letter-spacing:-0.06em; line-height:1; }
+  #shop .zero small { font-size:64px; color:var(--gris); letter-spacing:-0.01em; margin-left:18px; }
+  .stamp { position:absolute; right:60px; top:860px; padding:16px 34px; border:10px solid var(--rouge); border-radius:18px; color:var(--rouge); background:#fff; font-weight:800; font-size:76px; letter-spacing:.04em; transform:rotate(-9deg); white-space:nowrap; }
+  #perso { position:absolute; left:-10px; top:880px; width:1100px; }
+</style>
+</head>
+<body>
+<div id="t" class="dots">
+  <div class="tag">// dropshipping</div>
+  <div class="t1">Ta boutique<br>ne vend <span class="it">rien</span> ?</div>
+  <div class="ink" id="shop"><div class="bar"><i></i><i></i><i></i><span>ma-boutique.com</span></div><div class="lbl">// commandes aujourd'hui</div><div class="zero">0<small>vente</small></div></div>
+  <img id="perso" src="assets/thumb-perso.png" alt="" />
+  <div class="stamp">3 ERREURS</div>
+</div>
+</body>
+</html>

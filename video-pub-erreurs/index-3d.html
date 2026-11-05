@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Dropshipping erreurs 3D</title>
+<script type="importmap">{ "imports": { "three": "./assets/lib3d/three.module.js" } }</script>
+<script>window.__ready = new Promise((r) => (window.__readyResolve = r));</script>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/audio/words-final.js"></script>
+<script src="assets/audio/env-final.js"></script>
+<style>
+
+  /* DA « papier » : fond crème à points, encre noire, accent rouge, ombres en trame décalée */
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --carte:#FFFFFF; --jaune:#F6C21C; --bleu:#7CC8F2;
+    --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  #stage { position:relative; width:1080px; height:1920px; overflow:hidden; background:var(--papier); color:var(--encre); font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; }
+  .dots { background-color:var(--papier); background-image:radial-gradient(#CFC9BE 3px, transparent 3.6px); background-size:36px 36px; }
+  #cam { position:absolute; inset:0; transform-origin:50% 45%; }
+  #paper { position:absolute; left:-80px; top:-80px; right:-80px; bottom:-80px; }
+  #persoW { position:absolute; left:67px; top:802px; width:860px; height:1118px; transform-origin:50% 40%; z-index:4; }
+  #persoPop { position:absolute; inset:0; transform-origin:50% 100%; }
+  #perso { position:absolute; left:0; top:0; width:860px; height:1118px; overflow:visible; }
+  /* le personnage est piloté image par image : aucune animation CSS en temps réel */
+  #perso, #perso * { animation:none !important; transition:none !important; }
+  #perso#perso[data-talk="1"] .bouche { display:none; }
+  #perso#perso[data-talk="1"] .b-parle { display:inline; }
+  #perso#perso[data-talk="1"][data-expr="insiste"] .b-parle, #perso#perso[data-talk="1"][data-expr="panique"] .b-parle { display:none; }
+  #perso#perso[data-talk="1"][data-expr="insiste"] .b-grande, #perso#perso[data-talk="1"][data-expr="panique"] .b-grande { display:inline; }
+  #ui { position:absolute; inset:0; z-index:10; pointer-events:none; }
+  .u { position:absolute; visibility:hidden; }
+  /* carte « encre » : fond blanc, contour noir, ombre en trame de points décalée */
+  .ink { isolation:isolate; }
+  .ink::before { content:""; position:absolute; inset:0; border-radius:inherit; transform:translate(14px, 10px); z-index:-1;
+    background:radial-gradient(circle, #161616 2.2px, transparent 2.8px) 0 0 / 8px 8px; }
+  .ink::after { content:""; position:absolute; inset:0; border-radius:inherit; background:var(--carte); border:5px solid var(--encre); z-index:-1; }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; letter-spacing:-0.01em; color:var(--rouge); }
+  .k { position:relative; display:inline-block; color:var(--encre); isolation:isolate; padding:0 .08em; }
+  .k i { position:absolute; left:-.04em; right:-.04em; top:.1em; bottom:.04em; z-index:-1; border-radius:.08em; background:var(--rouge); transform:scaleX(0); transform-origin:left center; }
+  .ico { fill:none; stroke:currentColor; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
+  .pill { display:flex; align-items:center; gap:18px; padding:16px 30px 16px 18px; border-radius:999px; white-space:nowrap; font-weight:800; font-size:38px; letter-spacing:-0.02em; }
+  .pill .pi { width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--papier); border:4px solid var(--encre); color:var(--encre); flex:none; box-sizing:border-box; font:800 38px/1 "Inter", sans-serif; }
+  .pill .pi svg { width:38px; height:38px; }
+  .pill .ck { width:50px; height:50px; flex:none; margin-left:4px; }
+  .pill small { display:block; font:600 22px/1.2 var(--mono); color:var(--gris); letter-spacing:.02em; }
+  .tag { font:600 26px/1 var(--mono); letter-spacing:.06em; color:var(--gris); white-space:nowrap; }
+  .coin2 { position:absolute; left:50%; top:-58px; width:42px; height:42px; margin-left:-21px; border-radius:50%; border:4px solid var(--encre); box-sizing:border-box;
+    background:radial-gradient(circle at 35% 30%, #fff3c4 0 16%, var(--jaune) 17% 100%); }
+  .badge { position:absolute; width:66px; height:66px; right:-20px; top:-20px; }
+  .stamp { padding:10px 20px; border:6px solid var(--rouge); border-radius:12px; color:var(--rouge); background:var(--carte); font-weight:800; font-size:34px; letter-spacing:.04em; white-space:nowrap; }
+</style>
+<style>
+  /* éléments communs : étiquette du HUD, grands titres, rature, centrage, barre de censure */
+  #hud .htag { position:absolute; font:600 24px/1 var(--mono); letter-spacing:.06em; color:var(--gris); white-space:nowrap; }
+  #hud .line { position:absolute; height:4px; background:var(--rouge); }
+  .st { left:0; right:0; text-align:center; }
+  .st .tag { display:block; margin-bottom:16px; }
+  .st h2 { margin:0; font-weight:800; font-size:88px; line-height:1.04; letter-spacing:-0.045em; }
+  .st .it { font-size:1.15em; }
+  .strike { position:relative; display:inline-block; }
+  .strike i { position:absolute; left:-4%; right:-4%; top:52%; height:12px; margin-top:-6px; border-radius:6px; background:var(--rouge); transform:scaleX(0); transform-origin:left center; }
+  .ctr { position:absolute; }
+  .cens { position:relative; display:inline-block; }
+  .cens span { visibility:hidden; }
+  .cens b { position:absolute; left:-.08em; right:-.08em; top:.1em; bottom:0; border-radius:.12em; background:var(--encre); display:flex; align-items:center; justify-content:center; gap:.3em; color:#fff; font:800 .62em/1 var(--mono); letter-spacing:.14em; }
+  .cens b em { font-style:normal; color:var(--jaune); }
+  /* ---------- personnage papier : calques de la tête (3/4, regard) ---------- */
+  #perso { transform-origin:50% 96%; }
+  #perso .oeil, #perso .vz, #perso .nez, #perso .coiffe, #perso .or-g, #perso .or-d, #perso .barbe-g, #perso .barbe-fonce { transform-box:view-box; }
+  #perso .oeil-g { transform-origin:276px 312px; }
+  #perso .oeil-d { transform-origin:384px 312px; }
+  #perso3d { position:absolute; left:0; top:0; width:1080px; height:1920px; z-index:4; }
+
+  /* ---------- la boutique (première et dernière image) ---------- */
+  #shop { width:780px; height:600px; border-radius:40px; }
+  #shop .bar { position:absolute; left:0; right:0; top:0; height:78px; border-bottom:5px solid var(--encre); display:flex; align-items:center; gap:14px; padding:0 30px; box-sizing:border-box; }
+  #shop .bar i { width:20px; height:20px; border-radius:50%; border:4px solid var(--encre); box-sizing:border-box; display:block; }
+  #shop .bar i:first-child { background:var(--rouge); }
+  #shop .url { margin-left:18px; flex:1; height:42px; border-radius:21px; background:var(--papier); display:flex; align-items:center; padding:0 22px; font:600 24px/1 var(--mono); color:var(--gris); }
+  #shop .url svg { width:34px; height:34px; color:var(--gris); margin-left:auto; }
+  #shop .prod { position:absolute; left:44px; top:118px; width:220px; height:220px; border-radius:26px; border:5px solid var(--encre); background:#FFF3C4; display:flex; align-items:center; justify-content:center; box-sizing:border-box; }
+  #shop .prod svg { width:150px; height:150px; color:var(--encre); }
+  #shop .lbl { position:absolute; left:300px; top:128px; font:600 26px/1.3 var(--mono); color:var(--gris); letter-spacing:.03em; }
+  #shop .zero { position:absolute; left:296px; top:166px; font-weight:800; font-size:170px; letter-spacing:-0.06em; line-height:1; }
+  #shop .zero small { font-size:44px; letter-spacing:-0.02em; margin-left:14px; color:var(--gris); }
+  #shop .graph { position:absolute; left:44px; right:44px; bottom:40px; height:170px; border-radius:20px; background:var(--papier); }
+  #shop .graph svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  #clover { width:250px; height:250px; border-radius:36px; display:flex; align-items:center; justify-content:center; }
+  #clover > svg:first-child { width:170px; height:170px; }
+  .nx { position:absolute; left:50%; top:50%; width:200px; height:200px; margin:-100px 0 0 -100px; overflow:visible; }
+  .nx path { fill:none; stroke:var(--rouge); stroke-width:13; stroke-linecap:round; }
+
+  /* ---------- les 3 erreurs ---------- */
+  .num3 { width:210px; height:210px; border-radius:50%; background:var(--rouge); border:8px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; color:#fff; font:800 120px/1 "Inter", sans-serif; letter-spacing:-0.05em; }
+  .num3 .ck { position:absolute; right:-18px; top:-18px; width:84px; height:84px; }
+  .ban { padding:18px 40px; border-radius:20px; background:var(--encre); color:#fff; font:800 56px/1 "Inter", sans-serif; letter-spacing:.02em; white-space:nowrap; }
+  .ban em { font-style:normal; color:var(--rouge); }
+  .cd { width:440px; height:370px; border-radius:40px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
+  .cd > svg:first-child { width:185px; height:185px; color:var(--encre); }
+  .cd b { font-weight:800; font-size:48px; letter-spacing:-0.03em; text-align:center; line-height:1.05; }
+  .cd .ok { position:absolute; right:-24px; top:-24px; width:88px; height:88px; }
+  .big { font-size:48px; }
+  .big .pi { width:76px; height:76px; font-size:42px; }
+  .big .pi svg { width:46px; height:46px; }
+  .big .ck { width:62px; height:62px; }
+  .cmt { display:flex; align-items:center; gap:18px; }
+  .cmt .av { width:76px; height:76px; border-radius:50%; border:5px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; font:800 34px/1 "Inter", sans-serif; flex:none; }
+  .cmt .bub { position:relative; padding:20px 30px; border-radius:12px 40px 40px 40px; font-weight:800; font-size:44px; letter-spacing:-0.03em; white-space:nowrap; }
+  .cmt small { display:block; font:600 20px/1 var(--mono); color:var(--gris); letter-spacing:.05em; margin-bottom:8px; }
+  .chk { display:flex; flex-direction:column; gap:18px; }
+  .chk div { display:flex; align-items:center; gap:22px; font-weight:800; font-size:46px; letter-spacing:-0.03em; }
+  .chk i { width:58px; height:58px; border-radius:14px; border:6px solid var(--encre); box-sizing:border-box; background:#fff; display:block; }
+  #heart { width:120px; height:120px; }
+  .spk { width:70px; height:70px; color:var(--jaune); }
+  #srch { width:820px; height:120px; border-radius:60px; display:flex; align-items:center; gap:22px; padding:0 40px; box-sizing:border-box; font-weight:700; font-size:42px; color:var(--gris); }
+  #srch svg { width:60px; height:60px; color:var(--encre); flex:none; }
+  #srch b { margin-left:auto; color:var(--rouge); font-weight:800; }
+  .arrowR { width:120px; height:80px; }
+  .arrowR path { fill:none; stroke:var(--encre); stroke-width:12; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* ---------- erreur 2 ---------- */
+  #days { width:420px; height:360px; border-radius:40px; }
+  #days .top { position:absolute; left:0; right:0; top:0; height:84px; background:var(--rouge); border-bottom:5px solid var(--encre); border-radius:35px 35px 0 0; color:#fff; font:800 34px/84px var(--mono); text-align:center; letter-spacing:.08em; }
+  #days .n { position:absolute; left:0; right:0; top:104px; text-align:center; font-weight:800; font-size:160px; letter-spacing:-0.06em; line-height:1; }
+  #days .u { position:absolute; left:0; right:0; top:268px; text-align:center; font:600 30px/1 var(--mono); color:var(--gris); }
+  #stars { font:800 64px/1 "Inter", sans-serif; letter-spacing:.06em; color:var(--jaune); -webkit-text-stroke:3px var(--encre); white-space:nowrap; }
+  #stars span { color:#fff; }
+  .crack path { fill:none; stroke:var(--encre); stroke-width:8; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* ---------- erreur 3 ---------- */
+  .pay { width:820px; height:96px; border-radius:30px; display:flex; align-items:center; gap:24px; padding:0 34px; box-sizing:border-box; font-weight:800; font-size:42px; letter-spacing:-0.02em; }
+  .pay i { width:70px; height:46px; border-radius:10px; border:5px solid var(--encre); box-sizing:border-box; background:#CFC9BE; display:block; flex:none; }
+  .pay em { margin-left:auto; font:700 26px/1 var(--mono); font-style:normal; color:var(--rouge); letter-spacing:.04em; }
+  #prog { width:820px; height:90px; border-radius:45px; }
+  #prog .fill { position:absolute; left:14px; top:14px; bottom:14px; right:14px; border-radius:40px; background:var(--jaune); transform:scaleX(0); transform-origin:left center; }
+  #prog .lbl { position:absolute; left:40px; top:50%; margin-top:-15px; font:700 30px/1 var(--mono); color:var(--encre); letter-spacing:.04em; }
+  .notif { width:820px; height:130px; border-radius:30px; display:flex; align-items:center; gap:24px; padding:0 30px; box-sizing:border-box; }
+  .notif .ic { width:80px; height:80px; border-radius:22px; background:var(--rouge); border:5px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; flex:none; }
+  .notif .ic svg { width:50px; height:50px; color:#fff; }
+  .notif b { display:block; font-weight:800; font-size:42px; letter-spacing:-0.02em; }
+  .notif span { display:block; font:600 24px/1.3 var(--mono); color:var(--gris); }
+  #wall { width:46px; height:300px; border-radius:14px; background:repeating-linear-gradient(45deg, var(--rouge) 0 26px, #fff 26px 52px); border:6px solid var(--encre); box-sizing:border-box; }
+  .coin { width:110px; height:110px; border-radius:50%; border:7px solid var(--encre); box-sizing:border-box; background:radial-gradient(circle at 35% 30%, #fff3c4 0 16%, var(--jaune) 17% 100%); display:flex; align-items:center; justify-content:center; font:800 52px/1 "Inter", sans-serif; }
+
+  /* ---------- pas facile, le cycle ---------- */
+  .strike { position:relative; display:inline-block; }
+  .strike i { position:absolute; left:-4%; right:-4%; top:52%; height:12px; margin-top:-6px; border-radius:6px; background:var(--rouge); transform:scaleX(0); transform-origin:left center; }
+  #cycle { width:620px; height:620px; }
+  #cycle { overflow:visible; }
+  #cycle text { font:800 40px "Inter", sans-serif; letter-spacing:-0.03em; }
+
+  /* ---------- partage ---------- */
+  #shareB { width:200px; height:200px; border-radius:50%; background:var(--rouge); border:7px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
+  #shareB svg { width:104px; height:104px; color:var(--encre); }
+  #vcard { width:124px; height:210px; border-radius:20px; display:flex; align-items:center; justify-content:center; }
+  #vcard svg { width:66px; height:66px; }
+  #ami span { display:block; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-check" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#141414"/><path d="M19 33l9 9 17-19" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#E0402A" stroke="#141414" stroke-width="4"/><path d="M22 22 L42 42 M42 22 L22 42" stroke="#fff" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-person" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="40" r="18"/><path d="M24 104 Q24 68 60 68 Q96 68 96 104"/></g></symbol>
+  <symbol id="i-shop" viewBox="0 0 120 120"><g class="ico"><path d="M16 46 L26 18 L94 18 L104 46 Z"/><path d="M16 46 Q27 60 38 46 Q49 60 60 46 Q71 60 82 46 Q93 60 104 46"/><path d="M24 56 L24 102 L96 102 L96 56 M50 102 L50 74 L70 74 L70 102"/></g></symbol>
+  <symbol id="i-phone" viewBox="0 0 120 120"><g class="ico"><rect x="34" y="10" width="52" height="100" rx="12"/><path d="M52 94 L68 94"/></g><path d="M52 44 L72 58 L52 72 Z" fill="#E0402A" stroke="#141414" stroke-width="4" stroke-linejoin="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 120 120"><path d="M60 10 L74 44 L110 47 L82 70 L91 106 L60 86 L29 106 L38 70 L10 47 L46 44 Z" fill="#F6C21C" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 120 120"><path d="M10 56 L108 14 L80 106 L56 70 Z" fill="#fff" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M56 70 L108 14" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-live" viewBox="0 0 120 120"><g class="ico"><rect x="12" y="28" width="96" height="64" rx="12"/><path d="M60 50 L88 50 M60 70 L80 70"/></g><circle cx="36" cy="60" r="12" fill="#E0402A" stroke="#141414" stroke-width="4"/></symbol>
+  <symbol id="i-page" viewBox="0 0 120 120"><g class="ico"><rect x="14" y="14" width="92" height="92" rx="12"/><path d="M14 42 L106 42 M32 62 L88 62 M32 78 L88 78 M32 94 L64 94"/></g><circle cx="31" cy="28" r="6" fill="#E0402A"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="60" r="46"/><ellipse cx="60" cy="60" rx="20" ry="46"/><path d="M14 60 L106 60 M22 36 L98 36 M22 84 L98 84"/></g></symbol>
+  <symbol id="i-browser" viewBox="0 0 120 120"><g class="ico"><rect x="10" y="18" width="100" height="84" rx="12"/><path d="M10 40 L110 40 M70 58 L96 58 M70 72 L96 72 M70 86 L86 86"/></g><rect x="24" y="54" width="34" height="34" rx="5" fill="#E0402A" stroke="#141414" stroke-width="5"/><circle cx="23" cy="29" r="4.5" fill="currentColor"/><circle cx="36" cy="29" r="4.5" fill="currentColor"/></symbol>
+  <symbol id="i-shirt" viewBox="0 0 120 120"><path d="M40 20 L16 32 L6 56 L26 64 L32 52 L32 104 L88 104 L88 52 L94 64 L114 56 L104 32 L80 20 Q74 34 60 34 Q46 34 40 20 Z" fill="#F6C21C" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shoe" viewBox="0 0 120 120"><path d="M10 88 L10 50 Q28 54 42 40 L56 56 Q82 62 104 68 Q112 72 112 82 L112 92 L10 92 Z" fill="#E0402A" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/><path d="M10 80 L112 80" stroke="currentColor" stroke-width="6"/><path d="M50 54 L44 62 M60 60 L54 68" stroke="#fff" stroke-width="5" stroke-linecap="round"/></symbol>
+  <symbol id="i-lip" viewBox="0 0 120 120"><path d="M48 42 L48 20 L72 10 L72 42 Z" fill="#E0402A" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/><rect x="44" y="42" width="32" height="20" rx="3" fill="#F6C21C" stroke="currentColor" stroke-width="6"/><rect x="40" y="62" width="40" height="48" rx="6" fill="#141414" stroke="currentColor" stroke-width="6"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 120 120"><path d="M8 60 Q60 8 112 60 Q60 112 8 60 Z" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><circle cx="60" cy="60" r="16" fill="currentColor"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 120 120"><g class="ico"><rect x="22" y="12" width="76" height="96" rx="10"/><path d="M38 38 L82 38 M38 58 L82 58 M38 78 L66 78"/></g></symbol>
+  <symbol id="i-call" viewBox="0 0 120 120"><path d="M34 14 C 26 14 16 22 16 32 C 18 70 50 102 88 104 C 98 104 106 96 106 88 L106 76 L82 66 L72 78 C 58 72 48 62 42 48 L54 38 L46 14 Z" fill="currentColor"/></symbol>
+  <symbol id="i-search" viewBox="0 0 120 120"><g class="ico" style="stroke-width:10"><circle cx="50" cy="50" r="30"/><path d="M73 73 L104 104"/></g></symbol>
+  <symbol id="i-pin" viewBox="0 0 120 120"><path d="M60 112 C 40 86 18 64 18 42 A 42 42 0 0 1 102 42 C 102 64 80 86 60 112 Z" fill="#E0402A" stroke="#141414" stroke-width="7" stroke-linejoin="round"/><circle cx="60" cy="42" r="15" fill="#fff" stroke="#141414" stroke-width="6"/></symbol>
+  <symbol id="i-plate" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="64" r="42"/><circle cx="60" cy="64" r="26"/><path d="M46 14 Q52 8 46 2 M62 14 Q68 8 62 2 M78 14 Q84 8 78 2" style="stroke-width:5"/></g></symbol>
+  <symbol id="i-chat" viewBox="0 0 120 120"><path d="M60 12 C 32 12 12 32 12 58 C 12 70 16 80 24 88 L18 108 L40 100 C 46 103 53 104 60 104 C 88 104 108 84 108 58 C 108 32 88 12 60 12 Z" fill="#fff" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M42 44 Q44 72 76 78" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 120 120"><path d="M60 8 C 64 44 76 56 112 60 C 76 64 64 76 60 112 C 56 76 44 64 8 60 C 44 56 56 44 60 8 Z" fill="currentColor"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 120 120"><path d="M60 104 C 20 76 8 56 8 38 C 8 22 20 12 34 12 C 46 12 54 20 60 30 C 66 20 74 12 86 12 C 100 12 112 22 112 38 C 112 56 100 76 60 104 Z" fill="#E0402A" stroke="#fff" stroke-width="7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 120 120"><path d="M28 12 L106 60 L28 108 Z" fill="#fff" stroke-linejoin="round"/></symbol>
+  <symbol id="i-box" viewBox="0 0 120 120"><g class="ico"><path d="M60 12 L104 34 L104 86 L60 108 L16 86 L16 34 Z"/><path d="M16 34 L60 56 L104 34 M60 56 L60 108"/></g></symbol>
+  <symbol id="i-clock" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="60" r="46"/><path d="M60 30 L60 60 L80 72"/></g></symbol>
+  <symbol id="i-book" viewBox="0 0 120 120"><g class="ico"><path d="M60 30 C 46 20 28 18 12 22 L12 98 C 28 94 46 96 60 106 C 74 96 92 94 108 98 L108 22 C 92 18 74 20 60 30 Z"/><path d="M60 30 L60 106"/></g></symbol>
+  <symbol id="i-bolt" viewBox="0 0 120 120"><path d="M70 6 L22 68 L56 68 L44 114 L98 46 L62 46 Z" fill="#F6C21C" stroke="#141414" stroke-width="7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-glass" viewBox="0 0 120 120"><path d="M34 54 L86 54 L80 108 L40 108 Z" fill="#7CC8F2"/><path d="M26 14 L94 14 L82 108 L38 108 Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M34 54 Q47 48 60 54 Q73 60 86 54" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></symbol>
+  <symbol id="i-door" viewBox="0 0 120 120"><rect x="16" y="10" width="58" height="100" rx="6" fill="#C98B5A" stroke="currentColor" stroke-width="7"/><circle cx="60" cy="62" r="5" fill="currentColor"/><path d="M78 60 L112 60 M98 46 L112 60 L98 74" fill="none" stroke="#E0402A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 120 120"><path d="M80 12 C 50 16 28 40 28 68 C 28 96 52 112 82 106 C 60 98 48 82 48 62 C 48 40 60 22 80 12 Z" fill="#F6C21C" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-up" viewBox="0 0 120 120"><g class="ico" style="stroke-width:10"><path d="M60 104 L60 22 M28 52 L60 20 L92 52"/></g></symbol>
+  <symbol id="i-idea" viewBox="0 0 120 120"><path d="M60 10 C 36 10 20 28 20 50 C 20 66 30 76 38 84 L38 96 L82 96 L82 84 C 90 76 100 66 100 50 C 100 28 84 10 60 10 Z" fill="#F6C21C" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M42 108 L78 108" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-castle" viewBox="0 0 120 120"><g class="ico" style="stroke-dasharray:9 9"><path d="M10 110 L10 40 L36 40 L36 110 M84 110 L84 40 L110 40 L110 110 M36 60 L84 60 M10 110 L110 110"/><path d="M10 40 L10 26 L18 26 L18 34 L28 34 L28 26 L36 26 L36 40 M84 40 L84 26 L92 26 L92 34 L102 34 L102 26 L110 26 L110 40"/><path d="M60 60 L60 18 L80 25 L60 32"/><path d="M50 110 L50 90 Q60 78 70 90 L70 110"/></g></symbol>
+  <symbol id="i-ear" viewBox="0 0 120 120"><path d="M66 10 C 36 10 20 32 20 58 C 20 74 28 82 36 90 C 44 98 42 110 56 112 C 70 114 76 100 78 90 C 80 80 94 74 98 58 C 104 34 92 10 66 10 Z" fill="#B9805A" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M44 58 C 44 36 78 32 78 54 C 78 66 64 66 62 78" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 120 120"><g class="ico"><rect x="8" y="34" width="74" height="56" rx="10"/><path d="M82 54 L112 38 L112 86 L82 70"/></g><circle cx="38" cy="62" r="12" fill="#E0402A" stroke="#141414" stroke-width="5"/></symbol>
+  <symbol id="i-face" viewBox="0 0 120 120"><circle cx="60" cy="60" r="46" fill="#B9805A" stroke="#141414" stroke-width="7"/><circle cx="44" cy="54" r="6" fill="#141414"/><circle cx="76" cy="54" r="6" fill="#141414"/><path d="M42 76 Q60 90 78 76" fill="none" stroke="#141414" stroke-width="6" stroke-linecap="round"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 120 120"><g class="ico"><rect x="22" y="24" width="76" height="54" rx="6"/><path d="M8 94 L112 94 L102 78 L18 78 Z"/></g><path d="M52 40 L70 51 L52 62 Z" fill="#E0402A" stroke="#141414" stroke-width="4" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 120 120"><path d="M60 10 L100 24 L100 58 C100 84 82 102 60 110 C38 102 20 84 20 58 L20 24 Z" fill="#7CC8F2" stroke="#141414" stroke-width="7" stroke-linejoin="round"/><path d="M42 60 L55 73 L80 46" fill="none" stroke="#141414" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-wand" viewBox="0 0 120 120"><path d="M18 102 L76 44" stroke="#141414" stroke-width="13" stroke-linecap="round"/><path d="M64 56 L76 44" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M90 8 C92 23 96 27 111 29 C96 31 92 35 90 50 C88 35 84 31 69 29 C84 27 88 23 90 8 Z" fill="#F6C21C" stroke="#141414" stroke-width="5" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lock2" viewBox="0 0 120 120"><path d="M36 54 L36 38 A24 24 0 0 1 84 38 L84 54" fill="none" stroke="#141414" stroke-width="9"/><rect x="22" y="52" width="76" height="58" rx="12" fill="#F6C21C" stroke="#141414" stroke-width="7"/><circle cx="60" cy="77" r="8" fill="#141414"/><path d="M60 80 L60 94" stroke="#141414" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-grp3" viewBox="0 0 330 90"><g class="ico" style="stroke-width:7"><circle cx="85" cy="28" r="15"/><path d="M57 86 Q57 54 85 54 Q113 54 113 86"/><circle cx="165" cy="24" r="17"/><path d="M133 86 Q133 50 165 50 Q197 50 197 86"/><circle cx="245" cy="28" r="15"/><path d="M217 86 Q217 54 245 54 Q273 54 273 86"/></g></symbol>
+  <symbol id="i-grp5" viewBox="0 0 330 90"><g class="ico" style="stroke-width:6"><circle cx="35" cy="34" r="12"/><path d="M13 86 Q13 58 35 58 Q57 58 57 86"/><circle cx="100" cy="30" r="13"/><path d="M76 86 Q76 54 100 54 Q124 54 124 86"/><circle cx="165" cy="24" r="15"/><path d="M137 86 Q137 50 165 50 Q193 50 193 86"/><circle cx="230" cy="30" r="13"/><path d="M206 86 Q206 54 230 54 Q254 54 254 86"/><circle cx="295" cy="34" r="12"/><path d="M273 86 Q273 58 295 58 Q317 58 317 86"/></g></symbol>
+  <symbol id="i-yt" viewBox="0 0 120 120"><rect x="6" y="22" width="108" height="76" rx="24" fill="#E0402A" stroke="#141414" stroke-width="6"/><path d="M50 44 L80 60 L50 76 Z" fill="#fff"/></symbol>
+  <symbol id="i-clover" viewBox="0 0 120 120"><g fill="#9BC59D" stroke="#141414" stroke-width="6" stroke-linejoin="round"><circle cx="42" cy="40" r="22"/><circle cx="78" cy="40" r="22"/><circle cx="42" cy="74" r="22"/><circle cx="78" cy="74" r="22"/></g><path d="M60 60 C 64 84 70 98 84 110" fill="none" stroke="#141414" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 120 120"><path d="M30 10 L90 10 L90 110 L60 88 L30 110 Z" fill="#F6C21C" stroke="#141414" stroke-width="7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-gadget" viewBox="0 0 120 120"><path d="M38 20 L82 20 L94 64 L26 64 Z" fill="#B9A6E0" stroke="#141414" stroke-width="6" stroke-linejoin="round"/><rect x="54" y="64" width="12" height="30" fill="#141414"/><rect x="34" y="92" width="52" height="14" rx="7" fill="#7CC8F2" stroke="#141414" stroke-width="6"/><circle cx="60" cy="40" r="7" fill="#fff" stroke="#141414" stroke-width="4"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 120 120"><rect x="12" y="30" width="96" height="70" rx="12" fill="#C98B5A" stroke="#141414" stroke-width="6"/><path d="M12 46 L108 46" stroke="#141414" stroke-width="6"/><rect x="72" y="58" width="36" height="24" rx="8" fill="#F6C21C" stroke="#141414" stroke-width="6"/><circle cx="84" cy="70" r="4" fill="#141414"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 120 120"><g class="ico"><path d="M10 22 L28 22 L40 78 L96 78 L106 38 L34 38"/><circle cx="46" cy="96" r="8"/><circle cx="90" cy="96" r="8"/></g></symbol>
+  <symbol id="i-reload" viewBox="0 0 120 120"><g class="ico" style="stroke-width:9"><path d="M96 60 A 36 36 0 1 1 84 33"/><path d="M84 14 L86 36 L64 38"/></g></symbol>
+  <filter id="trame2" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1000" height="1200" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+    <feFlood flood-opacity="0" x="0" y="0" width="10" height="10" result="fond"/>
+    <feFlood flood-color="#161616" x="2.5" y="2.5" width="5" height="5" result="carre"/>
+    <feMerge x="0" y="0" width="10" height="10" result="tuile"><feMergeNode in="fond"/><feMergeNode in="carre"/></feMerge>
+    <feTile in="tuile" result="grille"/>
+    <feGaussianBlur in="grille" stdDeviation="1.1" result="flou"/>
+    <feComponentTransfer in="flou" result="points"><feFuncA type="discrete" tableValues="0 0 1 1"/></feComponentTransfer>
+    <feOffset in="SourceAlpha" dx="18" dy="12" result="decale"/>
+    <feComposite in="points" in2="decale" operator="in" result="ombre"/>
+    <feMerge><feMergeNode in="ombre"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</svg>
+
+<div id="stage">
+  <div id="cam">
+    <div id="paper" class="dots"></div>
+    <canvas id="perso3d" width="1080" height="1920"></canvas>
+  </div>
+
+  <div id="ui">
+    <!-- 1 · la boutique vide : première ET dernière image (boucle) -->
+    <div class="u ink ctr" id="shop" style="left:540px;top:300px">
+      <div class="bar"><i></i><i></i><i></i><div class="url">ma-boutique.com<svg id="reload" viewBox="0 0 120 120"><use href="#i-reload"/></svg></div></div>
+      <div class="prod"><svg viewBox="0 0 120 120"><use href="#i-gadget"/></svg></div>
+      <div class="lbl">// commandes aujourd'hui</div>
+      <div class="zero"><span id="cmdN">0</span><small>vente</small></div>
+      <div class="graph"><svg viewBox="0 0 692 170" preserveAspectRatio="none"><path d="M 20 140 L 672 140" fill="none" stroke="#CFC9BE" stroke-width="4" stroke-dasharray="10 12"/><path id="flat" d="M 20 138 L 140 139 L 260 137 L 380 138 L 500 139 L 672 138" fill="none" stroke="#E0402A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="u ink" id="clover" style="left:760px;top:220px"><svg viewBox="0 0 120 120"><use href="#i-clover"/></svg><svg class="nx" viewBox="0 0 100 100"><path id="xc1" pathLength="1" d="M 12 12 L 88 88"/><path id="xc2" pathLength="1" d="M 88 12 L 12 88"/></svg></div>
+    <div class="u st" id="tMal" style="top:960px"><h2>Pas la <span class="it">malchance</span>.</h2></div>
+
+    <!-- 2 · trois erreurs -->
+    <div class="u st" id="t3" style="top:250px"><span class="tag">// presque tous les débutants</span><h2>3 <span class="k" id="kErr">erreurs<i></i></span></h2></div>
+    <div class="u num3" id="n1" style="left:150px;top:520px">1</div>
+    <div class="u num3" id="n2" style="left:435px;top:520px">2</div>
+    <div class="u num3" id="n3" style="left:720px;top:520px">3</div>
+    <div class="u ink ctr cd" id="save" style="left:540px;top:500px"><svg viewBox="0 0 120 120"><use href="#i-bookmark"/></svg><b>enregistre-la</b></div>
+    <div class="u chk ctr" id="chk" style="left:540px;top:880px"><div><i></i>erreur 1 ?</div><div><i></i>erreur 2 ?</div></div>
+
+    <!-- 3 · erreur 1 : le produit -->
+    <div class="u ban ctr" id="b1" style="left:540px;top:220px"><em>ERREUR 1</em> · le produit</div>
+    <div class="u ink ctr cd" id="prod1" style="left:540px;top:350px"><svg viewBox="0 0 120 120"><use href="#i-gadget"/></svg><b>« il me plaît »</b></div>
+    <svg class="u" id="heart" style="left:720px;top:320px" viewBox="0 0 120 120"><use href="#i-heart"/></svg>
+    <svg class="u spk" id="sp1" style="left:290px;top:330px" viewBox="0 0 120 120"><use href="#i-spark"/></svg>
+    <svg class="u spk" id="sp2" style="left:760px;top:560px" viewBox="0 0 120 120"><use href="#i-spark"/></svg>
+    <div class="u ink ctr" id="srch" style="left:540px;top:760px"><svg viewBox="0 0 120 120"><use href="#i-search"/></svg>qui le cherche ?<b id="srchN">?</b></div>
+    <div class="u ink ctr cd" id="pb" style="left:280px;top:350px"><svg viewBox="0 0 120 120"><use href="#i-x"/></svg><b>un problème</b></div>
+    <svg class="u arrowR" id="arr1" style="left:480px;top:490px" viewBox="0 0 120 80"><path pathLength="1" id="arr1p" d="M 10 40 L 105 40 M 80 15 L 108 40 L 80 65"/></svg>
+    <div class="u ink ctr cd" id="sol" style="left:800px;top:350px"><svg viewBox="0 0 120 120"><use href="#i-gadget"/></svg><b>ton produit</b><svg class="ok"><use href="#i-check"/></svg></div>
+    <div class="u cmt" id="cm1" style="left:80px;top:760px"><div class="av" style="background:#F6C21C">T</div><div><small>tojo · commentaire</small><div class="bub ink">où je peux l'acheter ?</div></div></div>
+    <div class="u cmt" id="cm2" style="left:200px;top:900px"><div class="av" style="background:#7CC8F2">M</div><div><small>mialy · commentaire</small><div class="bub ink">où je peux l'acheter ??</div></div></div>
+    <div class="u cmt" id="cm3" style="left:120px;top:1040px"><div class="av" style="background:#9BC59D">H</div><div><small>hery · commentaire</small><div class="bub ink">lien stp !</div></div></div>
+
+    <!-- 4 · erreur 2 : jamais vu le produit -->
+    <div class="u ban ctr" id="b2" style="left:540px;top:220px"><em>ERREUR 2</em> · jamais vu</div>
+    <div class="u ink ctr cd" id="enligne" style="left:540px;top:350px"><svg viewBox="0 0 120 120"><use href="#i-browser"/></svg><b>en ligne…</b></div>
+    <div class="u stamp" id="jamais" style="left:620px;top:600px">JAMAIS VU</div>
+    <div class="u ink ctr" id="days" style="left:290px;top:340px"><div class="top">LIVRAISON</div><div class="n" id="daysN">1</div><div style="position:absolute;left:0;right:0;top:268px;text-align:center;font:600 30px/1 var(--mono);color:var(--gris)">jours d’attente</div></div>
+    <div class="u ink ctr cd" id="casse" style="left:790px;top:340px"><svg viewBox="0 0 120 120"><use href="#i-box"/></svg><b>mauvaise qualité</b><svg class="crack" style="position:absolute;left:120px;top:40px;width:160px;height:160px" viewBox="0 0 160 160"><path pathLength="1" id="crk" d="M 80 10 L 66 50 L 92 74 L 70 112 L 86 150"/></svg></div>
+    <div class="u ctr" id="stars" style="left:780px;top:710px">★<span>★★★★</span></div>
+    <div class="u ink ctr cd" id="ech" style="left:540px;top:330px"><svg viewBox="0 0 120 120"><use href="#i-box"/></svg><b>un échantillon</b></div>
+    <div class="u pill ink big" id="q1" style="left:540px;top:780px"><div class="pi"><svg><use href="#i-search"/></svg></div>la qualité<svg class="ck"><use href="#i-check"/></svg></div>
+    <div class="u pill ink big" id="q2" style="left:540px;top:910px"><div class="pi"><svg><use href="#i-clock"/></svg></div>le vrai délai<svg class="ck"><use href="#i-check"/></svg></div>
+
+    <!-- 5 · erreur 3 : encaisser -->
+    <div class="u ban ctr" id="b3" style="left:540px;top:220px"><em>ERREUR 3</em> · encaisser</div>
+    <div class="u ink ctr cd" id="wal" style="left:540px;top:340px"><svg viewBox="0 0 120 120"><use href="#i-wallet"/></svg><b>comment encaisser ?</b></div>
+    <div class="u pill ink big" id="mada" style="left:540px;top:350px"><div class="pi" style="border:none;background:none"><svg viewBox="0 0 120 120"><use href="#i-pin"/></svg></div>depuis Madagascar</div>
+    <div class="u ink ctr pay" id="p1" style="left:540px;top:470px"><i></i>paiement par carte<em>INDISPONIBLE</em></div>
+    <div class="u ink ctr pay" id="p2" style="left:540px;top:590px"><i></i>paiement en ligne<em>INDISPONIBLE</em></div>
+    <div class="u ink ctr pay" id="p3" style="left:540px;top:710px"><i></i>portefeuille connu<em>INDISPONIBLE</em></div>
+    <div class="u ink ctr" id="prog" style="left:540px;top:340px"><div class="fill"></div><span class="lbl">ta boutique · des semaines</span></div>
+    <div class="u ink ctr notif" id="notif" style="left:540px;top:480px"><div class="ic"><svg viewBox="0 0 120 120"><use href="#i-cart"/></svg></div><div><b>Nouvelle commande !</b><span>ma-boutique.com · maintenant</span></div></div>
+    <div class="u coin" id="coin" style="left:180px;top:720px">€</div>
+    <div class="u" id="wall" style="left:640px;top:660px"></div>
+    <div class="u pill ink big" id="o1" style="left:540px;top:430px"><div class="pi">1</div>le paiement<svg class="ck"><use href="#i-check"/></svg></div>
+    <div class="u pill ink big" id="o2" style="left:540px;top:580px"><div class="pi">2</div>la boutique</div>
+
+    <!-- 6 · pas d'argent facile, le cycle -->
+    <div class="u st" id="tFac" style="top:240px"><span class="tag">// le dropshipping</span><h2>Pas de <span class="strike">l'argent facile<i id="stkF"></i></span>.</h2></div>
+    <div class="u ctr" id="cycleW" style="left:540px;top:440px">
+      <svg id="cycle" viewBox="0 0 620 620">
+        <g fill="none" stroke="#141414" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+          <path id="c1" pathLength="1" d="M 310 70 A 240 240 0 0 1 518 430"/><path id="c2" pathLength="1" d="M 492 470 A 240 240 0 0 1 128 470"/><path id="c3" pathLength="1" d="M 102 430 A 240 240 0 0 1 270 72"/>
+        </g>
+        <g fill="#E0402A" stroke="#141414" stroke-width="5" stroke-linejoin="round"><path id="h1" d="M 500 410 L 540 424 L 512 456 Z"/><path id="h2" d="M 150 452 L 112 470 L 150 494 Z"/><path id="h3" d="M 262 50 L 294 72 L 258 92 Z"/></g>
+        <text id="w1" x="420" y="272" text-anchor="middle">tester</text>
+        <text id="w2" x="310" y="430" text-anchor="middle" fill="#E0402A">se tromper</text>
+        <text id="w3" x="215" y="200" text-anchor="middle">recommencer</text>
+      </svg>
+    </div>
+    <div class="u stamp ctr" id="mois" style="left:540px;top:1080px;font-size:50px">+ DES MOIS GAGNÉS</div>
+
+    <!-- 7 · laquelle tu faisais ? -->
+    <div class="u st" id="tQ" style="top:240px"><span class="tag">// et toi ?</span><h2>Laquelle tu <span class="it">faisais</span> ?</h2></div>
+    <div class="u cmt" id="r1" style="left:110px;top:560px"><div class="av" style="background:#F2A07B">R</div><div><small>rova · commentaire</small><div class="bub ink">1, moi…</div></div></div>
+    <div class="u cmt" id="r2" style="left:300px;top:720px"><div class="av" style="background:#B9A6E0">N</div><div><small>ny aina · commentaire</small><div class="bub ink">2, clairement</div></div></div>
+    <div class="u cmt" id="r3" style="left:160px;top:880px"><div class="av" style="background:#9BC59D">F</div><div><small>fara · commentaire</small><div class="bub ink">les trois…</div></div></div>
+
+    <!-- 8 · partage -->
+    <div class="u st" id="tEnv" style="top:250px"><span class="tag">// à quelqu'un qui veut lancer sa boutique</span><h2>Envoie-la.</h2></div>
+    <div class="u" id="shareB" style="left:180px;top:610px"><svg><use href="#i-plane"/></svg></div>
+    <div class="u ink" id="vcard" style="left:218px;top:605px"><svg><use href="#i-yt"/></svg></div>
+    <div class="u pill ink big" id="ami" style="left:780px;top:710px"><div class="pi" style="background:#F6C21C">L</div><div><span>Lova</span><small>veut lancer sa boutique</small></div></div>
+  </div>
+
+  <div id="hud">
+    <div class="htag" style="left:60px;top:96px">// dropshipping · les erreurs</div>
+    <div class="line" style="left:60px;top:132px;width:120px"></div>
+  </div>
+</div>
+<script>
+(async function () {
+  const WORDS = window.WORDS, DURATION = +(window.VOICE_END + 0.3).toFixed(2), $ = (id) => document.getElementById(id);
+  const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+  const NW = WORDS.map((w) => norm(w.text));
+  const find = (phrase, from = 0) => { const p = phrase.split(/\s+/).map(norm).filter(Boolean);
+    for (let i = from; i <= NW.length - p.length; i++) if (p.every((x, k) => NW[i + k] === x)) return i; throw new Error("expression absente : " + phrase); };
+  const S = (phrase, k = 0, from = 0) => WORDS[find(phrase, from) + k].start;
+  const tl = gsap.timeline({ paused: true }), CUES = [], B = (px) => `blur(${px}px)`;
+  const SFX = (file, t, g = -20) => CUES.push({ n: "sfx", file: "syn-" + file, t: +Math.max(0, t).toFixed(3), g });
+  const hide = (sel) => tl.set(sel, { autoAlpha: 0 }, 0);
+  const IN = (sel, t, o = {}) => { hide(sel); tl.fromTo(sel, { autoAlpha: 0, x: o.x ?? 0, y: o.y ?? 40, scale: o.s ?? 0.94, filter: B(o.b ?? 14) }, { autoAlpha: 1, x: 0, y: 0, scale: 1, filter: B(0), duration: o.d ?? 0.5, ease: o.e ?? "power3.out", stagger: o.st ?? 0, immediateRender: false }, t); };
+  const OUT = (sel, t, d = 0.35) => tl.to(sel, { autoAlpha: 0, y: "-=40", filter: B(12), duration: d, ease: "power2.in" }, t);
+  const POP = (sel, t, d = 0.45) => { hide(sel); tl.fromTo(sel, { autoAlpha: 0, scale: 0.5, filter: B(8) }, { autoAlpha: 1, scale: 1, filter: B(0), duration: d, ease: "back.out(1.8)", immediateRender: false }, t); };
+  const XPOP = (sel, t) => { hide(sel); tl.fromTo(sel, { scale: 0, rotation: -40, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.4, ease: "back.out(2.4)", immediateRender: false }, t); };
+  const STAMP = (sel, t, r = -8) => { hide(sel); tl.fromTo(sel, { autoAlpha: 0, scale: 2.2, rotation: r - 10 }, { autoAlpha: 1, scale: 1, rotation: r, duration: 0.32, ease: "power4.in", immediateRender: false }, t - 0.32); };
+  const HL = (k, t) => { tl.fromTo(`#${k} i`, { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, t);
+    tl.fromTo("#" + k, { color: "#141414" }, { color: "#ffffff", duration: 0.15, immediateRender: false }, t + 0.1); };
+  const DRAW = (sel, t, d = 0.5) => { tl.set(sel, { strokeDasharray: 1, strokeDashoffset: 1 }, 0); tl.fromTo(sel, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: d, ease: "power2.inOut", immediateRender: false }, t); };
+  const PULSE = (sel, t, s = 1.08) => tl.fromTo(sel, { scale: 1 }, { scale: s, duration: 0.15, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false }, t);
+  const ROLLF = (id, from, to, t, d, fmt, ease = "power2.out") => { const o = { n: from }; tl.set("#" + id, { textContent: fmt(from) }, 0);
+    tl.fromTo(o, { n: from }, { n: to, duration: d, ease, immediateRender: false, onUpdate: () => ($(id).textContent = fmt(o.n)) }, t); };
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const smooth = (a, b, x) => { const u = clamp((x - a) / (b - a)); return u * u * (3 - 2 * u); };
+  let sd = 11; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+
+  const INIT_EXPR = "sceptique", INIT_POSE = "croise"; // expression et geste de la première (= dernière) image
+
+  // =====================================================================
+  // LE PERSONNAGE 3D LISSE (Three.js) : même jeu d'acteur que le présentateur papier,
+  // tout est calculé à partir du temps t, puis rendu dans le canvas #perso3d
+  // =====================================================================
+  const THREE = await import("./assets/lib3d/three.module.js");
+  const { RoundedBoxGeometry } = await import("./assets/lib3d/RoundedBoxGeometry.js");
+  const CV = $("perso3d");
+  const renderer = new THREE.WebGLRenderer({ canvas: CV, antialias: true, alpha: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(1); renderer.setSize(1080, 1920, false);
+  renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const scene = new THREE.Scene();
+  // cadrage : la tête vers le bas de l'écran, le buste coupé par le bord (comme le présentateur papier)
+  const cam = new THREE.PerspectiveCamera(30, 1080 / 1920, 0.1, 100); cam.position.set(1.2, 8.3, 18); cam.lookAt(0, 8.45, 0);
+  scene.add(new THREE.HemisphereLight(0xFFF6EA, 0xC9BFAE, 1.5));
+  const key = new THREE.DirectionalLight(0xFFF1DE, 2.6); key.position.set(-5, 12, 9); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -0.0005; Object.assign(key.shadow.camera, { left: -6, right: 6, top: 11, bottom: 0 }); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xFFD9A8, 1.2); rim.position.set(6, 6, -6); scene.add(rim);
+  // ===================== matières =====================
+  const P = (c, r = 0.55, o = {}) => new THREE.MeshPhysicalMaterial({ color: c, roughness: r, metalness: 0, ...o });
+  const PEAU = P(0xB9805A, 0.5, { sheen: 0.4, sheenColor: 0xE8B48C, sheenRoughness: 0.6, clearcoat: 0.08 }), PEAU2 = P(0x8E5A3C, 0.6), LEVRE = P(0x7A3A2C, 0.5),
+    CHEV = P(0x17110E, 0.85), CHEMISE = P(0x8E2C3A, 0.75, { sheen: 0.5, sheenColor: 0xD98A95 }), CHEMISE2 = P(0x74222F, 0.8), COL = P(0xA5404E, 0.75),
+    BLANC = P(0xFFFFFF, 0.3, { clearcoat: 0.4 }), OEIL = P(0xFBFAF7, 0.15, { clearcoat: 1, clearcoatRoughness: 0.05 }), IRIS = P(0x4A2A16, 0.25, { clearcoat: 1 }), NOIR = P(0x0E0E0E, 0.35),
+    BOUCHE = P(0x5A1212, 0.6), LANGUE = P(0xD9545A, 0.45), DENTS = P(0xF7F3EA, 0.25, { clearcoat: 0.6 }), GRIS = P(0x9AA1AB, 0.35, { clearcoat: 0.5 }), GRIS2 = P(0x353A41, 0.45), ROUGE = P(0xE0402A, 0.45),
+    JEAN = P(0x2E4A6B, 0.9, { sheen: 0.3, sheenColor: 0x6E8FB5 }), JEAN2 = P(0x22384F, 0.9), CUIR = P(0x5A3A26, 0.45, { clearcoat: 0.3 }), SEMELLE = P(0xF4F1EA, 0.45), GOMME = P(0xC98B5A, 0.65), LACET = P(0xF7F5F0, 0.6),
+    OR = P(0xD9B44A, 0.25, { metalness: 0.85 }), MONTURE = P(0x111111, 0.25, { clearcoat: 1, clearcoatRoughness: 0.1 });
+  // barbe : ombre de poils qui s'estompe vers les joues (masque dégradé)
+  const barbeMasque = (() => { const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d"), im = x.createImageData(128, 128);
+    for (let j = 0; j < 128; j++) for (let i = 0; i < 128; i++) { const v = 1 - j / 127, u = i / 127; const a = Math.min(1, Math.max(0, (0.85 - v) / 0.45)) * Math.min(1, u / 0.18, (1 - u) / 0.18);
+      const k = (j * 128 + i) * 4; im.data[k] = im.data[k + 1] = im.data[k + 2] = Math.round(255 * a * (0.85 + 0.15 * Math.random())); im.data[k + 3] = 255; }
+    x.putImageData(im, 0, 0); return new THREE.CanvasTexture(c); })();
+  const BARBE = P(0x24160F, 0.95, { transparent: true, opacity: 0.62, alphaMap: barbeMasque, depthWrite: false });
+  const mesh = (geo, mat, parent, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; parent.add(m); return m; };
+  const grp = (parent, x = 0, y = 0, z = 0) => { const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g); return g; };
+  const sph = (r, mat, parent, x, y, z, sx = 1, sy = 1, sz = 1, seg = 48) => { const m = mesh(new THREE.SphereGeometry(r, seg, Math.round(seg * 0.75)), mat, parent, x, y, z); m.scale.set(sx, sy, sz); return m; };
+  const cap = (r, len, mat, parent, x, y, z) => mesh(new THREE.CapsuleGeometry(r, len, 12, 32), mat, parent, x, y, z);
+  const rbox = (w, h, d, rad, mat, parent, x, y, z) => mesh(new RoundedBoxGeometry(w, h, d, 6, Math.min(rad, w / 2.05, h / 2.05, d / 2.05)), mat, parent, x, y, z);
+  const tube = (pts, r, mat, parent) => mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map((p) => new THREE.Vector3(...p))), 32, r, 12, false), mat, parent);
+  const roundTube = (pts, r, mat, parent) => { const m = tube(pts, r, mat, parent); [pts[0], pts[pts.length - 1]].forEach((p) => sph(r, mat, parent, ...p, 1, 1, 1, 16)); return m; };
+  
+  // ===================== le personnage (lisse, squelette articulé) =====================
+  const LEG = 2.6, root = grp(scene);
+  // --- jambes, ceinture, baskets ---
+  const legs = grp(root);
+  [-1, 1].forEach((s) => { const x = s * 0.5;
+    const j = cap(0.46, 1.25, JEAN, legs, x, 1.78, 0); j.scale.set(1, 1, 0.95);
+    const ourlet = mesh(new THREE.TorusGeometry(0.43, 0.07, 12, 40), JEAN2, legs, x, 0.92, 0); ourlet.rotation.x = Math.PI / 2;
+    mesh(new THREE.CylinderGeometry(0.45, 0.44, 0.22, 40), JEAN2, legs, x, 0.98, 0);
+    tube([[x + s * 0.45, 2.45, 0.05], [x + s * 0.47, 1.7, 0.08], [x + s * 0.44, 1.0, 0.06]], 0.012, JEAN2, legs);            // couture
+    tube([[x - 0.18, 2.5, 0.42], [x, 2.38, 0.46], [x + 0.18, 2.5, 0.42]], 0.012, JEAN2, legs);                                // poche
+    mesh(new THREE.CylinderGeometry(0.3, 0.32, 0.3, 32), P(0xF2F0EA, 0.9), legs, x, 0.72, -0.05);                              // chaussette
+    // basket lisse : semelle épaisse, tige arrondie, bout rond, talon rouge, virgule rouge, lacets blancs
+    const sh = grp(legs, x, 0, 0.22);
+    rbox(1.0, 0.2, 1.7, 0.09, SEMELLE, sh, 0, 0.1, 0); rbox(1.02, 0.05, 1.72, 0.025, GOMME, sh, 0, 0.025, 0);
+    for (let k = 0; k < 8; k++) rbox(1.04, 0.02, 0.035, 0.01, P(0xDCD6C9, 0.6), sh, 0, 0.12, -0.74 + k * 0.21);
+    const tige = cap(0.4, 0.75, BLANC, sh, 0, 0.42, -0.08); tige.rotation.x = Math.PI / 2; tige.scale.set(1.15, 1, 0.78);
+    sph(0.42, P(0xEFEBE3, 0.35), sh, 0, 0.33, 0.48, 1.12, 0.62, 1.0);                                                          // bout rond
+    const colB = mesh(new THREE.TorusGeometry(0.3, 0.08, 14, 40), GRIS2, sh, 0, 0.66, -0.42); colB.rotation.x = Math.PI / 2 - 0.25; colB.scale.set(1.15, 1, 1);
+    rbox(0.46, 0.36, 0.14, 0.06, ROUGE, sh, 0, 0.46, -0.78);
+    [-1, 1].forEach((t) => roundTube([[t * 0.46, 0.22, 0.45], [t * 0.48, 0.32, 0.05], [t * 0.47, 0.5, -0.38]], 0.035, ROUGE, sh));
+    const lang = rbox(0.42, 0.08, 0.6, 0.04, P(0xF7F5F0, 0.5), sh, 0, 0.66, 0.0); lang.rotation.x = -0.35;
+    [0.26, 0.1, -0.06].forEach((dz) => { const y = 0.62 + (0.26 - dz) * 0.3;
+      [-1, 1].forEach((t) => { const l = cap(0.022, 0.42, LACET, sh, 0, y, dz); l.rotation.set(0, t * 0.35, Math.PI / 2); });
+      [-1, 1].forEach((t) => { const e = mesh(new THREE.TorusGeometry(0.03, 0.012, 8, 16), GRIS2, sh, t * 0.2, y - 0.01, dz); e.rotation.x = Math.PI / 2 - 0.4; }); });
+    [-1, 1].forEach((t) => { const b = mesh(new THREE.TorusGeometry(0.07, 0.018, 8, 20), LACET, sh, t * 0.07, 0.72, 0.36); b.rotation.set(0.6, t * 0.6, 0); });
+  });
+  const ceint = mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.24, 64), CUIR, legs, 0, LEG + 0.02, 0); ceint.scale.set(1.08, 1, 0.66);
+  rbox(0.34, 0.26, 0.06, 0.05, OR, legs, 0, LEG + 0.02, 0.68); rbox(0.2, 0.13, 0.08, 0.03, CUIR, legs, 0, LEG + 0.02, 0.7);
+  const hanche = cap(0.9, 0.2, JEAN, legs, 0, LEG - 0.35, 0); hanche.scale.set(1.05, 0.6, 0.62);
+  
+  // --- buste ---
+  const body = grp(root, 0, LEG, 0), chest = grp(body);
+  const torse = cap(0.95, 0.8, CHEMISE, chest, 0, 1.0, 0); torse.scale.set(1.06, 1, 0.66);
+  rbox(0.3, 1.55, 0.06, 0.03, CHEMISE2, chest, 0, 0.95, 0.66);
+  [1.5, 1.1, 0.7].forEach((y) => { const b = mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.04, 20), BLANC, chest, 0, y, 0.7); b.rotation.x = Math.PI / 2; });
+  const poche = rbox(0.5, 0.48, 0.05, 0.05, CHEMISE2, chest, 0.55, 1.32, 0.6); poche.rotation.y = 0.32;
+  cap(0.04, 0.3, ROUGE, chest, 0.68, 1.62, 0.6); sph(0.045, OR, chest, 0.68, 1.81, 0.6, 1, 1, 1, 12);
+  [-1, 1].forEach((s) => { const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(s * 0.55, -0.08); sh.lineTo(s * 0.18, -0.42); sh.closePath();
+    const c = mesh(new THREE.ExtrudeGeometry(sh, { depth: 0.04, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.04, bevelSegments: 4 }), COL, chest, s * 0.08, 2.08, 0.38); c.rotation.x = -0.35; });
+  mesh(new THREE.CylinderGeometry(0.32, 0.34, 0.55, 40), PEAU, chest, 0, 2.15, 0.02);                                         // cou
+  const arc = mesh(new THREE.TorusGeometry(0.66, 0.075, 16, 64, Math.PI), GRIS2, chest, 0, 2.02, 0.08); arc.rotation.set(Math.PI / 2 + 0.5, 0, Math.PI);
+  [-1, 1].forEach((s) => { const c = mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.22, 48), GRIS, chest, s * 0.76, 2.02, 0.42); c.rotation.set(0, s * 0.5, Math.PI / 2);
+    const coussin = mesh(new THREE.TorusGeometry(0.22, 0.08, 14, 40), GRIS2, chest, s * 0.67, 2.02, 0.48); coussin.rotation.set(0, Math.PI / 2 + s * 0.5, 0); });
+  
+  // --- bras : épaule → coude → main avec doigts ---
+  const ARM = {};
+  [["g", -1], ["d", 1]].forEach(([n, s]) => {
+    const sh = grp(chest, s * 1.18, 1.72, 0);
+    sph(0.36, CHEMISE, sh, 0, 0, 0);
+    cap(0.3, 0.6, CHEMISE, sh, 0, -0.45, 0);
+    const el = grp(sh, 0, -0.95, 0); sph(0.29, CHEMISE, el, 0, 0, 0); cap(0.27, 0.5, CHEMISE, el, 0, -0.38, 0);
+    const poignet = mesh(new THREE.TorusGeometry(0.24, 0.06, 12, 32), CHEMISE2, el, 0, -0.72, 0); poignet.rotation.x = Math.PI / 2;
+    const ha = grp(el, 0, -0.9, 0);
+    sph(0.24, PEAU, ha, 0, 0, 0, 1, 1.05, 0.62);                                                                               // paume
+    const doigts = grp(ha, 0, -0.18, 0);
+    [-0.12, 0, 0.12].forEach((dx, k) => { const f = cap(0.065, 0.22 - k * 0.02, PEAU, doigts, s * -(dx + 0.06), -0.12, 0.02); });
+    const idx = grp(ha, s * -0.15, -0.16, 0.03); cap(0.068, 0.26, PEAU, idx, 0, -0.16, 0);                                      // index
+    const pouce = grp(ha, s * -0.2, 0.02, 0.1); const p = cap(0.075, 0.16, PEAU, pouce, 0, -0.1, 0); pouce.rotation.set(0.4, 0, s * -0.7);
+    ARM[n] = { sh, el, ha, idx, doigts, s };
+  });
+  
+  // --- tête : pivot au cou ---
+  const neck = grp(chest, 0, 2.38, 0), H = grp(neck);
+  const crane = sph(1.05, PEAU, H, 0, 0.98, 0, 1.0, 1.12, 0.96, 72);                                                             // tête d'un seul volume (pas de couture)
+  [-1, 1].forEach((s) => { sph(0.22, PEAU, H, s * 1.02, 0.98, -0.05, 0.45, 1, 0.8, 24); sph(0.11, PEAU2, H, s * 1.08, 0.98, -0.02, 0.3, 0.7, 0.5, 16); });
+  // cheveux : une calotte + des centaines de petites boucles
+  const CENTRE = new THREE.Vector3(0, 1.08, 0), RAY = new THREE.Vector3(1.05, 1.12, 1.0);
+  { const c = sph(1.07, CHEV, H, 0, 1.1, -0.02, 1.0, 1.06, 0.97, 64); c.geometry = new THREE.SphereGeometry(1.07, 64, 32, 0, Math.PI * 2, 0, 1.2); c.rotation.x = -0.4; }
+  let sd3 = 5; const rnd3 = () => ((sd3 = (sd3 * 16807) % 2147483647) / 2147483647);
+  const N = 520, ga = Math.PI * (3 - Math.sqrt(5)), BOUCLE = new THREE.SphereGeometry(1, 14, 10);
+  for (let i = 0; i < N; i++) { const y = 1 - (i / (N - 1)) * 1.6, r = Math.sqrt(1 - y * y), th = ga * i, d = new THREE.Vector3(Math.cos(th) * r, y, Math.sin(th) * r);
+    const lim = 0.92 + 0.62 * (1 - (d.z + 1) / 2); if (Math.acos(d.y) > lim) continue; if (Math.abs(d.x) > 0.8 && d.y < 0.35 && d.z > -0.3) continue;
+    const m = new THREE.Mesh(BOUCLE, CHEV), rr = 0.13 + rnd3() * 0.07; m.scale.setScalar(rr);
+    m.position.copy(CENTRE).add(d.clone().multiply(RAY).multiplyScalar(1.05 + rnd3() * 0.04)); m.castShadow = true; H.add(m); }
+  // yeux : globe brillant, iris, pupille, reflet ; le globe tourne pour regarder
+  const F = 0.84, EYE = {};
+  [["g", -1], ["d", 1]].forEach(([n, s]) => { const cx = s * 0.38;
+    const ball = grp(H, cx, 1.14, F); sph(0.235, OEIL, ball, 0, 0, 0, 1, 1.08, 1);
+    sph(0.125, IRIS, ball, 0, 0, 0.2, 1, 1.08, 0.42, 32); sph(0.068, NOIR, ball, 0, 0, 0.228, 1, 1.08, 0.3, 24);
+    sph(0.035, BLANC, ball, 0.05, 0.06, 0.25, 1, 1, 0.4, 12);
+    const lid = mesh(new THREE.SphereGeometry(0.255, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2), PEAU, H, cx, 1.14, F);           // paupière haute
+    const lidBas = mesh(new THREE.SphereGeometry(0.25, 40, 12, 0, Math.PI * 2, Math.PI * 0.72, Math.PI * 0.28), PEAU, H, cx, 1.14, F);
+    lidBas.rotation.x = -0.35;
+    const brow = grp(H, cx, 1.5, 0.9); roundTube([[-0.2, -0.02, 0], [0, 0.05, 0.03], [0.2, 0, 0]], 0.055, CHEV, brow);
+    EYE[n] = { ball, lid, brow, s };
+  });
+  sph(0.17, PEAU, H, 0, 0.84, 1.0, 1.0, 0.85, 1.05, 32);                                                                      // nez
+  [-1, 1].forEach((s) => sph(0.08, PEAU, H, s * 0.12, 0.79, 0.95, 1, 0.8, 1, 16));                                            // ailes du nez
+  // lunettes : montures arrondies extrudées, verres, branches
+  const lun = grp(H, 0, 1.14, F + 0.3);
+  const rr = (w, h, r) => { const sh = new THREE.Shape(); sh.moveTo(-w / 2 + r, -h / 2); sh.lineTo(w / 2 - r, -h / 2); sh.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r); sh.lineTo(w / 2, h / 2 - r); sh.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2); sh.lineTo(-w / 2 + r, h / 2); sh.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r); sh.lineTo(-w / 2, -h / 2 + r); sh.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2); return sh; };
+  const VERRE = new THREE.MeshPhysicalMaterial({ color: 0xDDE6EE, roughness: 0.02, transmission: 0.0, transparent: true, opacity: 0.18, clearcoat: 1 });
+  [-1, 1].forEach((s) => { const o = rr(0.72, 0.6, 0.2), hole = rr(0.58, 0.46, 0.14); o.holes.push(hole);
+    const fr = mesh(new THREE.ExtrudeGeometry(o, { depth: 0.04, bevelEnabled: true, bevelThickness: 0.025, bevelSize: 0.02, bevelSegments: 4, curveSegments: 12 }), MONTURE, lun, s * 0.4, 0, 0);
+    mesh(new THREE.ShapeGeometry(rr(0.6, 0.48, 0.15), 12), VERRE, lun, s * 0.4, 0, 0.02);
+    roundTube([[s * 0.76, 0.12, 0.02], [s * 0.98, 0.1, -0.35], [s * 1.05, 0.0, -1.2]], 0.028, MONTURE, lun); });
+  roundTube([[-0.06, 0.08, 0.03], [0, 0.12, 0.05], [0.06, 0.08, 0.03]], 0.03, MONTURE, lun);
+  // bouche : trait souple (fermée) ou ouverture avec dents et langue
+  const mouth = grp(H, 0, 0.42, 0.93);
+  const lineC = grp(mouth); roundTube([[-0.16, 0, 0], [0, -0.01, 0.01], [0.16, 0, 0]], 0.03, LEVRE, lineC);
+  const cornerG = grp(mouth, -0.16, 0, 0), cornerD = grp(mouth, 0.16, 0, 0);
+  roundTube([[0, 0, 0], [-0.08, 0.005, -0.01], [-0.14, 0.01, -0.03]], 0.028, LEVRE, cornerG); roundTube([[0, 0, 0], [0.08, 0.005, -0.01], [0.14, 0.01, -0.03]], 0.028, LEVRE, cornerD);
+  const inner = grp(mouth); sph(0.3, BOUCHE, inner, 0, 0, -0.02, 1, 0.55, 0.3, 32);
+  const dents = rbox(0.38, 0.08, 0.06, 0.03, DENTS, inner, 0, 0.1, 0.06); sph(0.13, LANGUE, inner, 0.02, -0.08, 0.04, 1.2, 0.5, 0.6, 24);
+  roundTube([[-0.36, 0.0, -0.05], [-0.18, 0.08, 0.02], [0, 0.06, 0.05], [0.18, 0.08, 0.02], [0.36, 0.0, -0.05]], 0.06, CHEV, grp(H, 0, 0.58, 0.95)); // moustache
+  mesh(new THREE.SphereGeometry(1.07, 64, 32, Math.PI / 2 - 1.4, 2.8, Math.PI * 0.6, Math.PI * 0.36), BARBE, H, 0, 0.98, 0).scale.set(1.0, 1.12, 0.96); // barbe courte
+  const chin = sph(0.14, CHEV, H, 0, 0.1, 0.64, 1.2, 0.9, 0.6, 24);
+  
+  
+  root.rotation.y = 0.12;
+
+  const PER = (p) => DURATION / Math.round(DURATION / p);
+  const lerpA = (a, b, u) => a.map((x, i) => x + (b[i] - x) * u);
+  const eIO = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+  const eOut = (u) => 1 - Math.pow(1 - u, 3);
+  const eBack = (u) => { const c = 1.3; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); };
+  const track = (keys, d, ease = eIO, delay = 0) => { let st = null;
+    const at = (t, i) => (i === 0 ? keys[0][1] : lerpA(st[i], keys[i][1], ease(clamp((t - keys[i][0] - delay) / d))));
+    return (t) => { if (!st) { keys.sort((a, b) => a[0] - b[0]); st = [keys[0][1]]; for (let i = 1; i < keys.length; i++) st[i] = at(keys[i][0], i - 1); }
+      let i = 0; while (i + 1 < keys.length && keys[i + 1][0] <= t) i++; return at(t, i); }; };
+  // expressions : [paupière (0 ouverte → 1 fermée), sourcils y, sourcils rot, coins de bouche (+ sourire), échelle des yeux]
+  const EX = { neutre: [0.12, 0, 0, 0.05, 1], parle: [0.12, 0.02, 0, 0.1, 1], insiste: [0.24, -0.06, 0.2, 0, 1], sceptique: [0.34, -0.03, 0.18, 0.15, 1],
+    surpris: [0, 0.14, 0, -0.1, 1.06], content: [0.3, 0.05, 0, 0.45, 1], inquiet: [0.16, 0.08, -0.24, -0.25, 1.03], malin: [0.42, 0, 0.1, 0.35, 1], question: [0.1, 0.11, -0.12, 0, 1] };
+  // gestes : [épaule x, épaule z, coude x, coude z, poignet z, index] × 2 bras, + épaules
+  const PO = { pointe: { g: [-0.2, -2.5, 0, -0.25, 0.1, 1], d: [0, 0.1, -0.2, 0, 0, 0], e: 0.05 },
+    salue: { g: [0, -0.1, -0.15, 0, 0, 0], d: [-0.55, 0.3, -1.25, 0.2, 0, 0], e: 0 },
+    croise: { g: [-0.45, 0.12, -1.55, 0.95, 0, 0], d: [-0.42, -0.12, -1.6, -0.95, 0, 0], e: 0.02 },
+    neutre: { g: [0, -0.1, -0.15, 0, 0, 0], d: [0, 0.1, -0.15, 0, 0, 0], e: 0 } };
+  const poseVec = (p) => [...PO[p].g, ...PO[p].d, PO[p].e];
+  const EK = [[0, EX[INIT_EXPR]]], PK = [[0, poseVec(INIT_POSE)]], GK = [], POSES = [];
+  let lastPose = INIT_POSE;
+  const ACT = (t, expr, pose) => { t = Math.max(0.02, t); EK.push([t, EX[expr] || EX.parle]);
+    if (pose && pose !== lastPose) { PK.push([t, poseVec(pose)]); POSES.push(t); lastPose = pose; } };
+  const LOOK = (t, x, y) => GK.push([t, [x / 22, -y / 22]]);
+  const QW = [];
+  const qTilt = (t) => QW.reduce((s, [a, b, g]) => s + g * smooth(a - 0.15, a + 0.25, t) * (1 - smooth(b - 0.1, b + 0.3, t)), 0);
+  const ACC = []; WORDS.forEach((w) => { const n = norm(w.text).length, fin = /[.,!?…:]$/.test(w.text); if (!fin && n < 8) return;
+    const t = w.start + 0.55 * (w.end - w.start); if (ACC.length && t - ACC[ACC.length - 1].t < 0.42) return;
+    ACC.push({ t, a: fin ? 1 : 0.6, s: ACC.length % 2 ? 1 : -1, br: ACC.length % 3 === 0 }); });
+  const pulse = (x) => (x < 0 ? 0 : x < 0.1 ? Math.sin(((x / 0.1) * Math.PI) / 2) : x < 0.55 ? 0.5 + 0.5 * Math.cos(((x - 0.1) / 0.45) * Math.PI) : 0);
+  const ENV = window.ENV || [], EF = window.ENV_FPS || 60;
+  const envAt = (t) => { const x = t * EF, i = Math.floor(x); return i < 0 || i + 1 >= ENV.length ? 0 : ENV[i] + (ENV[i + 1] - ENV[i]) * (x - i); };
+  const SEGS = []; WORDS.forEach((w) => { const s = SEGS[SEGS.length - 1]; if (s && w.start - s[1] < 0.3) s[1] = w.end; else SEGS.push([Math.max(0.06, w.start), w.end]); });
+  const talking = (t) => SEGS.some(([a, b]) => t >= a - 0.03 && t <= b + 0.05);
+  const BLINK = []; for (let t = 1.7; t < DURATION - 1.2; t += 2.6 + rnd() * 1.8) BLINK.push(t);
+  const blinkAt = (t) => { for (const b of BLINK) { const x = t - b; if (x >= 0 && x < 0.18) return x < 0.06 ? x / 0.06 : 1 - (x - 0.06) / 0.12; } return 0; };
+  const MSK = [[0, [0, 0]]]; { let t = 1.0; while (t < DURATION - 1.4) { MSK.push([t, [(rnd() - 0.5) * 0.12, (rnd() - 0.5) * 0.08]]); t += 0.55 + rnd() * 0.9; } MSK.push([DURATION - 1.2, [0, 0]]); }
+  let eyeT, headT, exprT, armT, msT;
+
+  const life = (t) => {
+    if (!eyeT) { eyeT = track(GK, 0.13, eOut); headT = track(GK.map(([a, v]) => [a, v]), 0.5, eIO, 0.06); exprT = track(EK, 0.28, eIO); armT = track(PK, 0.55, eBack); msT = track(MSK, 0.05, eOut); }
+    const br = 0.5 + 0.5 * Math.sin((2 * Math.PI * t) / PER(3.4)), sway = Math.sin((2 * Math.PI * t) / PER(7.4));
+    let nod = 0, roll = 0, lift = 0, beat = 0;
+    for (const a of ACC) { const p = pulse(t - a.t); if (!p) continue; nod += p * a.a; roll += p * a.s * a.a; if (a.br) lift += p * a.a; beat += p * a.a; }
+    const open = talking(t) ? clamp(envAt(t) * 1.1) : 0;
+    const a = armT(t), e = exprT(t), [gx, gy] = eyeT(t), [hx, hy] = headT(t), [mx, my] = msT(t);
+    // corps : respiration, poids qui se balance
+    root.rotation.y = 0.12 + 0.05 * sway; body.rotation.z = 0.012 * sway; chest.scale.set(1, 1 + 0.012 * br, 1 + 0.012 * br); chest.position.y = 0.02 * br;
+    // bras : gestes fondus, battue sur les accents, poignet qui se pose après un changement de geste
+    let tp = -9; for (const p of POSES) if (p <= t) tp = p; const dt = t - tp, settle = dt < 1 ? 0.18 * Math.exp(-dt * 6) * Math.cos(dt * 15) : 0;
+    [["g", 0], ["d", 6]].forEach(([n, o]) => { const A = ARM[n];
+      A.sh.rotation.set(a[o], 0, a[o + 1]); A.sh.position.y = 1.72 + a[12] * 0.6 + 0.02 * br;
+      A.el.rotation.set(a[o + 2] - 0.1 * beat * (a[o + 2] < -0.8 ? 1 : 0.3), 0, a[o + 3]);
+      A.ha.rotation.z = a[o + 4] + settle; A.doigts.rotation.x = 1.6 * a[o + 5]; A.doigts.position.z = 0.08 * a[o + 5]; A.idx.rotation.x = 0.5 * (1 - a[o + 5]); });
+    // tête : suit le regard avec retard, hoche sur les accents, penche aux questions
+    neck.rotation.set(-hy * 0.35 + 0.07 * nod, hx * 0.6, 0.05 * roll - 0.03 * sway + qTilt(t) * 0.018);
+    const bl = blinkAt(t);
+    ["g", "d"].forEach((n) => { const E = EYE[n];
+      E.ball.rotation.set(-(gy + my) * 0.45, (gx + mx) * 0.55, 0); E.ball.scale.setScalar(e[4]);
+      E.lid.rotation.x = -1.15 + (Math.PI / 2 + 1.15) * clamp(e[0] + (1 - e[0]) * bl);
+      E.brow.position.y = 1.5 + e[1] + 0.06 * lift + 0.03 * nod; E.brow.rotation.z = E.s * e[2]; });
+    inner.scale.set(1 - 0.12 * open, 0.12 + 0.88 * open, 1); inner.visible = open > 0.04;
+    lineC.visible = cornerG.visible = cornerD.visible = open <= 0.04;
+    cornerG.rotation.z = -e[3] * 0.9; cornerD.rotation.z = e[3] * 0.9; chin.position.y = 0.1 - 0.07 * open;
+    renderer.render(scene, cam);
+  };
+  const LIFE = { t: 0 }; tl.fromTo(LIFE, { t: 0 }, { t: DURATION, duration: DURATION, ease: "none", immediateRender: false, onUpdate: () => life(LIFE.t) }, 0);
+  tl.fromTo("#paper", { x: 0, y: 0 }, { x: -36, y: -36, duration: DURATION, ease: "none", immediateRender: false }, 0);
+  gsap.set("#cam", { transformOrigin: "50% 40%" });
+
+  // =====================================================================
+  // LES SCÈNES (communes aux deux versions : présentateur papier et présentateur 3D)
+  // =====================================================================
+  const tRien = S("rien"), tCe = S("ce nest pas la"), tMal = S("malchance"), tCest = S("cest une de ces"), tTrois = S("trois"), tErreurs = S("erreurs");
+  const tPresque = S("presque"), tEnr = S("enregistre"), tVerif = S("verifie");
+  const tE1 = S("erreur numero un"), tChoisir = S("choisir"), tPlait = S("plait"), tToi = S("toi"), tGenial = S("genial"), tMais = S("mais est-ce"), tCherchent = S("cherchent");
+  const tBon = S("un bon produit"), tRegle = S("regle"), tProbleme = S("probleme"), tAvant = S("avant de le vendre"), tParlent = S("parlent"), tOu = S("ou je peux");
+  const tE2 = S("erreur numero deux"), tJamais = S("jamais"), tVu = S("vu"), tClient = S("le client"), tSem = S("semaines"), tRecoit = S("recoit"), tQual = S("mauvaise");
+  const tCmd = S("commande dabord"), tVerifies = S("verifies"), tMesures = S("mesures"), tDelai = S("delai");
+  const tE3 = S("erreur numero trois"), tOuvrir = S("ouvrir"), tEnc = S("encaisser"), tDepuis = S("depuis madagascar"), tSol = S("solutions"), tDispo = S("disponibles");
+  const tPasses = S("tu passes"), tJour = S("le jour de la"), tVente = S("vente"), tArgent = S("largent ne peut"), tArriver = S("arriver");
+  const tRegleP = S("regle le paiement"), tPremier = S("premier"), tLaBout = S("la boutique ensuite");
+  const tLeDrop = S("le dropshipping"), tFacile = S("facile"), tVrai = S("vrai business"), tTester = S("tester"), tTromper = S("tromper"), tRecom = S("recommencer"), tEvitant = S("evitant"), tMois = S("mois");
+  const tEtToi = S("et toi"), tFaisais = S("faisais"), iEcris = find("ecris"), tUn = S("un", 0, iEcris), tDeux = S("deux", 0, iEcris), tTroisC = S("trois", 0, iEcris), tComm = S("commentaire");
+  const tEnvoie = S("envoie"), tVid = S("video", 0, find("envoie")), tQqn = S("quelquun"), tParce = S("parce que si");
+
+  // ========== 1 · LA BOUTIQUE VIDE (première et dernière image) ==========
+  tl.set("#shop", { autoAlpha: 1, x: 0, y: 0, scale: 1 }, 0); tl.set("#reload", { rotation: 0, transformOrigin: "50% 50%" }, 0);
+  tl.fromTo("#reload", { rotation: 0 }, { rotation: 360, duration: 0.7, ease: "power2.inOut", transformOrigin: "50% 50%", immediateRender: false }, tRien - 0.35); SFX("tick", tRien - 0.3, -24);
+  tl.fromTo("#cmdN", { scale: 1 }, { scale: 1.12, duration: 0.15, yoyo: true, repeat: 1, ease: "power2.out", transformOrigin: "50% 80%", immediateRender: false }, tRien + 0.25);
+  POP("#clover", tCe - 0.05, 0.4); SFX("pop", tCe, -22);
+  DRAW("#xc1", tMal, 0.2); DRAW("#xc2", tMal + 0.14, 0.2); SFX("error", tMal + 0.05, -24);
+  IN("#tMal", tMal - 0.15, { y: 24 });
+  tl.to("#shop", { autoAlpha: 0, y: -80, scale: 0.9, filter: B(10), duration: 0.4, ease: "power3.in" }, tCest - 0.3);
+  OUT("#clover, #tMal", tCest - 0.3);
+
+  // ========== 2 · TROIS ERREURS ==========
+  IN("#t3", tCest - 0.05, { y: 26 }); HL("kErr", tErreurs); SFX("pop", tErreurs, -22);
+  ["#n1", "#n2", "#n3"].forEach((n, i) => { POP(n, tTrois - 0.1 + i * 0.15, 0.4); SFX("ding" + i, tTrois - 0.05 + i * 0.15, -22); });
+  OUT("#t3, #n1, #n2, #n3", tEnr - 0.3);
+  hide("#save"); tl.fromTo("#save", { autoAlpha: 0, y: -120, rotation: -8 }, { autoAlpha: 1, y: 0, rotation: 0, duration: 0.5, ease: "bounce.out", immediateRender: false }, tEnr - 0.1); SFX("thud", tEnr + 0.25, -22);
+  IN("#chk", tVerif - 0.1, { y: 24 });
+  OUT("#save, #chk", tE1 - 0.3);
+
+  // ========== 3 · ERREUR 1 : LE PRODUIT ==========
+  IN("#b1", tE1 - 0.05, { y: -30 }); SFX("whip", tE1, -22);
+  IN("#prod1", tChoisir - 0.05, { y: 50 }); SFX("card", tChoisir, -22);
+  POP("#heart", tPlait - 0.1); tl.fromTo("#heart", { scale: 1 }, { scale: 1.15, duration: 0.25, yoyo: true, repeat: 3, ease: "sine.inOut", immediateRender: false }, tPlait + 0.35); SFX("pop", tPlait, -21);
+  XPOP("#sp1", tGenial - 0.25); XPOP("#sp2", tGenial - 0.05); SFX("shimmer", tGenial - 0.2, -24);
+  IN("#srch", tMais - 0.05, { y: 30 }); PULSE("#srchN", tCherchent, 1.4); SFX("tick", tCherchent, -22);
+  OUT("#prod1, #heart, #sp1, #sp2, #srch", tBon - 0.3);
+  IN("#pb", tBon - 0.05, { x: -60, y: 0 }); DRAW("#arr1p", tRegle - 0.05, 0.35); tl.set("#arr1", { autoAlpha: 1 }, tRegle - 0.06); hide("#arr1");
+  IN("#sol", tRegle + 0.15, { x: 60, y: 0 }); XPOP("#sol .ok", tProbleme + 0.35); SFX("ding1", tProbleme + 0.35, -21);
+  [["#cm1", tParlent - 0.15], ["#cm2", tOu - 0.1], ["#cm3", tOu + 0.55]].forEach(([c, t]) => { IN(c, t, { x: -60, y: 0, d: 0.35 }); SFX("notif", t + 0.05, -22); });
+  OUT("#b1, #pb, #arr1, #sol, #cm1, #cm2, #cm3", tE2 - 0.3);
+
+  // ========== 4 · ERREUR 2 : JAMAIS VU LE PRODUIT ==========
+  IN("#b2", tE2 - 0.05, { y: -30 }); SFX("whip", tE2, -22);
+  IN("#enligne", tJamais - 0.1, { y: 50 }); STAMP("#jamais", tVu + 0.05, -8); SFX("stamp", tVu + 0.05, -18);
+  OUT("#enligne, #jamais", tClient - 0.25);
+  IN("#days", tClient - 0.1, { x: -60, y: 0 }); ROLLF("daysN", 1, 21, tSem - 0.55, 0.75, (n) => String(Math.round(n)), "power1.inOut"); SFX("tick", tSem - 0.4, -24); SFX("tick", tSem, -24);
+  IN("#casse", tRecoit - 0.05, { x: 60, y: 0 }); DRAW("#crk", tQual, 0.3); SFX("glass", tQual + 0.05, -22);
+  IN("#stars", tQual + 0.25, { y: 20 }); tl.fromTo("#casse", { x: 0 }, { x: 10, duration: 0.05, yoyo: true, repeat: 5, ease: "none", immediateRender: false }, tQual + 0.05);
+  OUT("#days, #casse, #stars", tCmd - 0.25);
+  hide("#ech"); tl.fromTo("#ech", { autoAlpha: 0, y: 200, rotation: 10 }, { autoAlpha: 1, y: 0, rotation: 0, duration: 0.55, ease: "back.out(1.6)", immediateRender: false }, tCmd - 0.05); SFX("card", tCmd + 0.1, -21);
+  IN("#q1", tVerifies - 0.05, { x: -60, y: 0 }); XPOP("#q1 .ck", tVerifies + 0.55); SFX("ding0", tVerifies + 0.55, -22);
+  IN("#q2", tMesures - 0.05, { x: -60, y: 0 }); XPOP("#q2 .ck", tDelai + 0.1); SFX("ding1", tDelai + 0.1, -22);
+  OUT("#b2, #ech, #q1, #q2", tE3 - 0.3);
+
+  // ========== 5 · ERREUR 3 : ENCAISSER ==========
+  IN("#b3", tE3 - 0.05, { y: -30 }); SFX("whip", tE3, -22);
+  IN("#wal", tOuvrir - 0.05, { y: 50 }); tl.fromTo("#wal", { rotation: 0 }, { rotation: 6, duration: 0.12, yoyo: true, repeat: 3, ease: "sine.inOut", immediateRender: false }, tEnc);
+  OUT("#wal", tDepuis - 0.25);
+  POP("#mada", tDepuis - 0.05, 0.4); SFX("pop", tDepuis, -22);
+  ["#p1", "#p2", "#p3"].forEach((p, i) => { IN(p, tSol - 0.15 + i * 0.18, { x: -60, y: 0, d: 0.35 });
+    tl.set(p + " em", { autoAlpha: 0 }, 0); tl.fromTo(p + " em", { autoAlpha: 0, scale: 1.8 }, { autoAlpha: 1, scale: 1, duration: 0.25, ease: "power3.in", immediateRender: false }, tDispo - 0.1 + i * 0.12); });
+  SFX("error", tDispo, -23); tl.to("#p1 i, #p2 i, #p3 i", { opacity: 0.4, duration: 0.3 }, tDispo + 0.2);
+  OUT("#mada, #p1, #p2, #p3", tPasses - 0.25);
+  IN("#prog", tPasses - 0.05, { y: 30 }); tl.fromTo("#prog .fill", { scaleX: 0 }, { scaleX: 1, duration: tJour - tPasses, ease: "power1.inOut", immediateRender: false }, tPasses + 0.1); SFX("keys", tPasses + 0.2, -26);
+  IN("#notif", tVente - 0.35, { y: -40 }); SFX("notif", tVente - 0.3, -19);
+  POP("#coin", tArgent - 0.25, 0.35); IN("#wall", tArgent - 0.2, { y: 40 });
+  tl.fromTo("#coin", { x: 0 }, { x: 345, duration: 0.45, ease: "power2.in", immediateRender: false }, tArgent + 0.15);
+  tl.to("#coin", { x: 140, rotation: -200, duration: 0.5, ease: "power2.out" }, tArgent + 0.6); tl.fromTo("#coin", { y: 0 }, { y: -60, duration: 0.25, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false }, tArgent + 0.6);
+  SFX("thud", tArgent + 0.6, -20); SFX("error", tArriver + 0.1, -24); PULSE("#wall", tArgent + 0.6, 1.08);
+  OUT("#prog, #notif, #coin, #wall", tRegleP - 0.25);
+  IN("#o1", tRegleP - 0.05, { x: -60, y: 0 }); XPOP("#o1 .ck", tPremier); SFX("ding2", tPremier, -21);
+  IN("#o2", tLaBout - 0.05, { x: -60, y: 0 }); SFX("tick", tLaBout, -22);
+  OUT("#b3, #o1, #o2", tLeDrop - 0.3);
+
+  // ========== 6 · PAS D'ARGENT FACILE, LE CYCLE ==========
+  IN("#tFac", tLeDrop - 0.05, { y: 26 });
+  tl.set("#stkF", { scaleX: 0 }, 0); tl.fromTo("#stkF", { scaleX: 0 }, { scaleX: 1, duration: 0.25, ease: "power3.out", immediateRender: false }, tFacile); SFX("strike", tFacile, -21);
+  IN("#cycleW", tVrai - 0.15, { y: 40, s: 0.9 });
+  [["#c1", "#h1", "#w1", tTester], ["#c2", "#h2", "#w2", tTromper], ["#c3", "#h3", "#w3", tRecom]].forEach(([c, h, w, t], i) => {
+    DRAW(c, t - 0.3, 0.45); POP(h, t + 0.1, 0.3); hide(w); tl.fromTo(w, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.3, immediateRender: false }, t - 0.1); SFX("tick", t, -23); });
+  tl.fromTo("#cycle", { rotation: 0 }, { rotation: 12, duration: tEtToi - tRecom, ease: "none", svgOrigin: "310 330", immediateRender: false }, tRecom + 0.3);
+  STAMP("#mois", tMois + 0.05, -5); SFX("stamp", tMois + 0.05, -18);
+  OUT("#tFac, #cycleW, #mois", tEtToi - 0.3);
+
+  // ========== 7 · LAQUELLE TU FAISAIS ? ==========
+  IN("#tQ", tEtToi - 0.05, { y: 26 });
+  [["#r1", tUn], ["#r2", tDeux], ["#r3", tTroisC]].forEach(([r, t]) => { IN(r, t - 0.1, { x: -60, y: 0, d: 0.35 }); SFX("notif", t, -22); });
+  OUT("#tQ, #r1, #r2, #r3", tEnvoie - 0.3);
+
+  // ========== 8 · ENVOIE-LA… ET LA BOUCLE ==========
+  IN("#tEnv", tEnvoie - 0.05, { y: 26 });
+  POP("#shareB", tEnvoie, 0.4); SFX("pop", tEnvoie + 0.05, -22);
+  hide("#vcard"); tl.fromTo("#vcard", { autoAlpha: 0, scale: 0.5, rotation: -12 }, { autoAlpha: 1, scale: 1, rotation: -6, duration: 0.3, ease: "back.out(2)", immediateRender: false }, tVid - 0.05);
+  tl.fromTo("#vcard", { x: 0 }, { x: 520, duration: 0.75, ease: "power1.inOut", immediateRender: false }, tVid + 0.3);
+  tl.fromTo("#vcard", { y: 0 }, { y: -100, duration: 0.375, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, tVid + 0.3);
+  tl.to("#vcard", { scale: 0.3, autoAlpha: 0, rotation: 10, duration: 0.2, ease: "power2.in" }, tVid + 0.9); SFX("whip", tVid + 0.3, -22);
+  POP("#ami", tQqn - 0.15, 0.4); PULSE("#ami", tVid + 1.05, 1.1); SFX("ding2", tVid + 1.05, -21);
+  OUT("#tEnv, #shareB, #ami", tParce - 0.3);
+  // la boutique vide revient : dernière image = première image
+  tl.fromTo("#shop", { autoAlpha: 0, y: 90, scale: 0.9, filter: B(10) }, { autoAlpha: 1, y: 0, scale: 1, filter: B(0), duration: 0.55, ease: "back.out(1.4)", immediateRender: false }, tParce - 0.05); SFX("card", tParce + 0.05, -21);
+  tl.fromTo("#reload", { rotation: 360 }, { rotation: 720, duration: 0.7, ease: "power2.inOut", transformOrigin: "50% 50%", immediateRender: false }, tParce + 0.9);
+
+  // ---------- jeu d'acteur : [moment, expression, pose] ----------
+  [[tCest - 0.1, "insiste", "pointe"], [tPresque - 0.05, "parle", "salue"], [tEnr - 0.05, "content", "pointe"], [tE1 - 0.1, "insiste"], [tPlait - 0.1, "content", "salue"],
+   [tMais - 0.05, "question"], [tBon - 0.05, "parle", "pointe"], [tOu - 0.1, "content"], [tE2 - 0.1, "insiste", "croise"], [tClient - 0.05, "inquiet"],
+   [tCmd - 0.05, "parle", "pointe"], [tVerifies - 0.05, "content", "salue"], [tE3 - 0.1, "insiste", "pointe"], [tDepuis - 0.05, "sceptique", "croise"],
+   [tVente - 0.15, "surpris"], [tArgent + 0.1, "inquiet"], [tRegleP - 0.05, "insiste", "pointe"], [tLeDrop - 0.05, "sceptique", "croise"], [tVrai - 0.05, "parle", "salue"],
+   [tEvitant - 0.05, "content"], [tEtToi - 0.05, "question"], [tEnvoie - 0.05, "malin", "pointe"], [tParce - 0.1, INIT_EXPR, INIT_POSE]].forEach(([t, e, p]) => ACT(t, e, p));
+  // ---------- regard : la tête se tourne vers ce qui apparaît ----------
+  [[0, -2, -10], [tCest - 0.2, 0, -8], [tPresque, 0, 0], [tEnr, -2, -9], [tVerif + 0.2, 0, 0], [tE1, -2, -10], [tPlait, 4, -10], [tToi, 0, 0], [tMais, -2, -6],
+   [tBon, -9, -9], [tRegle + 0.2, 9, -9], [tAvant, 0, 0], [tParlent, -8, -4], [tE2 - 0.1, 0, 0], [tJamais, -2, -10], [tClient, -9, -9], [tRecoit, 9, -9], [tCmd, -2, -10],
+   [tMesures + 0.3, 0, 0], [tE3, 0, -9], [tDepuis + 0.2, 0, 0], [tSol, -2, -8], [tPasses, 0, -8], [tVente, -2, -8], [tArgent, -6, -4], [tArriver, 6, -4], [tRegleP, 0, 0],
+   [tLeDrop, 0, -8], [tTester, 6, -8], [tTromper, 0, -4], [tRecom, -6, -8], [tEvitant, 0, 0], [tEtToi, 0, 0], [tUn, -6, -4], [tComm, 0, 0], [tEnvoie, -8, -6], [tQqn, 9, -6],
+   [tParce - 0.2, -2, -10]].forEach(([t, x, y]) => LOOK(t, x, y));
+  QW.push([tMais, tCherchent + 0.6, 4.5], [tEtToi, tFaisais + 0.5, -4.5]);
+
+  // grands changements de regard : un clignement (et on retire ceux qui tombent trop près)
+  for (let i = 1; i < GK.length; i++) { const d = Math.hypot(GK[i][1][0] - GK[i - 1][1][0], GK[i][1][1] - GK[i - 1][1][1]); if (d > 10 && GK[i][0] > 1.5 && GK[i][0] < DURATION - 1.2) BLINK.push(GK[i][0] - 0.02); }
+  BLINK.sort((a, b) => a - b); for (let i = BLINK.length - 1; i > 0; i--) if (BLINK[i] - BLINK[i - 1] < 0.9) BLINK.splice(i, 1);
+  gsap.set(".pill", { xPercent: -50, yPercent: -50 });
+  gsap.set(".ctr", { xPercent: -50 });
+  tl.set({}, {}, DURATION);
+  window.__duration = DURATION; window.__sfx = CUES.sort((a, b) => a.t - b.t);
+  // window.__seek ne doit rien renvoyer (sinon le rendu essaie de recopier la timeline et bloque)
+  // l'image 0 est calculée un millième de seconde plus loin : sinon GSAP n'applique pas les réglages posés à 0 et la boucle saute
+  window.__seek = (t) => { tl.seek(Math.max(t, 0.001), false); };
+  Promise.all([document.fonts.ready, ...[...document.images].map((im) => (im.complete ? 0 : new Promise((r) => (im.onload = im.onerror = r))))]).then(() => { window.__seek(0); window.__readyResolve(true); });
+  if (!new URLSearchParams(location.search).has("render")) { const au = new Audio("assets/audio/voix-final.mp3"); window.__ready.then(() => { document.body.onclick = () => { au.currentTime = 0; au.play(); tl.play(0); }; }); }
+})();
+
+</script>
+</body>
+</html>
