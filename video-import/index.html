@@ -1,0 +1,1110 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Import Chine</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/audio/words-final.js"></script>
+<script src="assets/audio/env-final.js"></script>
+<style>
+
+  /* DA « papier » : fond crème à points, encre noire, accent rouge, ombres en trame décalée */
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --carte:#FFFFFF; --jaune:#F6C21C; --bleu:#7CC8F2;
+    --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  #stage { position:relative; width:1080px; height:1920px; overflow:hidden; background:var(--papier); color:var(--encre); font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; }
+  .dots { background-color:var(--papier); background-image:radial-gradient(#CFC9BE 3px, transparent 3.6px); background-size:36px 36px; }
+  #cam { position:absolute; inset:0; transform-origin:50% 45%; }
+  #paper { position:absolute; left:-80px; top:-80px; right:-80px; bottom:-80px; }
+  #persoW { position:absolute; left:67px; top:802px; width:860px; height:1118px; transform-origin:50% 40%; z-index:4; }
+  #persoPop { position:absolute; inset:0; transform-origin:50% 100%; }
+  #perso { position:absolute; left:0; top:0; width:860px; height:1118px; overflow:visible; }
+  /* le personnage est piloté image par image : aucune animation CSS en temps réel */
+  #perso, #perso * { animation:none !important; transition:none !important; }
+  #perso#perso[data-talk="1"] .bouche { display:none; }
+  #perso#perso[data-talk="1"] .b-parle { display:inline; }
+  #perso#perso[data-talk="1"][data-expr="insiste"] .b-parle, #perso#perso[data-talk="1"][data-expr="panique"] .b-parle { display:none; }
+  #perso#perso[data-talk="1"][data-expr="insiste"] .b-grande, #perso#perso[data-talk="1"][data-expr="panique"] .b-grande { display:inline; }
+  #ui { position:absolute; inset:0; z-index:10; pointer-events:none; }
+  .u { position:absolute; visibility:hidden; }
+  /* carte « encre » : fond blanc, contour noir, ombre en trame de points décalée */
+  .ink { isolation:isolate; }
+  .ink::before { content:""; position:absolute; inset:0; border-radius:inherit; transform:translate(14px, 10px); z-index:-1;
+    background:radial-gradient(circle, #161616 2.2px, transparent 2.8px) 0 0 / 8px 8px; }
+  .ink::after { content:""; position:absolute; inset:0; border-radius:inherit; background:var(--carte); border:5px solid var(--encre); z-index:-1; }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; letter-spacing:-0.01em; color:var(--rouge); }
+  .k { position:relative; display:inline-block; color:var(--encre); isolation:isolate; padding:0 .08em; }
+  .k i { position:absolute; left:-.04em; right:-.04em; top:.1em; bottom:.04em; z-index:-1; border-radius:.08em; background:var(--rouge); transform:scaleX(0); transform-origin:left center; }
+  .ico { fill:none; stroke:currentColor; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
+  .pill { display:flex; align-items:center; gap:18px; padding:16px 30px 16px 18px; border-radius:999px; white-space:nowrap; font-weight:800; font-size:38px; letter-spacing:-0.02em; }
+  .pill .pi { width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--papier); border:4px solid var(--encre); color:var(--encre); flex:none; box-sizing:border-box; font:800 38px/1 "Inter", sans-serif; }
+  .pill .pi svg { width:38px; height:38px; }
+  .pill .ck { width:50px; height:50px; flex:none; margin-left:4px; }
+  .pill small { display:block; font:600 22px/1.2 var(--mono); color:var(--gris); letter-spacing:.02em; }
+  .tag { font:600 26px/1 var(--mono); letter-spacing:.06em; color:var(--gris); white-space:nowrap; }
+  .coin2 { position:absolute; left:50%; top:-58px; width:42px; height:42px; margin-left:-21px; border-radius:50%; border:4px solid var(--encre); box-sizing:border-box;
+    background:radial-gradient(circle at 35% 30%, #fff3c4 0 16%, var(--jaune) 17% 100%); }
+  .badge { position:absolute; width:66px; height:66px; right:-20px; top:-20px; }
+  .stamp { padding:10px 20px; border:6px solid var(--rouge); border-radius:12px; color:var(--rouge); background:var(--carte); font-weight:800; font-size:34px; letter-spacing:.04em; white-space:nowrap; }
+</style>
+<style>
+  /* éléments communs : étiquette du HUD, grands titres, rature, centrage, barre de censure */
+  #hud .htag { position:absolute; font:600 24px/1 var(--mono); letter-spacing:.06em; color:var(--gris); white-space:nowrap; }
+  #hud .line { position:absolute; height:4px; background:var(--rouge); }
+  .st { left:0; right:0; text-align:center; }
+  .st .tag { display:block; margin-bottom:16px; }
+  .st h2 { margin:0; font-weight:800; font-size:88px; line-height:1.04; letter-spacing:-0.045em; }
+  .st .it { font-size:1.15em; }
+  .strike { position:relative; display:inline-block; }
+  .strike i { position:absolute; left:-4%; right:-4%; top:52%; height:12px; margin-top:-6px; border-radius:6px; background:var(--rouge); transform:scaleX(0); transform-origin:left center; }
+  .ctr { position:absolute; }
+  .cens { position:relative; display:inline-block; }
+  .cens span { visibility:hidden; }
+  .cens b { position:absolute; left:-.08em; right:-.08em; top:.1em; bottom:0; border-radius:.12em; background:var(--encre); display:flex; align-items:center; justify-content:center; gap:.3em; color:#fff; font:800 .62em/1 var(--mono); letter-spacing:.14em; }
+  .cens b em { font-style:normal; color:var(--jaune); }
+  /* ---------- personnage papier : calques de la tête (3/4, regard) ---------- */
+  #perso { transform-origin:50% 96%; }
+  #perso .oeil, #perso .vz, #perso .nez, #perso .coiffe, #perso .or-g, #perso .or-d, #perso .barbe-g, #perso .barbe-fonce { transform-box:view-box; }
+  #perso .oeil-g { transform-origin:276px 312px; }
+  #perso .oeil-d { transform-origin:384px 312px; }
+  #perso3d { position:absolute; left:0; top:0; width:1080px; height:1920px; z-index:4; }
+
+  /* ---------- la boutique (première et dernière image) ---------- */
+  #shop { width:780px; height:600px; border-radius:40px; }
+  #shop .bar { position:absolute; left:0; right:0; top:0; height:78px; border-bottom:5px solid var(--encre); display:flex; align-items:center; gap:14px; padding:0 30px; box-sizing:border-box; }
+  #shop .bar i { width:20px; height:20px; border-radius:50%; border:4px solid var(--encre); box-sizing:border-box; display:block; }
+  #shop .bar i:first-child { background:var(--rouge); }
+  #shop .url { margin-left:18px; flex:1; height:42px; border-radius:21px; background:var(--papier); display:flex; align-items:center; padding:0 22px; font:600 24px/1 var(--mono); color:var(--gris); }
+  #shop .url svg { width:34px; height:34px; color:var(--gris); margin-left:auto; }
+  #shop .prod { position:absolute; left:44px; top:118px; width:220px; height:220px; border-radius:26px; border:5px solid var(--encre); background:#FFF3C4; display:flex; align-items:center; justify-content:center; box-sizing:border-box; }
+  #shop .prod svg { width:150px; height:150px; color:var(--encre); }
+  #shop .lbl { position:absolute; left:300px; top:128px; font:600 26px/1.3 var(--mono); color:var(--gris); letter-spacing:.03em; }
+  #shop .zero { position:absolute; left:296px; top:166px; font-weight:800; font-size:170px; letter-spacing:-0.06em; line-height:1; }
+  #shop .zero small { font-size:44px; letter-spacing:-0.02em; margin-left:14px; color:var(--gris); }
+  #shop .graph { position:absolute; left:44px; right:44px; bottom:40px; height:170px; border-radius:20px; background:var(--papier); }
+  #shop .graph svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  #clover { width:250px; height:250px; border-radius:36px; display:flex; align-items:center; justify-content:center; }
+  #clover > svg:first-child { width:170px; height:170px; }
+  .nx { position:absolute; left:50%; top:50%; width:200px; height:200px; margin:-100px 0 0 -100px; overflow:visible; }
+  .nx path { fill:none; stroke:var(--rouge); stroke-width:13; stroke-linecap:round; }
+
+  /* ---------- les 3 erreurs ---------- */
+  .num3 { width:210px; height:210px; border-radius:50%; background:var(--rouge); border:8px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; color:#fff; font:800 120px/1 "Inter", sans-serif; letter-spacing:-0.05em; }
+  .num3 .ck { position:absolute; right:-18px; top:-18px; width:84px; height:84px; }
+  .ban { padding:18px 40px; border-radius:20px; background:var(--encre); color:#fff; font:800 56px/1 "Inter", sans-serif; letter-spacing:.02em; white-space:nowrap; }
+  .ban em { font-style:normal; color:var(--rouge); }
+  .cd { width:440px; height:370px; border-radius:40px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
+  .cd > svg:first-child { width:185px; height:185px; color:var(--encre); }
+  .cd b { font-weight:800; font-size:48px; letter-spacing:-0.03em; text-align:center; line-height:1.05; }
+  .cd .ok { position:absolute; right:-24px; top:-24px; width:88px; height:88px; }
+  .big { font-size:48px; }
+  .big .pi { width:76px; height:76px; font-size:42px; }
+  .big .pi svg { width:46px; height:46px; }
+  .big .ck { width:62px; height:62px; }
+  .cmt { display:flex; align-items:center; gap:18px; }
+  .cmt .av { width:76px; height:76px; border-radius:50%; border:5px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; font:800 34px/1 "Inter", sans-serif; flex:none; }
+  .cmt .bub { position:relative; padding:20px 30px; border-radius:12px 40px 40px 40px; font-weight:800; font-size:44px; letter-spacing:-0.03em; white-space:nowrap; }
+  .cmt small { display:block; font:600 20px/1 var(--mono); color:var(--gris); letter-spacing:.05em; margin-bottom:8px; }
+  .chk { display:flex; flex-direction:column; gap:18px; }
+  .chk div { display:flex; align-items:center; gap:22px; font-weight:800; font-size:46px; letter-spacing:-0.03em; }
+  .chk i { width:58px; height:58px; border-radius:14px; border:6px solid var(--encre); box-sizing:border-box; background:#fff; display:block; }
+  #heart { width:120px; height:120px; }
+  .spk { width:70px; height:70px; color:var(--jaune); }
+  #srch { width:820px; height:120px; border-radius:60px; display:flex; align-items:center; gap:22px; padding:0 40px; box-sizing:border-box; font-weight:700; font-size:42px; color:var(--gris); }
+  #srch svg { width:60px; height:60px; color:var(--encre); flex:none; }
+  #srch b { margin-left:auto; color:var(--rouge); font-weight:800; }
+  .arrowR { width:120px; height:80px; }
+  .arrowR path { fill:none; stroke:var(--encre); stroke-width:12; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* ---------- erreur 2 ---------- */
+  #days { width:420px; height:360px; border-radius:40px; }
+  #days .top { position:absolute; left:0; right:0; top:0; height:84px; background:var(--rouge); border-bottom:5px solid var(--encre); border-radius:35px 35px 0 0; color:#fff; font:800 34px/84px var(--mono); text-align:center; letter-spacing:.08em; }
+  #days .n { position:absolute; left:0; right:0; top:104px; text-align:center; font-weight:800; font-size:160px; letter-spacing:-0.06em; line-height:1; }
+  #days .u { position:absolute; left:0; right:0; top:268px; text-align:center; font:600 30px/1 var(--mono); color:var(--gris); }
+  #stars { font:800 64px/1 "Inter", sans-serif; letter-spacing:.06em; color:var(--jaune); -webkit-text-stroke:3px var(--encre); white-space:nowrap; }
+  #stars span { color:#fff; }
+  .crack path { fill:none; stroke:var(--encre); stroke-width:8; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* ---------- erreur 3 ---------- */
+  .pay { width:820px; height:96px; border-radius:30px; display:flex; align-items:center; gap:24px; padding:0 34px; box-sizing:border-box; font-weight:800; font-size:42px; letter-spacing:-0.02em; }
+  .pay i { width:70px; height:46px; border-radius:10px; border:5px solid var(--encre); box-sizing:border-box; background:#CFC9BE; display:block; flex:none; }
+  .pay em { margin-left:auto; font:700 26px/1 var(--mono); font-style:normal; color:var(--rouge); letter-spacing:.04em; }
+  #prog { width:820px; height:90px; border-radius:45px; }
+  #prog .fill { position:absolute; left:14px; top:14px; bottom:14px; right:14px; border-radius:40px; background:var(--jaune); transform:scaleX(0); transform-origin:left center; }
+  #prog .lbl { position:absolute; left:40px; top:50%; margin-top:-15px; font:700 30px/1 var(--mono); color:var(--encre); letter-spacing:.04em; }
+  .notif { width:820px; height:130px; border-radius:30px; display:flex; align-items:center; gap:24px; padding:0 30px; box-sizing:border-box; }
+  .notif .ic { width:80px; height:80px; border-radius:22px; background:var(--rouge); border:5px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; flex:none; }
+  .notif .ic svg { width:50px; height:50px; color:#fff; }
+  .notif b { display:block; font-weight:800; font-size:42px; letter-spacing:-0.02em; }
+  .notif span { display:block; font:600 24px/1.3 var(--mono); color:var(--gris); }
+  #wall { width:46px; height:300px; border-radius:14px; background:repeating-linear-gradient(45deg, var(--rouge) 0 26px, #fff 26px 52px); border:6px solid var(--encre); box-sizing:border-box; }
+  .coin { width:110px; height:110px; border-radius:50%; border:7px solid var(--encre); box-sizing:border-box; background:radial-gradient(circle at 35% 30%, #fff3c4 0 16%, var(--jaune) 17% 100%); display:flex; align-items:center; justify-content:center; font:800 52px/1 "Inter", sans-serif; }
+
+  /* ---------- pas facile, le cycle ---------- */
+  .strike { position:relative; display:inline-block; }
+  .strike i { position:absolute; left:-4%; right:-4%; top:52%; height:12px; margin-top:-6px; border-radius:6px; background:var(--rouge); transform:scaleX(0); transform-origin:left center; }
+  #cycle { width:620px; height:620px; }
+  #cycle { overflow:visible; }
+  #cycle text { font:800 40px "Inter", sans-serif; letter-spacing:-0.03em; }
+
+  /* ---------- partage ---------- */
+  #shareB { width:200px; height:200px; border-radius:50%; background:var(--rouge); border:7px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
+  #shareB svg { width:104px; height:104px; color:var(--encre); }
+  #vcard { width:124px; height:210px; border-radius:20px; display:flex; align-items:center; justify-content:center; }
+  #vcard svg { width:66px; height:66px; }
+  #ami span { display:block; }
+
+  /* ---------- vidéo produit ---------- */
+  #podW { width:560px; height:640px; }
+  #pod { position:absolute; left:80px; right:80px; bottom:0; height:120px; border-radius:20px 20px 0 0; background:#fff; border:7px solid var(--encre); box-sizing:border-box; }
+  #pod::after { content:""; position:absolute; left:-40px; right:-40px; bottom:-7px; height:34px; background:var(--encre); border-radius:8px; }
+  #podP { position:absolute; left:50%; bottom:110px; width:300px; height:300px; margin-left:-150px; }
+  #spot { position:absolute; left:50%; top:-40px; width:520px; height:600px; margin-left:-260px; background:radial-gradient(ellipse at 50% 20%, rgba(246,194,28,.38), rgba(246,194,28,0) 65%); }
+  #tagToi { right:-30px; top:120px; padding:14px 22px; border-radius:16px; transform:rotate(8deg); font-weight:800; font-size:38px; display:flex; align-items:center; gap:10px; }
+  #tagToi svg { width:46px; height:46px; }
+  .crowd { display:flex; gap:18px; }
+  .crowd span { position:relative; width:110px; height:110px; color:#B5AFA4; }
+  .crowd span svg { width:110px; height:110px; }
+  .crowd span i { position:absolute; right:-6px; top:-6px; width:44px; height:44px; }
+  .crowd span i svg { display:block; width:44px; height:44px; }
+  .crowd span { color:#8F897E; }
+  #cases { width:760px; padding:34px 44px; border-radius:40px; display:flex; flex-direction:column; gap:14px; box-sizing:border-box; }
+  #cases .row5 { display:flex; align-items:center; gap:24px; font-weight:800; font-size:42px; letter-spacing:-0.02em; }
+  #cases .bx { position:relative; width:62px; height:62px; border-radius:14px; border:6px solid var(--encre); box-sizing:border-box; background:#fff; flex:none; }
+  #cases .bx svg { position:absolute; inset:-10px; width:70px; height:70px; }
+  #phone2 { width:400px; height:640px; border-radius:58px; }
+  #phone2 .scr { position:absolute; left:18px; top:18px; right:18px; bottom:18px; border-radius:42px; background:#17171B; overflow:hidden; }
+  #phone2 .scr svg.p { position:absolute; left:50%; top:46%; width:230px; height:230px; margin:-115px 0 0 -115px; }
+  #timer { position:absolute; left:50%; top:30px; transform:translateX(-50%); padding:8px 22px; border-radius:20px; background:var(--rouge); color:#fff; font:800 34px/1 var(--mono); }
+  #longtxt { width:700px; height:260px; border-radius:30px; padding:30px 40px; box-sizing:border-box; overflow:hidden; }
+  #longtxt i { display:block; height:16px; border-radius:8px; background:#CFC9BE; margin:0 0 16px; }
+  #bar5 { width:820px; height:110px; border-radius:30px; display:flex; overflow:hidden; }
+  #bar5 > div { position:relative; height:100%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:38px; border-right:5px solid var(--encre); box-sizing:border-box; transform-origin:left center; }
+  #bar5 > div:last-child { border-right:none; }
+  .score { padding:20px 36px; border-radius:24px; font-weight:800; font-size:64px; letter-spacing:-0.03em; display:flex; align-items:center; gap:18px; }
+  .score small { font:700 30px/1 var(--mono); letter-spacing:.04em; }
+
+  /* ---------- vidéo import ---------- */
+  #stall { width:700px; height:560px; }
+  #stall > svg { position:absolute; left:0; top:0; width:700px; height:525px; }
+  .lbl2 { padding:12px 22px; border-radius:16px; font:800 34px/1 "Inter", sans-serif; white-space:nowrap; }
+  #route { width:980px; height:420px; overflow:visible; }
+  #route path.r { fill:none; stroke:var(--encre); stroke-width:8; stroke-dasharray:4 22; stroke-linecap:round; }
+  .pinL { display:flex; flex-direction:column; align-items:center; gap:6px; font:800 34px/1 "Inter", sans-serif; }
+  .pinL svg { width:110px; height:110px; }
+  #mover { width:120px; height:120px; }
+  #glob { width:300px; height:300px; }
+  .dot4 { width:150px; height:150px; border-radius:50%; background:#fff; border:7px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; font:800 80px/1 "Inter", sans-serif; }
+  #appW { width:420px; height:640px; border-radius:58px; }
+  #appW .scr { position:absolute; left:18px; top:18px; right:18px; bottom:18px; border-radius:42px; background:#FF6A00; overflow:hidden; }
+  #appW .srch { position:absolute; left:24px; right:24px; top:70px; height:70px; border-radius:35px; background:#fff; display:flex; align-items:center; padding:0 24px; font:700 28px/1 var(--mono); color:var(--gris); }
+  .itm { position:absolute; width:168px; height:200px; border-radius:20px; background:#fff; border:4px solid var(--encre); box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; font:800 30px/1 "Inter", sans-serif; color:var(--rouge); }
+  .itm svg { width:90px; height:90px; color:var(--encre); }
+  .ph2 { width:420px; height:420px; border-radius:36px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; }
+  .ph2 svg.pic { width:250px; height:200px; }
+  .ph2 b { font-weight:800; font-size:40px; letter-spacing:-0.02em; }
+  .stars { font:800 46px/1 "Inter"; color:var(--jaune); -webkit-text-stroke:2px var(--encre); letter-spacing:.06em; }
+  .warn { display:flex; align-items:center; gap:22px; padding:22px 32px; border-radius:26px; font-weight:800; font-size:44px; letter-spacing:-0.02em; white-space:nowrap; }
+  .warn i { width:58px; height:58px; border-radius:50%; background:var(--jaune); border:5px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; font:800 34px/1 "Inter"; font-style:normal; flex:none; }
+  #accomp { width:860px; height:520px; border-radius:46px; }
+  #accomp .hd { position:absolute; left:50px; top:40px; font-weight:800; font-size:56px; letter-spacing:-0.04em; }
+  #accomp .tag { position:absolute; left:52px; top:110px; }
+  #steps4 { position:absolute; left:50px; right:50px; top:190px; display:flex; align-items:center; justify-content:space-between; }
+  #steps4 .s { width:120px; height:120px; border-radius:50%; border:6px solid var(--encre); background:#fff; box-sizing:border-box; display:flex; align-items:center; justify-content:center; font:800 54px/1 "Inter"; }
+  #steps4 .ln { flex:1; height:8px; background:#CFC9BE; margin:0 8px; position:relative; }
+  #steps4 .ln b { position:absolute; inset:0; background:var(--encre); transform:scaleX(0); transform-origin:left center; }
+  #accomp .fin { position:absolute; left:0; right:0; top:350px; text-align:center; font-weight:800; font-size:52px; letter-spacing:-0.03em; }
+  #prix { font-size:64px; }
+  #cIn { width:860px; height:110px; border-radius:55px; display:flex; align-items:center; padding:0 40px; box-sizing:border-box; font-weight:800; font-size:48px; gap:16px; }
+  #cIn small { font:600 26px/1 var(--mono); color:var(--gris); }
+  #typed { color:var(--rouge); letter-spacing:.04em; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-check" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#141414"/><path d="M19 33l9 9 17-19" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#E0402A" stroke="#141414" stroke-width="4"/><path d="M22 22 L42 42 M42 22 L22 42" stroke="#fff" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-person" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="40" r="18"/><path d="M24 104 Q24 68 60 68 Q96 68 96 104"/></g></symbol>
+  <symbol id="i-shop" viewBox="0 0 120 120"><g class="ico"><path d="M16 46 L26 18 L94 18 L104 46 Z"/><path d="M16 46 Q27 60 38 46 Q49 60 60 46 Q71 60 82 46 Q93 60 104 46"/><path d="M24 56 L24 102 L96 102 L96 56 M50 102 L50 74 L70 74 L70 102"/></g></symbol>
+  <symbol id="i-phone" viewBox="0 0 120 120"><g class="ico"><rect x="34" y="10" width="52" height="100" rx="12"/><path d="M52 94 L68 94"/></g><path d="M52 44 L72 58 L52 72 Z" fill="#E0402A" stroke="#141414" stroke-width="4" stroke-linejoin="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 120 120"><path d="M60 10 L74 44 L110 47 L82 70 L91 106 L60 86 L29 106 L38 70 L10 47 L46 44 Z" fill="#F6C21C" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 120 120"><path d="M10 56 L108 14 L80 106 L56 70 Z" fill="#fff" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M56 70 L108 14" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-live" viewBox="0 0 120 120"><g class="ico"><rect x="12" y="28" width="96" height="64" rx="12"/><path d="M60 50 L88 50 M60 70 L80 70"/></g><circle cx="36" cy="60" r="12" fill="#E0402A" stroke="#141414" stroke-width="4"/></symbol>
+  <symbol id="i-page" viewBox="0 0 120 120"><g class="ico"><rect x="14" y="14" width="92" height="92" rx="12"/><path d="M14 42 L106 42 M32 62 L88 62 M32 78 L88 78 M32 94 L64 94"/></g><circle cx="31" cy="28" r="6" fill="#E0402A"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="60" r="46"/><ellipse cx="60" cy="60" rx="20" ry="46"/><path d="M14 60 L106 60 M22 36 L98 36 M22 84 L98 84"/></g></symbol>
+  <symbol id="i-browser" viewBox="0 0 120 120"><g class="ico"><rect x="10" y="18" width="100" height="84" rx="12"/><path d="M10 40 L110 40 M70 58 L96 58 M70 72 L96 72 M70 86 L86 86"/></g><rect x="24" y="54" width="34" height="34" rx="5" fill="#E0402A" stroke="#141414" stroke-width="5"/><circle cx="23" cy="29" r="4.5" fill="currentColor"/><circle cx="36" cy="29" r="4.5" fill="currentColor"/></symbol>
+  <symbol id="i-shirt" viewBox="0 0 120 120"><path d="M40 20 L16 32 L6 56 L26 64 L32 52 L32 104 L88 104 L88 52 L94 64 L114 56 L104 32 L80 20 Q74 34 60 34 Q46 34 40 20 Z" fill="#F6C21C" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shoe" viewBox="0 0 120 120"><path d="M10 88 L10 50 Q28 54 42 40 L56 56 Q82 62 104 68 Q112 72 112 82 L112 92 L10 92 Z" fill="#E0402A" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/><path d="M10 80 L112 80" stroke="currentColor" stroke-width="6"/><path d="M50 54 L44 62 M60 60 L54 68" stroke="#fff" stroke-width="5" stroke-linecap="round"/></symbol>
+  <symbol id="i-lip" viewBox="0 0 120 120"><path d="M48 42 L48 20 L72 10 L72 42 Z" fill="#E0402A" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/><rect x="44" y="42" width="32" height="20" rx="3" fill="#F6C21C" stroke="currentColor" stroke-width="6"/><rect x="40" y="62" width="40" height="48" rx="6" fill="#141414" stroke="currentColor" stroke-width="6"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 120 120"><path d="M8 60 Q60 8 112 60 Q60 112 8 60 Z" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><circle cx="60" cy="60" r="16" fill="currentColor"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 120 120"><g class="ico"><rect x="22" y="12" width="76" height="96" rx="10"/><path d="M38 38 L82 38 M38 58 L82 58 M38 78 L66 78"/></g></symbol>
+  <symbol id="i-call" viewBox="0 0 120 120"><path d="M34 14 C 26 14 16 22 16 32 C 18 70 50 102 88 104 C 98 104 106 96 106 88 L106 76 L82 66 L72 78 C 58 72 48 62 42 48 L54 38 L46 14 Z" fill="currentColor"/></symbol>
+  <symbol id="i-search" viewBox="0 0 120 120"><g class="ico" style="stroke-width:10"><circle cx="50" cy="50" r="30"/><path d="M73 73 L104 104"/></g></symbol>
+  <symbol id="i-pin" viewBox="0 0 120 120"><path d="M60 112 C 40 86 18 64 18 42 A 42 42 0 0 1 102 42 C 102 64 80 86 60 112 Z" fill="#E0402A" stroke="#141414" stroke-width="7" stroke-linejoin="round"/><circle cx="60" cy="42" r="15" fill="#fff" stroke="#141414" stroke-width="6"/></symbol>
+  <symbol id="i-plate" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="64" r="42"/><circle cx="60" cy="64" r="26"/><path d="M46 14 Q52 8 46 2 M62 14 Q68 8 62 2 M78 14 Q84 8 78 2" style="stroke-width:5"/></g></symbol>
+  <symbol id="i-chat" viewBox="0 0 120 120"><path d="M60 12 C 32 12 12 32 12 58 C 12 70 16 80 24 88 L18 108 L40 100 C 46 103 53 104 60 104 C 88 104 108 84 108 58 C 108 32 88 12 60 12 Z" fill="#fff" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M42 44 Q44 72 76 78" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 120 120"><path d="M60 8 C 64 44 76 56 112 60 C 76 64 64 76 60 112 C 56 76 44 64 8 60 C 44 56 56 44 60 8 Z" fill="currentColor"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 120 120"><path d="M60 104 C 20 76 8 56 8 38 C 8 22 20 12 34 12 C 46 12 54 20 60 30 C 66 20 74 12 86 12 C 100 12 112 22 112 38 C 112 56 100 76 60 104 Z" fill="#E0402A" stroke="#fff" stroke-width="7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 120 120"><path d="M28 12 L106 60 L28 108 Z" fill="#fff" stroke-linejoin="round"/></symbol>
+  <symbol id="i-box" viewBox="0 0 120 120"><g class="ico"><path d="M60 12 L104 34 L104 86 L60 108 L16 86 L16 34 Z"/><path d="M16 34 L60 56 L104 34 M60 56 L60 108"/></g></symbol>
+  <symbol id="i-clock" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="60" r="46"/><path d="M60 30 L60 60 L80 72"/></g></symbol>
+  <symbol id="i-book" viewBox="0 0 120 120"><g class="ico"><path d="M60 30 C 46 20 28 18 12 22 L12 98 C 28 94 46 96 60 106 C 74 96 92 94 108 98 L108 22 C 92 18 74 20 60 30 Z"/><path d="M60 30 L60 106"/></g></symbol>
+  <symbol id="i-bolt" viewBox="0 0 120 120"><path d="M70 6 L22 68 L56 68 L44 114 L98 46 L62 46 Z" fill="#F6C21C" stroke="#141414" stroke-width="7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-glass" viewBox="0 0 120 120"><path d="M34 54 L86 54 L80 108 L40 108 Z" fill="#7CC8F2"/><path d="M26 14 L94 14 L82 108 L38 108 Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M34 54 Q47 48 60 54 Q73 60 86 54" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></symbol>
+  <symbol id="i-door" viewBox="0 0 120 120"><rect x="16" y="10" width="58" height="100" rx="6" fill="#C98B5A" stroke="currentColor" stroke-width="7"/><circle cx="60" cy="62" r="5" fill="currentColor"/><path d="M78 60 L112 60 M98 46 L112 60 L98 74" fill="none" stroke="#E0402A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 120 120"><path d="M80 12 C 50 16 28 40 28 68 C 28 96 52 112 82 106 C 60 98 48 82 48 62 C 48 40 60 22 80 12 Z" fill="#F6C21C" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-up" viewBox="0 0 120 120"><g class="ico" style="stroke-width:10"><path d="M60 104 L60 22 M28 52 L60 20 L92 52"/></g></symbol>
+  <symbol id="i-idea" viewBox="0 0 120 120"><path d="M60 10 C 36 10 20 28 20 50 C 20 66 30 76 38 84 L38 96 L82 96 L82 84 C 90 76 100 66 100 50 C 100 28 84 10 60 10 Z" fill="#F6C21C" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M42 108 L78 108" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-castle" viewBox="0 0 120 120"><g class="ico" style="stroke-dasharray:9 9"><path d="M10 110 L10 40 L36 40 L36 110 M84 110 L84 40 L110 40 L110 110 M36 60 L84 60 M10 110 L110 110"/><path d="M10 40 L10 26 L18 26 L18 34 L28 34 L28 26 L36 26 L36 40 M84 40 L84 26 L92 26 L92 34 L102 34 L102 26 L110 26 L110 40"/><path d="M60 60 L60 18 L80 25 L60 32"/><path d="M50 110 L50 90 Q60 78 70 90 L70 110"/></g></symbol>
+  <symbol id="i-ear" viewBox="0 0 120 120"><path d="M66 10 C 36 10 20 32 20 58 C 20 74 28 82 36 90 C 44 98 42 110 56 112 C 70 114 76 100 78 90 C 80 80 94 74 98 58 C 104 34 92 10 66 10 Z" fill="#B9805A" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M44 58 C 44 36 78 32 78 54 C 78 66 64 66 62 78" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 120 120"><g class="ico"><rect x="8" y="34" width="74" height="56" rx="10"/><path d="M82 54 L112 38 L112 86 L82 70"/></g><circle cx="38" cy="62" r="12" fill="#E0402A" stroke="#141414" stroke-width="5"/></symbol>
+  <symbol id="i-face" viewBox="0 0 120 120"><circle cx="60" cy="60" r="46" fill="#B9805A" stroke="#141414" stroke-width="7"/><circle cx="44" cy="54" r="6" fill="#141414"/><circle cx="76" cy="54" r="6" fill="#141414"/><path d="M42 76 Q60 90 78 76" fill="none" stroke="#141414" stroke-width="6" stroke-linecap="round"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 120 120"><g class="ico"><rect x="22" y="24" width="76" height="54" rx="6"/><path d="M8 94 L112 94 L102 78 L18 78 Z"/></g><path d="M52 40 L70 51 L52 62 Z" fill="#E0402A" stroke="#141414" stroke-width="4" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 120 120"><path d="M60 10 L100 24 L100 58 C100 84 82 102 60 110 C38 102 20 84 20 58 L20 24 Z" fill="#7CC8F2" stroke="#141414" stroke-width="7" stroke-linejoin="round"/><path d="M42 60 L55 73 L80 46" fill="none" stroke="#141414" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-wand" viewBox="0 0 120 120"><path d="M18 102 L76 44" stroke="#141414" stroke-width="13" stroke-linecap="round"/><path d="M64 56 L76 44" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M90 8 C92 23 96 27 111 29 C96 31 92 35 90 50 C88 35 84 31 69 29 C84 27 88 23 90 8 Z" fill="#F6C21C" stroke="#141414" stroke-width="5" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lock2" viewBox="0 0 120 120"><path d="M36 54 L36 38 A24 24 0 0 1 84 38 L84 54" fill="none" stroke="#141414" stroke-width="9"/><rect x="22" y="52" width="76" height="58" rx="12" fill="#F6C21C" stroke="#141414" stroke-width="7"/><circle cx="60" cy="77" r="8" fill="#141414"/><path d="M60 80 L60 94" stroke="#141414" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-grp3" viewBox="0 0 330 90"><g class="ico" style="stroke-width:7"><circle cx="85" cy="28" r="15"/><path d="M57 86 Q57 54 85 54 Q113 54 113 86"/><circle cx="165" cy="24" r="17"/><path d="M133 86 Q133 50 165 50 Q197 50 197 86"/><circle cx="245" cy="28" r="15"/><path d="M217 86 Q217 54 245 54 Q273 54 273 86"/></g></symbol>
+  <symbol id="i-grp5" viewBox="0 0 330 90"><g class="ico" style="stroke-width:6"><circle cx="35" cy="34" r="12"/><path d="M13 86 Q13 58 35 58 Q57 58 57 86"/><circle cx="100" cy="30" r="13"/><path d="M76 86 Q76 54 100 54 Q124 54 124 86"/><circle cx="165" cy="24" r="15"/><path d="M137 86 Q137 50 165 50 Q193 50 193 86"/><circle cx="230" cy="30" r="13"/><path d="M206 86 Q206 54 230 54 Q254 54 254 86"/><circle cx="295" cy="34" r="12"/><path d="M273 86 Q273 58 295 58 Q317 58 317 86"/></g></symbol>
+  <symbol id="i-yt" viewBox="0 0 120 120"><rect x="6" y="22" width="108" height="76" rx="24" fill="#E0402A" stroke="#141414" stroke-width="6"/><path d="M50 44 L80 60 L50 76 Z" fill="#fff"/></symbol>
+  <symbol id="i-clover" viewBox="0 0 120 120"><g fill="#9BC59D" stroke="#141414" stroke-width="6" stroke-linejoin="round"><circle cx="42" cy="40" r="22"/><circle cx="78" cy="40" r="22"/><circle cx="42" cy="74" r="22"/><circle cx="78" cy="74" r="22"/></g><path d="M60 60 C 64 84 70 98 84 110" fill="none" stroke="#141414" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 120 120"><path d="M30 10 L90 10 L90 110 L60 88 L30 110 Z" fill="#F6C21C" stroke="#141414" stroke-width="7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-gadget" viewBox="0 0 120 120"><path d="M38 20 L82 20 L94 64 L26 64 Z" fill="#B9A6E0" stroke="#141414" stroke-width="6" stroke-linejoin="round"/><rect x="54" y="64" width="12" height="30" fill="#141414"/><rect x="34" y="92" width="52" height="14" rx="7" fill="#7CC8F2" stroke="#141414" stroke-width="6"/><circle cx="60" cy="40" r="7" fill="#fff" stroke="#141414" stroke-width="4"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 120 120"><rect x="12" y="30" width="96" height="70" rx="12" fill="#C98B5A" stroke="#141414" stroke-width="6"/><path d="M12 46 L108 46" stroke="#141414" stroke-width="6"/><rect x="72" y="58" width="36" height="24" rx="8" fill="#F6C21C" stroke="#141414" stroke-width="6"/><circle cx="84" cy="70" r="4" fill="#141414"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 120 120"><g class="ico"><path d="M10 22 L28 22 L40 78 L96 78 L106 38 L34 38"/><circle cx="46" cy="96" r="8"/><circle cx="90" cy="96" r="8"/></g></symbol>
+  <symbol id="i-reload" viewBox="0 0 120 120"><g class="ico" style="stroke-width:9"><path d="M96 60 A 36 36 0 1 1 84 33"/><path d="M84 14 L86 36 L64 38"/></g></symbol>
+  <symbol id="i-back" viewBox="0 0 120 120"><g class="ico"><circle cx="70" cy="20" r="11"/><path d="M66 32 C 50 44 46 58 52 76 L 44 106 M52 76 L 72 104 M58 46 L 84 56"/></g><path d="M30 46 L 40 56 M28 60 L 40 62 M34 34 L 42 48" stroke="#E0402A" stroke-width="6" stroke-linecap="round"/></symbol>
+  <symbol id="i-messy" viewBox="0 0 120 120"><g stroke="#141414" stroke-width="6" stroke-linejoin="round"><rect x="14" y="62" width="40" height="40" fill="#C98B5A" transform="rotate(-8 34 82)"/><rect x="52" y="70" width="46" height="34" fill="#7CC8F2" transform="rotate(10 75 87)"/><rect x="34" y="28" width="38" height="36" fill="#F6C21C" transform="rotate(16 53 46)"/></g><path d="M86 30 L 96 22 M92 44 L 106 44" stroke="#141414" stroke-width="6" stroke-linecap="round"/></symbol>
+  <symbol id="i-battery" viewBox="0 0 120 120"><rect x="34" y="16" width="52" height="92" rx="10" fill="#fff" stroke="#141414" stroke-width="7"/><rect x="50" y="6" width="20" height="10" rx="3" fill="#141414"/><rect x="42" y="88" width="36" height="12" rx="3" fill="#E0402A"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 120 120"><g stroke="#141414" stroke-width="6" stroke-linejoin="round"><rect x="8" y="34" width="66" height="50" rx="6" fill="#F6C21C"/><path d="M74 50 L 98 50 L 112 66 L 112 84 L 74 84 Z" fill="#fff"/></g><circle cx="30" cy="88" r="11" fill="#141414"/><circle cx="92" cy="88" r="11" fill="#141414"/></symbol>
+  <symbol id="i-feather" viewBox="0 0 120 120"><path d="M96 14 C 50 20 26 56 24 100 C 60 96 92 66 96 14 Z" fill="#7CC8F2" stroke="#141414" stroke-width="6" stroke-linejoin="round"/><path d="M90 22 L 20 106" stroke="#141414" stroke-width="6" stroke-linecap="round"/></symbol>
+  <symbol id="i-weight" viewBox="0 0 120 120"><path d="M34 40 L 86 40 L 104 106 L 16 106 Z" fill="#6B675F" stroke="#141414" stroke-width="6" stroke-linejoin="round"/><circle cx="60" cy="26" r="12" fill="none" stroke="#141414" stroke-width="7"/><text x="60" y="88" text-anchor="middle" font-family="Inter" font-weight="800" font-size="28" fill="#fff">KG</text></symbol>
+  <symbol id="i-sad" viewBox="0 0 120 120"><circle cx="60" cy="60" r="46" fill="#F6C21C" stroke="#141414" stroke-width="7"/><circle cx="44" cy="52" r="6" fill="#141414"/><circle cx="76" cy="52" r="6" fill="#141414"/><path d="M40 84 Q60 68 80 84" fill="none" stroke="#141414" stroke-width="6" stroke-linecap="round"/></symbol>
+  <symbol id="i-factory" viewBox="0 0 120 120"><path d="M10 104 L10 54 L38 40 L38 54 L66 40 L66 54 L94 40 L94 20 L110 20 L110 104 Z" fill="#CFC9BE" stroke="#141414" stroke-width="6" stroke-linejoin="round"/><rect x="24" y="72" width="16" height="14" fill="#141414"/><rect x="52" y="72" width="16" height="14" fill="#141414"/><rect x="80" y="72" width="16" height="14" fill="#141414"/></symbol>
+  <symbol id="i-boat" viewBox="0 0 120 120"><path d="M8 70 L112 70 L96 96 L22 96 Z" fill="#E0402A" stroke="#141414" stroke-width="6" stroke-linejoin="round"/><g stroke="#141414" stroke-width="5"><rect x="28" y="46" width="20" height="24" fill="#7CC8F2"/><rect x="50" y="46" width="20" height="24" fill="#F6C21C"/><rect x="72" y="46" width="20" height="24" fill="#9BC59D"/><rect x="50" y="24" width="20" height="22" fill="#F2A07B"/></g><path d="M6 106 Q 20 100 34 106 T 62 106 T 90 106 T 118 106" fill="none" stroke="#7CC8F2" stroke-width="5" stroke-linecap="round"/></symbol>
+  <symbol id="i-photo" viewBox="0 0 120 120"><rect x="10" y="20" width="100" height="80" rx="10" fill="#fff" stroke="#141414" stroke-width="6"/><path d="M14 92 L 46 58 L 70 80 L 86 66 L 106 88" fill="none" stroke="#141414" stroke-width="6" stroke-linejoin="round"/><circle cx="82" cy="42" r="9" fill="#F6C21C" stroke="#141414" stroke-width="5"/></symbol>
+  <symbol id="i-stall" viewBox="0 0 160 120"><rect x="16" y="50" width="128" height="62" fill="#fff" stroke="#141414" stroke-width="6"/><path d="M8 50 L 20 14 L 140 14 L 152 50 Z" fill="#E0402A" stroke="#141414" stroke-width="6" stroke-linejoin="round"/><path d="M50 14 L 44 50 M80 14 L 80 50 M110 14 L 116 50" stroke="#fff" stroke-width="10"/><path d="M8 50 L 20 14 L 140 14 L 152 50 Z" fill="none" stroke="#141414" stroke-width="6" stroke-linejoin="round"/><rect x="30" y="70" width="26" height="26" rx="4" fill="#F6C21C" stroke="#141414" stroke-width="5"/><rect x="66" y="64" width="28" height="32" rx="4" fill="#7CC8F2" stroke="#141414" stroke-width="5"/><rect x="104" y="72" width="24" height="24" rx="4" fill="#9BC59D" stroke="#141414" stroke-width="5"/></symbol>
+  <filter id="trame2" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1000" height="1200" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+    <feFlood flood-opacity="0" x="0" y="0" width="10" height="10" result="fond"/>
+    <feFlood flood-color="#161616" x="2.5" y="2.5" width="5" height="5" result="carre"/>
+    <feMerge x="0" y="0" width="10" height="10" result="tuile"><feMergeNode in="fond"/><feMergeNode in="carre"/></feMerge>
+    <feTile in="tuile" result="grille"/>
+    <feGaussianBlur in="grille" stdDeviation="1.1" result="flou"/>
+    <feComponentTransfer in="flou" result="points"><feFuncA type="discrete" tableValues="0 0 1 1"/></feComponentTransfer>
+    <feOffset in="SourceAlpha" dx="18" dy="12" result="decale"/>
+    <feComposite in="points" in2="decale" operator="in" result="ombre"/>
+    <feMerge><feMergeNode in="ombre"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</svg>
+
+<div id="stage">
+  <div id="cam">
+    <div id="paper" class="dots"></div>
+    <div id="persoW"><div id="persoPop">
+<svg id="perso" class="perso" style="--sweat:#B8552E" viewBox="0 0 600 780" xmlns="http://www.w3.org/2000/svg"
+     data-expr="insiste" data-pose="salue" data-parle="non" data-lunettes="non" data-tenue="polo" data-casque="non" data-pin="non" data-barbe="oui" data-moustache="oui" data-trame="oui" data-bandeau="non" data-montre="non"
+     role="img" aria-label="Personnage présentateur">
+<style>
+  #perso {
+    --peau: #B9805A;
+    --cheveux: #17110E;
+    --sweat: #2A2A2E;
+    --trait: #151515;
+    --rouge: #E0402A;
+    --jaune: #F6C21C;
+    --orange: #F7931E;
+    --bleu: #7CC8F2;
+    --joue: #D0665A;
+    --bouche: #6B1414;
+    --langue: #E5484D;
+    --casque: #9097A1;
+    --peau2: color-mix(in srgb, var(--peau) 75%, #5A2C14);
+    --sweat2: color-mix(in srgb, var(--sweat) 70%, #000);
+    --cheveux2: color-mix(in srgb, var(--cheveux) 65%, #fff);
+    overflow: visible;
+  }
+  #perso .f-peau { fill: var(--peau); }
+  #perso .f-peau2 { fill: var(--peau2); }
+  #perso .f-cheveux { fill: var(--cheveux); }
+  #perso .f-sweat { fill: var(--sweat); }
+  #perso .f-sweat2 { fill: var(--sweat2); }
+  #perso .f-blanc { fill: #fff; }
+  #perso .f-trait { fill: var(--trait); }
+  #perso .f-rouge { fill: var(--rouge); }
+  #perso .f-bouche { fill: var(--bouche); }
+  #perso .f-langue { fill: var(--langue); }
+  #perso .f-casque { fill: var(--casque); }
+  #perso .f-casque2 { fill: color-mix(in srgb, var(--casque) 55%, #000); }
+  #perso .o { stroke: var(--trait); stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+  #perso .o-seul { fill: none; }
+  #perso .o-fin { fill: none; stroke: var(--trait); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+  #perso .meche { fill: none; stroke: var(--cheveux2); stroke-width: 6; stroke-linecap: round; opacity: .55; }
+  #perso .joues ellipse { fill: var(--joue); opacity: .55; }
+  #perso .f-col { fill: color-mix(in srgb, var(--sweat) 82%, #fff); }
+  #perso .bouton { fill: color-mix(in srgb, var(--sweat) 60%, #fff); }
+  #perso .boucle { fill: none; stroke: var(--cheveux2); stroke-width: 4; stroke-linecap: round; opacity: .5; }
+  #perso .barbe { fill: var(--cheveux); opacity: .3; }
+  #perso .barbe-fonce { fill: var(--cheveux); opacity: .6; }
+  #perso .moustache { fill: var(--cheveux); opacity: .85; }
+  #perso .monture { fill: url(#perso-verre); stroke: var(--trait); stroke-width: 9; stroke-linejoin: round; }
+  #perso .branche { fill: none; stroke: var(--trait); stroke-width: 9; stroke-linecap: round; }
+  #perso .reflet { fill: #fff; opacity: .16; }
+  #perso .sc-c { fill: none; stroke: var(--trait); stroke-width: 25; stroke-linecap: round; }
+  #perso .sc-f { fill: none; stroke: var(--cheveux); stroke-width: 13; stroke-linecap: round; }
+  #perso .cordon-c { fill: none; stroke: var(--trait); stroke-width: 14; stroke-linecap: round; }
+  #perso .cordon-b { fill: none; stroke: #fff; stroke-width: 6; stroke-linecap: round; }
+  #perso .bras-contour { fill: none; stroke: var(--trait); stroke-width: 84; stroke-linecap: round; stroke-linejoin: round; }
+  #perso .bras-tissu { fill: none; stroke: var(--sweat); stroke-width: 70; stroke-linecap: round; stroke-linejoin: round; }
+  #perso .rayon-c { stroke: var(--trait); stroke-width: 21; stroke-linecap: round; }
+  #perso .rayon { stroke: var(--jaune); stroke-width: 12; stroke-linecap: round; }
+  #perso .goutte { fill: #fff; stroke: var(--trait); stroke-width: 4.5; stroke-linejoin: round; }
+  #perso .goutte.bleue { fill: var(--bleu); }
+  #perso .point-q { font: 900 120px/1 "Inter", "Arial Black", sans-serif; fill: var(--orange); stroke: var(--trait); stroke-width: 9; paint-order: stroke; stroke-linejoin: round; }
+
+  /* Pivots des pièces mobiles */
+  #perso .tete { transform-box: view-box; transform-origin: 330px 470px; animation: hoche 3.6s ease-in-out infinite; }
+  #perso .pup, #perso .ph, #perso .pb, #perso .sc { transform-box: view-box; transition: transform .16s ease-out; }
+  #perso .pup-g, #perso .ph-g, #perso .pb-g { transform-origin: 276px 312px; }
+  #perso .pup-d, #perso .ph-d, #perso .pb-d { transform-origin: 384px 312px; }
+  #perso .sc-g { transform-origin: 275px 260px; }
+  #perso .sc-d { transform-origin: 385px 260px; }
+  #perso .ph { transform: translateY(8px); animation: cligne 4.2s infinite; }
+  #perso .bouche { transform-box: view-box; transform-origin: 330px 396px; }
+  #perso .main-ouverte { transform-box: view-box; transform-origin: 100px 470px; }
+  #perso .main-pointe { transform-box: view-box; transform-origin: 100px 470px; }
+  #perso .extra { transform-box: fill-box; transform-origin: center; animation: pop .38s cubic-bezier(.3, 1.6, .5, 1) both; }
+
+  /* Tout est caché par défaut, chaque état allume ses pièces */
+  #perso .bouche, #perso .bras, #perso .main-pointe, #perso .main-ouverte, #perso .extra, #perso .joues { display: none; }
+  #perso[data-casque="non"] .casque, #perso[data-pin="non"] .pin, #perso[data-lunettes="non"] .lunettes,
+  #perso[data-tenue="polo"] .tenue-sweat, #perso[data-tenue="sweat"] .tenue-polo,
+  #perso[data-barbe="non"] .barbe, #perso[data-barbe="non"] .barbe-fonce, #perso[data-moustache="non"] .moustache { display: none; }
+  #perso[data-trame="non"] > g { filter: none; }
+  /* chemise : le col du polo, une patte boutonnée jusqu'en bas, une poche avec un stylo */
+  #perso .tenue-chemise { display: none; }
+  #perso[data-tenue="chemise"] .tenue-sweat { display: none; }
+  #perso[data-tenue="chemise"] .tenue-chemise { display: inline; }
+  #perso[data-bandeau="non"] .bandeau, #perso[data-montre="non"] .montre { display: none; }
+
+  /* Lunettes de soleil : elles glissent sur le nez pour laisser voir les yeux quand l'émotion monte */
+  #perso .lunettes { transform-box: view-box; transform-origin: 330px 310px; transition: transform .2s ease-out; }
+  #perso[data-expr="sceptique"] .lunettes { transform: translateY(3px) rotate(-3deg); }
+  #perso[data-expr="insiste"] .lunettes { transform: translateY(-3px); }
+  #perso[data-expr="inquiet"] .lunettes { transform: translateY(5px) rotate(-2deg); }
+  #perso[data-expr="question"] .lunettes { transform: rotate(3deg); }
+  #perso[data-expr="surpris"] .lunettes, #perso[data-expr="panique"] .lunettes { transform: translateY(46px); }
+  #perso[data-expr="malin"] .lunettes { transform: translateY(40px); }
+  #perso[data-lunettes="oui"][data-expr="malin"] .ph { transform: translateY(16px); }
+  #perso[data-lunettes="oui"][data-expr="malin"] .pup { transform: translate(2px, -4px); }
+  #perso[data-parle="oui"] .anim { animation: parle .5s ease-in-out infinite alternate; }
+
+  /* Poses */
+  #perso[data-pose="croise"] .bras-croise,
+  #perso[data-pose="pointe"] .bras-leve, #perso[data-pose="pointe"] .main-pointe,
+  #perso[data-pose="salue"] .bras-leve, #perso[data-pose="salue"] .main-ouverte { display: inline; }
+  #perso[data-pose="pointe"] .main-pointe { animation: insiste .9s ease-in-out infinite; }
+  #perso[data-pose="salue"] .main-ouverte { animation: coucou 1.3s ease-in-out infinite; }
+
+  /* neutre */
+  #perso[data-expr="neutre"] .b-sourire { display: inline; }
+
+  /* sceptique : regard en coin, sourire en coin */
+  #perso[data-expr="sceptique"] .b-coin { display: inline; }
+  #perso[data-expr="sceptique"] .pup { transform: translate(12px, 3px); }
+  #perso[data-expr="sceptique"] .ph-g { transform: translateY(30px) rotate(-4deg); }
+  #perso[data-expr="sceptique"] .ph-d { transform: translateY(27px) rotate(5deg); }
+  #perso[data-expr="sceptique"] .sc-g { transform: translateY(-10px) rotate(-4deg); }
+  #perso[data-expr="sceptique"] .sc-d { transform: translateY(7px) rotate(-12deg); }
+
+  /* parle : explication neutre */
+  #perso[data-expr="parle"] .b-parle { display: inline; }
+  #perso[data-expr="parle"] .pup { transform: translate(0, 2px); }
+  #perso[data-expr="parle"] .ph { transform: translateY(10px); }
+  #perso[data-expr="parle"] .sc { transform: translateY(-4px); }
+
+  /* insiste : il crie un peu, sourcil froncé */
+  #perso[data-expr="insiste"] .b-grande { display: inline; }
+  #perso[data-expr="insiste"] .pup { transform: translate(10px, 2px); }
+  #perso[data-expr="insiste"] .ph-g { transform: translateY(24px) rotate(8deg); }
+  #perso[data-expr="insiste"] .ph-d { transform: translateY(20px) rotate(-6deg); }
+  #perso[data-expr="insiste"] .sc-g { transform: translateY(4px) rotate(10deg); }
+  #perso[data-expr="insiste"] .sc-d { transform: translateY(2px) rotate(-14deg); }
+
+  /* surpris : yeux ronds, traits jaunes, sueur */
+  #perso[data-expr="surpris"] .b-plate,
+  #perso[data-expr="surpris"] .x-rayons,
+  #perso[data-expr="surpris"] .x-gouttes { display: inline; }
+  #perso[data-expr="surpris"] .pup { transform: scale(.7); }
+  #perso[data-expr="surpris"] .ph { transform: translateY(0); }
+  #perso[data-expr="surpris"] .sc { transform: translateY(-16px); }
+
+  /* content : yeux mi-clos, joues roses, étincelle */
+  #perso[data-expr="content"] .b-sourire,
+  #perso[data-expr="content"] .joues,
+  #perso[data-expr="content"] .x-etincelle { display: inline; }
+  #perso[data-expr="content"] .pup { transform: translate(0, 4px); }
+  #perso[data-expr="content"] .ph { transform: translateY(20px); }
+  #perso[data-expr="content"] .pb { transform: translateY(-16px); }
+  #perso[data-expr="content"] .sc { transform: translateY(-6px); }
+
+  /* inquiet : larmes, sourcils tristes */
+  #perso[data-expr="inquiet"] .b-froncee,
+  #perso[data-expr="inquiet"] .x-larmes,
+  #perso[data-expr="inquiet"] .x-sueur { display: inline; }
+  #perso[data-expr="inquiet"] .pup { transform: translate(0, 5px) scale(1.1); }
+  #perso[data-expr="inquiet"] .ph-g { transform: translateY(14px) rotate(-12deg); }
+  #perso[data-expr="inquiet"] .ph-d { transform: translateY(14px) rotate(12deg); }
+  #perso[data-expr="inquiet"] .sc-g { transform: translateY(-6px) rotate(-16deg); }
+  #perso[data-expr="inquiet"] .sc-d { transform: translateY(-6px) rotate(16deg); }
+
+  /* panique : bouche grande ouverte, sueur partout */
+  #perso[data-expr="panique"] .b-grande,
+  #perso[data-expr="panique"] .x-gouttes,
+  #perso[data-expr="panique"] .x-sueur { display: inline; }
+  #perso[data-expr="panique"] .pup { transform: scale(.6); }
+  #perso[data-expr="panique"] .ph { transform: translateY(0); }
+  #perso[data-expr="panique"] .sc-g { transform: translateY(-18px) rotate(-8deg); }
+  #perso[data-expr="panique"] .sc-d { transform: translateY(-18px) rotate(8deg); }
+
+  /* malin : paupières lourdes, sourire en coin */
+  #perso[data-expr="malin"] .b-coin { display: inline; }
+  #perso[data-expr="malin"] .pup { transform: translate(2px, 8px); }
+  #perso[data-expr="malin"] .ph { transform: translateY(34px); }
+  #perso[data-expr="malin"] .pb { transform: translateY(-8px); }
+  #perso[data-expr="malin"] .sc { transform: translateY(4px); }
+
+  /* question : point d'interrogation, invite à commenter */
+  #perso[data-expr="question"] .b-parle,
+  #perso[data-expr="question"] .joues,
+  #perso[data-expr="question"] .x-question { display: inline; }
+  #perso[data-expr="question"] .pup { transform: translate(-4px, 0); }
+  #perso[data-expr="question"] .ph { transform: translateY(16px); }
+  #perso[data-expr="question"] .sc-g { transform: translateY(-12px); }
+  #perso[data-expr="question"] .sc-d { transform: rotate(-6deg); }
+
+  @keyframes cligne { 0%, 93%, 100% { translate: 0 0; } 96% { translate: 0 72px; } }
+  @keyframes parle { 0% { scale: 1 .35; } 30% { scale: 1 1; } 55% { scale: 1 .6; } 80% { scale: 1 .95; } 100% { scale: 1 .45; } }
+  @keyframes hoche { 0%, 100% { rotate: 0deg; translate: 0 0; } 50% { rotate: .8deg; translate: 0 2px; } }
+  @keyframes pop { from { scale: .3; opacity: 0; } to { scale: 1; opacity: 1; } }
+  @keyframes coucou { 0%, 100% { rotate: -7deg; } 50% { rotate: 7deg; } }
+  @keyframes insiste { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+  @media (prefers-reduced-motion: reduce) {
+    #perso * { animation: none !important; transition: none !important; }
+  }
+</style>
+<defs>
+  <!-- Ombre en trame de points décalée (effet Ben-Day), calculée entièrement dans le filtre :
+       une tuile 10×10 avec un carré, répétée, arrondie (flou + seuil), découpée par la silhouette décalée -->
+  <filter id="perso-trame" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1000" height="1200" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+    <feFlood flood-opacity="0" x="0" y="0" width="10" height="10" result="fond"/>
+    <feFlood flood-color="#161616" x="2.5" y="2.5" width="5" height="5" result="carre"/>
+    <feMerge x="0" y="0" width="10" height="10" result="tuile"><feMergeNode in="fond"/><feMergeNode in="carre"/></feMerge>
+    <feTile in="tuile" result="grille"/>
+    <feGaussianBlur in="grille" stdDeviation="1.1" result="flou"/>
+    <feComponentTransfer in="flou" result="points"><feFuncA type="discrete" tableValues="0 0 1 1"/></feComponentTransfer>
+    <feOffset in="SourceAlpha" dx="18" dy="10" result="decale"/>
+    <feComposite in="points" in2="decale" operator="in" result="ombre"/>
+    <feMerge><feMergeNode in="ombre"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <clipPath id="perso-clip-tete">
+    <path d="M 210 270 C 208 200 260 165 330 165 C 400 165 452 200 450 270 L 451 336 C 452 420 404 464 330 466 C 256 464 208 420 209 336 Z"/>
+  </clipPath>
+  <clipPath id="perso-clip-oeil-g"><circle cx="276" cy="312" r="33"/></clipPath>
+  <clipPath id="perso-clip-oeil-d"><circle cx="384" cy="312" r="33"/></clipPath>
+  <clipPath id="perso-clip-bouche"><path d="M 300 398 Q 330 392 362 396 Q 360 434 330 438 Q 302 434 300 398 Z"/></clipPath>
+  <clipPath id="perso-clip-cri"><path d="M 296 394 Q 330 386 366 394 Q 366 452 330 456 Q 296 452 296 394 Z"/></clipPath>
+  <linearGradient id="perso-verre" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#34343A"/>
+    <stop offset="1" stop-color="#0B0B0D"/>
+  </linearGradient>
+  <path id="perso-goutte" d="M 0 0 C 10 14 14 22 14 30 C 14 40 7 46 0 46 C -7 46 -14 40 -14 30 C -14 22 -10 14 0 0 Z"/>
+</defs>
+
+<g filter="url(#perso-trame)">
+
+  <!-- Buste -->
+  <path class="f-sweat o" d="M 112 792 C 118 670 150 598 236 566 L 296 548 L 364 548 L 424 566 C 510 598 542 670 548 792 Z"/>
+  <path class="o-fin" d="M 180 664 C 192 712 190 752 184 792"/>
+  <path class="o-fin" d="M 480 664 C 468 712 470 752 476 792"/>
+
+  <!-- Cou -->
+  <path class="f-peau o" d="M 298 420 L 298 562 L 362 562 L 362 420 Z"/>
+  <path class="f-peau2" d="M 302 480 L 358 480 L 358 520 C 340 532 320 532 302 520 Z"/>
+
+  <!-- Tenue sweat : t-shirt, col de capuche, cordons -->
+  <g class="tenue-sweat">
+    <path class="f-blanc o" d="M 262 546 L 398 546 L 330 612 Z"/>
+    <path class="f-sweat2 o" d="M 226 546 C 244 612 292 642 330 644 C 368 642 416 612 434 546 L 402 542 C 392 586 360 612 330 614 C 300 612 268 586 258 542 Z"/>
+    <path class="cordon-c" d="M 306 634 C 304 672 300 702 300 730"/>
+    <path class="cordon-b" d="M 306 634 C 304 672 300 702 300 730"/>
+    <path class="cordon-c" d="M 354 634 C 356 672 360 702 360 730"/>
+    <path class="cordon-b" d="M 354 634 C 356 672 360 702 360 730"/>
+  </g>
+
+  <!-- Tenue polo : col ouvert, patte boutonnée -->
+  <g class="tenue-polo">
+    <path class="f-peau o" d="M 284 546 L 376 546 L 330 616 Z"/>
+    <rect class="f-sweat o" style="stroke-width: 4" x="318" y="604" width="24" height="92" rx="3"/>
+    <circle class="bouton" cx="330" cy="630" r="4.5"/>
+    <circle class="bouton" cx="330" cy="666" r="4.5"/>
+    <path class="f-col o" d="M 292 538 L 240 552 C 244 580 256 602 268 622 L 326 606 Z"/>
+    <path class="f-col o" d="M 368 538 L 420 552 C 416 580 404 602 392 622 L 334 606 Z"/>
+  </g>
+
+  <!-- Tenue chemise (par-dessus le polo) -->
+  <g class="tenue-chemise">
+    <path class="o-fin" d="M 324 696 L 324 792 M 336 696 L 336 792"/>
+    <circle class="bouton" cx="330" cy="712" r="4.5"/>
+    <circle class="bouton" cx="330" cy="750" r="4.5"/>
+    <rect class="f-rouge o" style="stroke-width: 4" x="402" y="618" width="13" height="46" rx="6"/>
+    <path class="f-sweat2 o" style="stroke-width: 5" d="M 384 646 L 448 646 L 448 708 Q 416 720 384 708 Z"/>
+  </g>
+
+  <!-- Casque autour du cou (option) -->
+  <g class="casque">
+    <path d="M 252 548 C 270 606 390 606 408 548" fill="none" stroke="var(--trait)" stroke-width="22" stroke-linecap="round"/>
+    <path d="M 252 548 C 270 606 390 606 408 548" fill="none" stroke="color-mix(in srgb, var(--casque) 55%, #000)" stroke-width="11" stroke-linecap="round"/>
+    <ellipse class="f-casque o" cx="248" cy="566" rx="30" ry="38" transform="rotate(-18 248 566)"/>
+    <ellipse class="f-casque2" cx="248" cy="566" rx="15" ry="22" transform="rotate(-18 248 566)"/>
+    <ellipse class="f-casque o" cx="412" cy="566" rx="30" ry="38" transform="rotate(18 412 566)"/>
+    <ellipse class="f-casque2" cx="412" cy="566" rx="15" ry="22" transform="rotate(18 412 566)"/>
+  </g>
+
+  <!-- Pin (option) -->
+  <g class="pin">
+    <circle class="f-rouge o" cx="424" cy="664" r="16" style="stroke-width: 5"/>
+    <path class="f-blanc" d="M 419 655 L 432 664 L 419 673 Z"/>
+  </g>
+
+  <!-- Tête (agrandie et descendue vers le col) -->
+  <g transform="translate(330 498) scale(1.07) translate(-330 -460)">
+  <g class="tete">
+    <g class="or-g"><ellipse class="f-peau o" cx="208" cy="332" rx="22" ry="30"/>
+    <path class="o-fin" d="M 214 318 C 202 326 204 342 214 346"/></g>
+    <g class="or-d"><ellipse class="f-peau o" cx="452" cy="332" rx="22" ry="30"/>
+    <path class="o-fin" d="M 446 318 C 458 326 456 342 446 346"/></g>
+
+    <path class="f-peau" d="M 210 270 C 208 200 260 165 330 165 C 400 165 452 200 450 270 L 451 336 C 452 420 404 464 330 466 C 256 464 208 420 209 336 Z"/>
+    <path class="f-peau2" clip-path="url(#perso-clip-tete)" d="M 420 170 C 472 250 468 400 352 470 L 480 480 L 480 160 Z"/>
+    <path class="o o-seul" d="M 210 270 C 208 200 260 165 330 165 C 400 165 452 200 450 270 L 451 336 C 452 420 404 464 330 466 C 256 464 208 420 209 336 Z"/>
+
+    <g class="vz">
+    <g class="joues"><ellipse cx="246" cy="380" rx="22" ry="11"/><ellipse cx="414" cy="380" rx="22" ry="11"/></g>
+    <g class="nez"><path class="o-fin" d="M 334 322 C 322 346 316 362 332 372 C 338 375 346 372 348 365"/></g>
+
+    <!-- Œil gauche -->
+    <g class="oeil oeil-g">
+    <circle class="f-blanc" cx="276" cy="312" r="33"/>
+    <g clip-path="url(#perso-clip-oeil-g)">
+      <g class="pup pup-g"><circle class="f-trait" cx="276" cy="314" r="10.5"/><circle class="f-blanc" cx="279.5" cy="310" r="3"/></g>
+      <g class="ph ph-g"><rect class="f-peau" x="236" y="139" width="80" height="140"/><path class="o" d="M 236 279 L 316 279"/></g>
+      <g class="pb pb-g"><rect class="f-peau" x="236" y="345" width="80" height="140"/><path class="o" d="M 236 345 L 316 345"/></g>
+    </g>
+    <circle class="o o-seul" cx="276" cy="312" r="33"/>
+    </g>
+
+    <!-- Œil droit -->
+    <g class="oeil oeil-d">
+    <circle class="f-blanc" cx="384" cy="312" r="33"/>
+    <g clip-path="url(#perso-clip-oeil-d)">
+      <g class="pup pup-d"><circle class="f-trait" cx="384" cy="314" r="10.5"/><circle class="f-blanc" cx="387.5" cy="310" r="3"/></g>
+      <g class="ph ph-d"><rect class="f-peau" x="344" y="139" width="80" height="140"/><path class="o" d="M 344 279 L 424 279"/></g>
+      <g class="pb pb-d"><rect class="f-peau" x="344" y="345" width="80" height="140"/><path class="o" d="M 344 345 L 424 345"/></g>
+    </g>
+    <circle class="o o-seul" cx="384" cy="312" r="33"/>
+    </g>
+    </g>
+
+    <g class="coiffe">
+    <!-- Cheveux : courts et bouclés, contour en boucles serrées -->
+    <path class="f-cheveux o" d="M 206 300 C 200 250 204 200 232 172 C 262 144 300 136 334 136 C 372 136 414 146 438 174 C 462 202 460 252 454 300 L 444 300 C 440 270 432 252 420 242 C 400 232 380 226 364 226 C 352 220 340 218 330 220 C 318 218 300 222 290 228 C 270 228 250 236 240 248 C 228 262 222 280 220 300 Z"/>
+    <g class="f-cheveux o" style="stroke-width: 5">
+      <circle cx="210" cy="219" r="12"/><circle cx="216" cy="200" r="12"/><circle cx="227" cy="183" r="12"/>
+      <circle cx="241" cy="168" r="12"/><circle cx="258" cy="155" r="12"/><circle cx="278" cy="145" r="12"/>
+      <circle cx="300" cy="139" r="12"/><circle cx="324" cy="136" r="12"/><circle cx="347" cy="137" r="12"/>
+      <circle cx="370" cy="141" r="12"/><circle cx="391" cy="149" r="12"/><circle cx="410" cy="160" r="12"/>
+      <circle cx="426" cy="174" r="12"/><circle cx="439" cy="191" r="12"/><circle cx="447" cy="208" r="12"/>
+      <circle cx="452" cy="227" r="12"/>
+    </g>
+    <g class="boucle">
+      <path d="M 252 196 a 7 7 0 1 1 10 6"/><path d="M 290 176 a 7 7 0 1 1 10 6"/><path d="M 332 168 a 7 7 0 1 1 10 6"/>
+      <path d="M 374 176 a 7 7 0 1 1 10 6"/><path d="M 408 198 a 7 7 0 1 1 10 6"/><path d="M 270 212 a 6 6 0 1 1 9 5"/>
+      <path d="M 312 198 a 6 6 0 1 1 9 5"/><path d="M 354 200 a 6 6 0 1 1 9 5"/><path d="M 236 228 a 6 6 0 1 1 9 5"/>
+      <path d="M 424 228 a 6 6 0 1 1 9 5"/>
+    </g>
+
+
+    <!-- Bandeau de sport (option data-bandeau) -->
+    <g class="bandeau">
+      <path d="M 212 264 C 222 214 280 196 330 196 C 380 196 438 214 448 264" fill="none" stroke="#141414" stroke-width="40" stroke-linecap="round"/>
+      <path d="M 212 264 C 222 214 280 196 330 196 C 380 196 438 214 448 264" fill="none" stroke="#E0402A" stroke-width="27" stroke-linecap="round"/>
+      <path d="M 224 250 C 236 214 284 203 330 203 C 376 203 424 214 436 250" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".75"/>
+    </g>
+
+    </g>
+    <g class="vz">
+    <!-- Lunettes de soleil rectangulaires -->
+    <g class="lunettes">
+      <path class="branche" d="M 232 292 L 212 300"/>
+      <path class="branche" d="M 428 292 L 448 300"/>
+      <path class="branche" d="M 318 298 Q 330 289 342 298" style="stroke-width: 10"/>
+      <rect class="monture" x="230" y="276" width="90" height="68" rx="14"/>
+      <rect class="monture" x="340" y="276" width="90" height="68" rx="14"/>
+      <path class="reflet" d="M 248 336 L 272 284 L 288 284 L 264 336 Z"/>
+      <path class="reflet" d="M 358 336 L 382 284 L 390 284 L 366 336 Z"/>
+    </g>
+
+    <!-- Sourcils -->
+    <g class="sc sc-g"><path class="sc-c" d="M 248 268 Q 272 250 302 260"/><path class="sc-f" d="M 248 268 Q 272 250 302 260"/></g>
+    <g class="sc sc-d"><path class="sc-c" d="M 358 260 Q 388 250 412 268"/><path class="sc-f" d="M 358 260 Q 388 250 412 268"/></g>
+
+    </g>
+    <g class="barbe-g">
+    <!-- Barbe de quelques jours -->
+    <path class="barbe" d="M 226 392 C 236 440 280 466 330 466 C 380 466 424 440 434 392 C 420 424 384 444 352 446 C 344 440 316 440 308 446 C 276 444 240 424 226 392 Z"/>
+    <path class="barbe-fonce" d="M 316 448 Q 330 455 344 448 L 340 462 Q 330 466 320 462 Z"/>
+
+    </g>
+    <g class="vz">
+    <!-- Bouches -->
+    <g class="bouche b-coin"><path class="o o-seul" d="M 302 404 Q 332 416 362 398"/><path class="o-fin" d="M 358 392 Q 367 398 363 407"/></g>
+    <g class="bouche b-plate"><path class="o o-seul" d="M 310 408 L 352 408"/></g>
+    <g class="bouche b-sourire"><path class="o o-seul" d="M 302 398 Q 330 426 360 398"/></g>
+    <g class="bouche b-froncee"><path class="o o-seul" d="M 308 416 Q 330 400 354 416"/></g>
+    <g class="bouche b-parle anim">
+      <path class="f-bouche" d="M 300 398 Q 330 392 362 396 Q 360 434 330 438 Q 302 434 300 398 Z"/>
+      <g clip-path="url(#perso-clip-bouche)">
+        <path class="f-blanc" d="M 296 396 L 366 396 L 366 405 Q 330 402 296 407 Z"/>
+        <ellipse class="f-langue" cx="333" cy="434" rx="20" ry="10"/>
+      </g>
+      <path class="o o-seul" d="M 300 398 Q 330 392 362 396 Q 360 434 330 438 Q 302 434 300 398 Z"/>
+    </g>
+    <g class="bouche b-grande anim">
+      <path class="f-bouche" d="M 296 394 Q 330 386 366 394 Q 366 452 330 456 Q 296 452 296 394 Z"/>
+      <g clip-path="url(#perso-clip-cri)">
+        <path class="f-blanc" d="M 292 392 L 370 392 L 370 402 Q 330 398 292 404 Z"/>
+        <ellipse class="f-langue" cx="333" cy="450" rx="24" ry="13"/>
+      </g>
+      <path class="o o-seul" d="M 296 394 Q 330 386 366 394 Q 366 452 330 456 Q 296 452 296 394 Z"/>
+    </g>
+
+    <!-- Moustache légère, par-dessus la bouche -->
+    <path class="moustache" d="M 300 391 C 312 378 324 380 330 385 C 336 380 348 378 360 391 C 348 388 340 389 330 392 C 320 389 312 388 300 391 Z"/>
+    </g>
+  </g>
+  </g>
+
+  <!-- Bras croisés -->
+  <g class="bras bras-croise">
+    <path class="bras-contour" d="M 488 744 C 420 706 330 676 244 678"/>
+    <path class="bras-tissu" d="M 488 744 C 420 706 330 676 244 678"/>
+    <path class="f-peau o" d="M 196 672 C 194 652 210 640 230 642 L 252 646 L 256 696 L 230 700 C 210 702 198 690 196 672 Z"/>
+    <path class="o-fin" d="M 204 662 L 224 664 M 202 678 L 224 680"/>
+    <path class="bras-contour" d="M 166 762 C 240 730 340 726 456 738"/>
+    <path class="bras-tissu" d="M 166 762 C 240 730 340 726 456 738"/>
+    <path class="o-fin" d="M 236 704 C 246 724 246 748 238 768"/>
+  </g>
+
+  <!-- Bras levé (pointe ou salue) -->
+  <g class="bras bras-leve">
+    <path class="bras-contour" d="M 238 656 C 166 690 110 670 104 590 L 100 490"/>
+    <path class="bras-tissu" d="M 238 656 C 166 690 110 670 104 590 L 100 490"/>
+    <path class="o-fin" d="M 66 510 L 136 504"/>
+    <!-- montre (option data-montre) -->
+    <g class="montre"><rect x="68" y="476" width="64" height="26" rx="8" fill="#141414"/><circle cx="100" cy="489" r="18" fill="#fff" stroke="#141414" stroke-width="5"/><path d="M100 489 L100 478 M100 489 L108 493" stroke="#E0402A" stroke-width="3.5" stroke-linecap="round"/></g>
+    <g class="main-pointe">
+      <g transform="translate(0 -40) translate(100 470) scale(1.15) rotate(-14) translate(-100 -470)">
+        <rect class="f-peau o" x="88" y="390" width="23" height="74" rx="11.5"/>
+        <path class="f-peau o" d="M 72 458 C 70 436 84 428 104 430 C 126 432 134 446 132 464 C 130 486 116 498 100 498 C 82 498 74 482 72 458 Z"/>
+        <path class="o-fin" d="M 80 458 L 100 456 M 82 475 L 104 473"/>
+        <path class="f-peau o" d="M 118 450 C 132 446 141 456 135 466 C 129 473 118 471 114 464 Z"/>
+      </g>
+    </g>
+    <g class="main-ouverte"><g transform="translate(0 -40) translate(100 470) scale(1.15) translate(-100 -470)">
+      <rect class="f-peau o" x="90" y="388" width="20" height="68" rx="10" transform="rotate(-34 100 470)"/>
+      <rect class="f-peau o" x="90" y="382" width="20" height="74" rx="10" transform="rotate(-12 100 470)"/>
+      <rect class="f-peau o" x="90" y="384" width="20" height="72" rx="10" transform="rotate(10 100 470)"/>
+      <rect class="f-peau o" x="90" y="394" width="20" height="62" rx="10" transform="rotate(32 100 470)"/>
+      <rect class="f-peau o" x="90" y="414" width="21" height="50" rx="10.5" transform="rotate(80 100 470)"/>
+      <ellipse class="f-peau o" cx="100" cy="474" rx="33" ry="36"/>
+      <path class="o-fin" d="M 86 484 Q 100 492 114 482"/>
+    </g></g>
+  </g>
+
+  <!-- Accessoires d'expression (même repère que la tête) -->
+  <g transform="translate(330 498) scale(1.07) translate(-330 -460)">
+  <g class="extra x-rayons">
+    <path class="rayon-c" d="M 232 150 L 200 110"/><path class="rayon" d="M 232 150 L 200 110"/>
+    <path class="rayon-c" d="M 330 64 L 330 22"/><path class="rayon" d="M 330 64 L 330 22"/>
+    <path class="rayon-c" d="M 430 140 L 462 100"/><path class="rayon" d="M 430 140 L 462 100"/>
+  </g>
+  <g class="extra x-gouttes">
+    <use href="#perso-goutte" class="goutte" transform="translate(176 236) rotate(-25)"/>
+    <use href="#perso-goutte" class="goutte" transform="translate(186 300) rotate(-10) scale(.7)"/>
+    <use href="#perso-goutte" class="goutte" transform="translate(486 212) rotate(25)"/>
+    <path class="o-fin" d="M 492 280 L 522 262 M 496 304 L 530 302"/>
+  </g>
+  <g class="extra x-sueur">
+    <use href="#perso-goutte" class="goutte bleue" transform="translate(470 252) rotate(12) scale(.8)"/>
+  </g>
+  <g class="extra x-larmes">
+    <use href="#perso-goutte" class="goutte" transform="translate(252 348) scale(.62)"/>
+    <use href="#perso-goutte" class="goutte" transform="translate(408 348) scale(.62)"/>
+  </g>
+  <g class="extra x-etincelle">
+    <path class="f-rouge o" style="stroke-width: 5" transform="translate(160 292)"
+          d="M 0 -30 C 5 -7 7 -5 30 0 C 7 5 5 7 0 30 C -5 7 -7 5 -30 0 C -7 -5 -5 -7 0 -30 Z"/>
+  </g>
+  <g class="extra x-question">
+    <text class="point-q" x="138" y="262" transform="rotate(-12 170 220)">?</text>
+  </g>
+  </g>
+
+</g>
+</svg>
+    </div></div>
+  </div>
+
+  <div id="ui">
+    <!-- 1 · l'étal du marché (première ET dernière image) -->
+    <div class="u ctr" id="stall" style="left:540px;top:300px"><svg viewBox="0 0 160 120"><use href="#i-stall"/></svg><div class="ink lbl2" id="lblM" style="position:absolute;left:250px;top:-40px;transform:rotate(-4deg)">au marché</div></div>
+    <div class="u ink ctr cd" id="fact" style="left:540px;top:870px"><svg viewBox="0 0 120 120"><use href="#i-factory"/></svg><b>fabriqué ici ?</b><svg class="nx" viewBox="0 0 100 100"><path id="xf1" pathLength="1" d="M 12 12 L 88 88"/><path id="xf2" pathLength="1" d="M 88 12 L 12 88"/></svg></div>
+    <div class="u ctr" id="routeW" style="left:540px;top:330px">
+      <svg id="route" viewBox="0 0 980 420"><path class="r" id="rp" pathLength="1" d="M 120 300 C 300 40 680 40 860 300"/></svg>
+      <div class="pinL" style="position:absolute;left:50px;top:290px"><svg viewBox="0 0 120 120"><use href="#i-pin"/></svg>CHINE</div>
+      <div class="pinL" style="position:absolute;left:790px;top:290px"><svg viewBox="0 0 120 120"><use href="#i-shop"/></svg>ton pays</div>
+      <svg id="mover" style="position:absolute;left:60px;top:240px" viewBox="0 0 120 120"><use href="#i-box"/></svg>
+    </div>
+    <div class="u st" id="tPays" style="top:850px"><h2>Peu importe ton <span class="k" id="kPays">pays<i></i></span>.</h2></div>
+
+    <!-- 2 · quatre étapes -->
+    <div class="u st" id="t4" style="top:240px"><span class="tag">// la méthode</span><h2>4 <span class="it">étapes</span></h2></div>
+    <div class="u dot4" id="d1" style="left:110px;top:500px">1</div>
+    <div class="u dot4" id="d2" style="left:340px;top:500px">2</div>
+    <div class="u dot4" id="d3" style="left:570px;top:500px">3</div>
+    <div class="u dot4" id="d4" style="left:800px;top:500px">4</div>
+    <div class="u ink ctr cd" id="save" style="left:540px;top:720px"><svg viewBox="0 0 120 120"><use href="#i-bookmark"/></svg><b>enregistre-la</b></div>
+
+    <!-- 3 · étape 1 : la plateforme -->
+    <div class="u ban ctr" id="b1" style="left:540px;top:220px"><em>1</em> · la plateforme</div>
+    <div class="u ink ctr" id="appW" style="left:540px;top:330px"><div class="scr">
+      <div class="srch">Taobao · recherche…</div>
+      <div class="itm" id="it1" style="left:20px;top:170px"><svg viewBox="0 0 120 120"><use href="#i-gadget"/></svg>¥ 9</div>
+      <div class="itm" id="it2" style="left:198px;top:170px"><svg viewBox="0 0 120 120"><use href="#i-shirt"/></svg>¥ 15</div>
+      <div class="itm" id="it3" style="left:20px;top:385px"><svg viewBox="0 0 120 120"><use href="#i-shoe"/></svg>¥ 22</div>
+      <div class="itm" id="it4" style="left:198px;top:385px"><svg viewBox="0 0 120 120"><use href="#i-glass"/></svg>¥ 6</div>
+    </div></div>
+    <div class="u stamp ctr" id="bas" style="left:540px;top:1030px;font-size:50px">PRIX LES PLUS BAS</div>
+
+    <!-- 4 · étape 2 : recherche, avis, vraies photos -->
+    <div class="u ban ctr" id="b2" style="left:540px;top:220px"><em>2</em> · la recherche</div>
+    <div class="u pill ink big" id="avis" style="left:540px;top:400px"><div class="pi"><svg><use href="#i-chat"/></svg></div>avis clients <span class="stars" style="margin-left:10px">★★★★</span></div>
+    <div class="u ink ctr ph2" id="phV" style="left:290px;top:520px"><svg class="pic" viewBox="0 0 120 120"><use href="#i-photo"/></svg><b>photo du vendeur</b><svg class="nx" viewBox="0 0 100 100"><path id="xv1" pathLength="1" d="M 12 12 L 88 88"/><path id="xv2" pathLength="1" d="M 88 12 L 12 88"/></svg></div>
+    <svg class="u spk" id="spV" style="left:120px;top:500px" viewBox="0 0 120 120"><use href="#i-spark"/></svg>
+    <div class="u ink ctr ph2" id="phC" style="left:790px;top:520px"><svg class="pic" viewBox="0 0 120 120"><use href="#i-photo"/></svg><b>photo d'un acheteur</b><svg class="ok" style="position:absolute;right:-24px;top:-24px;width:88px;height:88px"><use href="#i-check"/></svg></div>
+    <div class="u st" id="tQual" style="top:1000px"><h2>La <span class="k" id="kQual">vraie qualité<i></i></span>.</h2></div>
+
+    <!-- 5 · étape 3 : le transitaire -->
+    <div class="u ban ctr" id="b3" style="left:540px;top:220px"><em>3</em> · le transitaire</div>
+    <div class="u ctr" id="route2W" style="left:540px;top:380px">
+      <svg id="route2" style="width:980px;height:420px;overflow:visible" viewBox="0 0 980 420"><path class="r" id="rp2" pathLength="1" d="M 120 300 C 300 40 680 40 860 300" fill="none" stroke="#141414" stroke-width="8" stroke-dasharray="4 22" stroke-linecap="round"/></svg>
+      <div class="pinL" style="position:absolute;left:50px;top:290px"><svg viewBox="0 0 120 120"><use href="#i-pin"/></svg>CHINE</div>
+      <div class="pinL" style="position:absolute;left:790px;top:290px"><svg viewBox="0 0 120 120"><use href="#i-pin"/></svg>ton pays</div>
+      <svg id="truck2" style="position:absolute;left:60px;top:230px;width:130px;height:130px" viewBox="0 0 120 120"><use href="#i-truck"/></svg>
+    </div>
+
+    <!-- 6 · étape 4 : réceptionne et vends -->
+    <div class="u ban ctr" id="b4" style="left:540px;top:220px"><em>4</em> · réceptionne et vends</div>
+    <div class="u ink ctr cd" id="colis" style="left:540px;top:330px"><svg viewBox="0 0 120 120"><use href="#i-box"/></svg><b>ton colis est arrivé</b><svg class="ok"><use href="#i-check"/></svg></div>
+    <div class="u pill ink big" id="v1" style="left:540px;top:800px"><div class="pi"><svg viewBox="0 0 160 120"><use href="#i-stall"/></svg></div>au marché</div>
+    <div class="u pill ink big" id="v2" style="left:540px;top:930px"><div class="pi"><svg><use href="#i-heart"/></svg></div>à tes proches</div>
+    <div class="u pill ink big" id="v3" style="left:540px;top:1060px"><div class="pi"><svg><use href="#i-phone"/></svg></div>en ligne</div>
+
+    <!-- 7 · pas si simple -->
+    <div class="u st" id="tSimple" style="top:240px"><span class="tag">// dit comme ça…</span><h2>Ça a l'air <span class="strike">simple<i id="stkS"></i></span>.</h2></div>
+    <div class="u ink ctr warn" id="w1" style="left:540px;top:470px"><i>!</i>trouver le bon produit</div>
+    <div class="u ink ctr warn" id="w2" style="left:540px;top:610px"><i>!</i>parler au vendeur</div>
+    <div class="u ink ctr warn" id="w3" style="left:540px;top:750px"><i>!</i>choisir un transitaire sérieux</div>
+    <div class="u coin" id="cL1" style="left:300px;top:880px;font-size:40px">Ar</div>
+    <div class="u coin" id="cL2" style="left:485px;top:900px;font-size:40px">Ar</div>
+    <div class="u coin" id="cL3" style="left:670px;top:880px;font-size:40px">Ar</div>
+
+    <!-- 8 · l'offre -->
+    <div class="u ink ctr" id="accomp" style="left:540px;top:300px">
+      <div class="hd">Je t'accompagne</div><span class="tag">// étape par étape</span>
+      <div id="steps4"><div class="s" id="sa">1</div><div class="ln"><b id="la"></b></div><div class="s" id="sb">2</div><div class="ln"><b id="lb"></b></div><div class="s" id="sc">3</div><div class="ln"><b id="lc"></b></div><div class="s" id="sd">4</div></div>
+      <div class="fin" id="fin1">jusqu'à ton <span class="k" id="kArt">premier article<i></i></span></div>
+    </div>
+    <div class="u stamp ctr" id="prix" style="left:540px;top:900px">MOINS DE 60 000 Ar</div>
+
+    <!-- 9 · écris CHINE -->
+    <div class="u ink ctr" id="cIn" style="left:540px;top:330px"><small>commentaire :</small><span id="typed"></span></div>
+    <div class="u cmt" id="r1" style="left:110px;top:520px"><div class="av" style="background:#F2A07B">R</div><div><small>rova · commentaire</small><div class="bub ink">CHINE</div></div></div>
+    <div class="u cmt" id="r2" style="left:260px;top:680px"><div class="av" style="background:#B9A6E0">N</div><div><small>ny aina · commentaire</small><div class="bub ink">CHINE stp</div></div></div>
+    <div class="u cmt" id="r3" style="left:150px;top:840px"><div class="av" style="background:#9BC59D">F</div><div><small>fara · commentaire</small><div class="bub ink">CHINE !</div></div></div>
+    <div class="u" id="shareB" style="left:820px;top:980px;width:160px;height:160px"><svg><use href="#i-plane"/></svg></div>
+  </div>
+
+  <div id="hud">
+    <div class="htag" style="left:60px;top:96px">// import · chine → ton pays</div>
+    <div class="line" style="left:60px;top:132px;width:120px"></div>
+  </div>
+</div>
+<script>
+(function () {
+  const WORDS = window.WORDS, DURATION = +(window.VOICE_END + 0.3).toFixed(2), $ = (id) => document.getElementById(id);
+  const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+  const NW = WORDS.map((w) => norm(w.text));
+  const find = (phrase, from = 0) => { const p = phrase.split(/\s+/).map(norm).filter(Boolean);
+    for (let i = from; i <= NW.length - p.length; i++) if (p.every((x, k) => NW[i + k] === x)) return i; throw new Error("expression absente : " + phrase); };
+  const S = (phrase, k = 0, from = 0) => WORDS[find(phrase, from) + k].start;
+  const tl = gsap.timeline({ paused: true }), CUES = [], B = (px) => `blur(${px}px)`;
+  const SFX = (file, t, g = -20) => CUES.push({ n: "sfx", file: "syn-" + file, t: +Math.max(0, t).toFixed(3), g });
+  const hide = (sel) => tl.set(sel, { autoAlpha: 0 }, 0);
+  const IN = (sel, t, o = {}) => { hide(sel); tl.fromTo(sel, { autoAlpha: 0, x: o.x ?? 0, y: o.y ?? 40, scale: o.s ?? 0.94, filter: B(o.b ?? 14) }, { autoAlpha: 1, x: 0, y: 0, scale: 1, filter: B(0), duration: o.d ?? 0.5, ease: o.e ?? "power3.out", stagger: o.st ?? 0, immediateRender: false }, t); };
+  const OUT = (sel, t, d = 0.35) => tl.to(sel, { autoAlpha: 0, y: "-=40", filter: B(12), duration: d, ease: "power2.in" }, t);
+  const POP = (sel, t, d = 0.45) => { hide(sel); tl.fromTo(sel, { autoAlpha: 0, scale: 0.5, filter: B(8) }, { autoAlpha: 1, scale: 1, filter: B(0), duration: d, ease: "back.out(1.8)", immediateRender: false }, t); };
+  const XPOP = (sel, t) => { hide(sel); tl.fromTo(sel, { scale: 0, rotation: -40, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.4, ease: "back.out(2.4)", immediateRender: false }, t); };
+  const STAMP = (sel, t, r = -8) => { hide(sel); tl.fromTo(sel, { autoAlpha: 0, scale: 2.2, rotation: r - 10 }, { autoAlpha: 1, scale: 1, rotation: r, duration: 0.32, ease: "power4.in", immediateRender: false }, t - 0.32); };
+  const HL = (k, t) => { tl.fromTo(`#${k} i`, { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, t);
+    tl.fromTo("#" + k, { color: "#141414" }, { color: "#ffffff", duration: 0.15, immediateRender: false }, t + 0.1); };
+  const DRAW = (sel, t, d = 0.5) => { tl.set(sel, { strokeDasharray: 1, strokeDashoffset: 1 }, 0); tl.fromTo(sel, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: d, ease: "power2.inOut", immediateRender: false }, t); };
+  const PULSE = (sel, t, s = 1.08) => tl.fromTo(sel, { scale: 1 }, { scale: s, duration: 0.15, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false }, t);
+  const ROLLF = (id, from, to, t, d, fmt, ease = "power2.out") => { const o = { n: from }; tl.set("#" + id, { textContent: fmt(from) }, 0);
+    tl.fromTo(o, { n: from }, { n: to, duration: d, ease, immediateRender: false, onUpdate: () => ($(id).textContent = fmt(o.n)) }, t); };
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const smooth = (a, b, x) => { const u = clamp((x - a) / (b - a)); return u * u * (3 - 2 * u); };
+  let sd = 11; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+
+  const INIT_EXPR = "insiste", INIT_POSE = "salue"; // expression et geste de la première (= dernière) image
+
+  // =====================================================================
+  // LE PERSONNAGE : tout est calculé à chaque image (aucune animation CSS)
+  //  - tête en 3/4 : les traits du visage glissent vers le regard, les oreilles et les cheveux à contresens
+  //  - regard : saccades rapides des yeux, la tête suit avec retard ; micro-saccades quand il fixe
+  //  - hochements, sourcils et gestes de la main sur les syllabes accentuées
+  //  - bouche ouverte au volume réel de la voix (assets/audio/env-final.js)
+  //  - expressions fondues entre elles (plus de changement sec)
+  // =====================================================================
+  const P_ = $("perso"), Q = (s) => [...P_.querySelectorAll(s)], Q1 = (s) => P_.querySelector(s);
+  const TETE = Q1(".tete"), VZ = Q(".vz"), NEZ = Q1(".nez"), COIFFE = Q1(".coiffe"), ORG = Q1(".or-g"), ORD = Q1(".or-d"), BARBE = Q1(".barbe-g"), MENTON = Q1(".barbe-fonce");
+  const EYG = Q1(".oeil-g"), EYD = Q1(".oeil-d"), PUPS = Q(".pup"), PHG = Q1(".ph-g"), PHD = Q1(".ph-d"), PHS = Q(".ph"), PBS = Q(".pb"), SCG = Q1(".sc-g"), SCD = Q1(".sc-d");
+  const MP = Q1(".main-pointe"), MO = Q1(".main-ouverte"), MOUTHS = Q(".b-parle, .b-grande");
+  const PER = (p) => DURATION / Math.round(DURATION / p);
+  const lerpA = (a, b, u) => a.map((x, i) => x + (b[i] - x) * u);
+  const eIO = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+  const eOut = (u) => 1 - Math.pow(1 - u, 3);
+  // piste lissée : chaque clé part de la valeur réellement atteinte (pas de saut si deux clés se suivent de près)
+  const track = (keys, d, ease = eIO, delay = 0) => { let st = null;
+    const at = (t, i) => (i === 0 ? keys[0][1] : lerpA(st[i], keys[i][1], ease(clamp((t - keys[i][0] - delay) / d))));
+    return (t) => { if (!st) { keys.sort((a, b) => a[0] - b[0]); st = [keys[0][1]]; for (let i = 1; i < keys.length; i++) st[i] = at(keys[i][0], i - 1); }
+      let i = 0; while (i + 1 < keys.length && keys[i + 1][0] <= t) i++; return at(t, i); }; };
+
+  // expressions : [pupille x, y, échelle, paupière G y, rot, paupière D y, rot, paupière basse y, sourcil G y, rot, sourcil D y, rot]
+  const EX = {
+    neutre:    [0, 0, 1,    8, 0,   8, 0,    0,    0, 0,    0, 0],
+    parle:     [0, 2, 1,    10, 0,  10, 0,   0,   -4, 0,   -4, 0],
+    insiste:   [2, 2, 1,    24, 8,  20, -6,  0,    4, 10,   2, -14],
+    sceptique: [5, 3, 1,    30, -4, 27, 5,   0,  -10, -4,   7, -12],
+    surpris:   [0, 0, 0.72, 0, 0,   0, 0,    0,  -17, 0,  -17, 0],
+    content:   [0, 4, 1,    20, 0,  20, 0,  -16,  -6, 0,   -6, 0],
+    inquiet:   [0, 5, 1.1,  14, -12, 14, 12, 0,   -6, -16, -6, 16],
+    malin:     [2, 6, 1,    32, 0,  32, 0,  -8,    4, 0,    4, 0],
+    question:  [-2, 0, 1,   16, 0,  16, 0,   0,  -13, 0,    0, -6],
+  };
+  const EK = [[0, EX[INIT_EXPR]]], GK = [], POSES = [];
+  const EXTRAS = { surpris: ".x-rayons, .x-gouttes", content: ".x-etincelle", inquiet: ".x-larmes, .x-sueur", question: ".x-question" };
+  let lastPose = INIT_POSE;
+  const ACT = (t, expr, pose) => { t = Math.max(0.02, t); EK.push([t, EX[expr]]);
+    tl.set(P_, { attr: { "data-expr": expr } }, t);
+    if (EXTRAS[expr]) tl.fromTo(P_.querySelectorAll(EXTRAS[expr]), { opacity: 0 }, { opacity: 1, duration: 0.25, immediateRender: false }, t);
+    if (pose && pose !== lastPose) { tl.set(P_, { attr: { "data-pose": pose } }, t); POSES.push(t);
+      if (pose === "croise") tl.fromTo(Q1(".bras-croise"), { y: 90 }, { y: 0, duration: 0.5, ease: "back.out(1.4)", immediateRender: false }, t);
+      else tl.fromTo(Q1(".bras-leve"), { y: 150 }, { y: 0, duration: 0.55, ease: "back.out(1.3)", immediateRender: false }, t);
+      tl.fromTo("#persoPop", { scaleY: 0.975, scaleX: 1.015 }, { scaleY: 1, scaleX: 1, duration: 0.45, ease: "back.out(3)", immediateRender: false }, t);
+      lastPose = pose; } };
+  // regard : [moment, x, y] en pixels de pupille (x > 0 = vers la droite de l'image)
+  const LOOK = (t, x, y) => GK.push([t, [x, y]]);
+  // état de la première image (= dernière image) posé à 0 : le retour en arrière dans la timeline ne le casse pas
+  tl.set(P_, { attr: { "data-expr": INIT_EXPR, "data-pose": INIT_POSE } }, 0);
+  tl.set([Q1(".bras-leve"), Q1(".bras-croise")], { y: 0 }, 0);
+  tl.set("#persoPop", { scaleX: 1, scaleY: 1 }, 0);
+  if (EXTRAS[INIT_EXPR]) tl.set(P_.querySelectorAll(EXTRAS[INIT_EXPR]), { opacity: 1 }, 0);
+
+  // syllabes accentuées : fin de groupe (ponctuation) ou mot long
+  const ACC = []; WORDS.forEach((w) => { const n = norm(w.text).length, fin = /[.,!?…:]$/.test(w.text); if (!fin && n < 8) return;
+    const t = w.start + 0.55 * (w.end - w.start); if (ACC.length && t - ACC[ACC.length - 1].t < 0.42) return;
+    ACC.push({ t, a: fin ? 1 : 0.6, s: ACC.length % 2 ? 1 : -1, br: ACC.length % 3 === 0 }); });
+  const pulse = (x) => (x < 0 ? 0 : x < 0.1 ? Math.sin(((x / 0.1) * Math.PI) / 2) : x < 0.55 ? 0.5 + 0.5 * Math.cos(((x - 0.1) / 0.45) * Math.PI) : 0);
+  const QW = []; // questions : la tête penche et reste penchée
+  const qTilt = (t) => QW.reduce((s, [a, b, g]) => s + g * smooth(a - 0.15, a + 0.25, t) * (1 - smooth(b - 0.1, b + 0.3, t)), 0);
+  // bouche : volume réel de la voix, seulement pendant les mots
+  const ENV = window.ENV || [], EF = window.ENV_FPS || 60;
+  const envAt = (t) => { const x = t * EF, i = Math.floor(x); return i < 0 || i + 1 >= ENV.length ? 0 : ENV[i] + (ENV[i + 1] - ENV[i]) * (x - i); };
+  const SEGS = []; WORDS.forEach((w) => { const s = SEGS[SEGS.length - 1]; if (s && w.start - s[1] < 0.3) s[1] = w.end; else SEGS.push([Math.max(0.06, w.start), w.end]); });
+  const talking = (t) => SEGS.some(([a, b]) => t >= a - 0.03 && t <= b + 0.05);
+  // clignements : réguliers mais irréguliers, plus un à chaque grand changement de regard (comme un vrai regard)
+  const BLINK = []; for (let t = 1.7; t < DURATION - 1.2; t += 2.6 + rnd() * 1.8) BLINK.push(t);
+  const blinkAt = (t) => { for (const b of BLINK) { const x = t - b; if (x >= 0 && x < 0.18) return x < 0.06 ? Math.sin((x / 0.06) * Math.PI / 2) : Math.cos(((x - 0.06) / 0.12) * Math.PI / 2); } return 0; };
+  const MSK = [[0, [0, 0]]]; { let t = 1.0; while (t < DURATION - 1.4) { MSK.push([t, [(rnd() - 0.5) * 3.4, (rnd() - 0.5) * 2.4]]); t += 0.55 + rnd() * 0.9; } MSK.push([DURATION - 1.2, [0, 0]]); }
+  let eyeT, headT, exprT, msT;
+
+  const life = (t) => {
+    if (!eyeT) { eyeT = track(GK, 0.13, eOut); headT = track(GK.map(([a, v]) => [a, v]), 0.5, eIO, 0.06); exprT = track(EK, 0.26, eIO); msT = track(MSK, 0.05, eOut); }
+    const br = 0.5 + 0.5 * Math.sin((2 * Math.PI * t) / PER(3.4)), sway = Math.sin((2 * Math.PI * t) / PER(7.4));
+    let nod = 0, roll = 0, lift = 0, beat = 0;
+    for (const a of ACC) { const p = pulse(t - a.t); if (!p) continue; nod += p * a.a; roll += p * a.s * a.a; if (a.br) lift += p * a.a; beat += p * a.a; }
+    const o = talking(t) ? clamp(envAt(t) * 1.1) : 0;
+    const [gx, gy] = eyeT(t), [hx, hy] = headT(t), [mx, my] = msT(t), e = exprT(t);
+    const yaw = hx * 0.95, pitch = hy * 0.5 + 5 * nod;
+    // corps : respiration, léger balancement du poids
+    P_.style.translate = `0 ${(-5 * br).toFixed(2)}px`;
+    P_.style.rotate = `${(0.6 * sway).toFixed(3)}deg`;
+    // tête : roulis (accents, questions, contre-balancement), un peu de suivi du regard, hochement
+    TETE.style.rotate = `${(-0.45 * sway + 1.5 * roll + qTilt(t) + 0.5 * Math.sin((2 * Math.PI * t) / PER(4.7))).toFixed(3)}deg`;
+    TETE.style.translate = `${(hx * 0.35).toFixed(2)}px ${(2 * br + 2.4 * nod + 1.3 * o + hy * 0.18).toFixed(2)}px`;
+    // tête en 3/4 : chaque calque glisse plus ou moins (profondeur)
+    VZ.forEach((g) => (g.style.translate = `${yaw.toFixed(2)}px ${pitch.toFixed(2)}px`));
+    NEZ.style.translate = `${(yaw * 0.35).toFixed(2)}px ${(pitch * 0.25).toFixed(2)}px`;
+    BARBE.style.translate = `${(yaw * 0.45).toFixed(2)}px ${(pitch * 0.5).toFixed(2)}px`;
+    COIFFE.style.translate = `${(yaw * 0.3).toFixed(2)}px ${(-pitch * 0.35).toFixed(2)}px`;
+    ORG.style.translate = `${(-0.6 * Math.min(yaw, 0)).toFixed(2)}px ${(-pitch * 0.5).toFixed(2)}px`;
+    ORD.style.translate = `${(-0.6 * Math.max(yaw, 0)).toFixed(2)}px ${(-pitch * 0.5).toFixed(2)}px`;
+    EYG.style.scale = `${(1 - 0.006 * Math.max(0, -yaw)).toFixed(4)} 1`;
+    EYD.style.scale = `${(1 - 0.006 * Math.max(0, yaw)).toFixed(4)} 1`;
+    // yeux : expression (transform) + regard et micro-saccades (translate)
+    PUPS.forEach((p) => { p.style.transform = `translate(${e[0].toFixed(2)}px, ${e[1].toFixed(2)}px) scale(${e[2].toFixed(3)})`; p.style.translate = `${(gx + mx).toFixed(2)}px ${(gy * 0.8 + my).toFixed(2)}px`; });
+    PHG.style.transform = `translateY(${e[3].toFixed(2)}px) rotate(${e[4].toFixed(2)}deg)`;
+    PHD.style.transform = `translateY(${e[5].toFixed(2)}px) rotate(${e[6].toFixed(2)}deg)`;
+    const bl = blinkAt(t); PHS.forEach((p) => (p.style.translate = `0 ${(72 * bl).toFixed(1)}px`));
+    PBS.forEach((p) => { p.style.transform = `translateY(${e[7].toFixed(2)}px)`; p.style.translate = `0 ${(-6 * bl).toFixed(1)}px`; });
+    SCG.style.transform = `translateY(${(e[8] - 7 * lift - 2 * bl).toFixed(2)}px) rotate(${e[9].toFixed(2)}deg)`;
+    SCD.style.transform = `translateY(${(e[10] - 7 * lift - 2 * bl).toFixed(2)}px) rotate(${e[11].toFixed(2)}deg)`;
+    // bouche et mâchoire
+    P_.setAttribute("data-talk", o > 0 || talking(t) ? "1" : "0");
+    MOUTHS.forEach((m) => (m.style.scale = `${(1 - 0.08 * o).toFixed(3)} ${(0.25 + 0.75 * o).toFixed(3)}`));
+    MENTON.style.translate = `0 ${(5 * o).toFixed(2)}px`;
+    // mains : battue sur les accents + poignet qui se pose après un changement de pose
+    let tp = -9; for (const p of POSES) if (p <= t) tp = p; const dt = t - tp, settle = dt < 1 ? 11 * Math.exp(-dt * 6) * Math.cos(dt * 15) : 0;
+    MP.style.translate = `0 ${(7 * beat - 3 * Math.sin((2 * Math.PI * t) / PER(2.3))).toFixed(2)}px`;
+    MP.style.rotate = `${(-4 * beat + settle).toFixed(2)}deg`;
+    MO.style.rotate = `${(3 * Math.sin((2 * Math.PI * t) / PER(2.4)) - 3 * beat + settle).toFixed(2)}deg`;
+  };
+  const LIFE = { t: 0 }; tl.fromTo(LIFE, { t: 0 }, { t: DURATION, duration: DURATION, ease: "none", immediateRender: false, onUpdate: () => life(LIFE.t) }, 0);
+  gsap.set("#persoW", { x: 43, y: 196, scaleX: 0.8, scaleY: 0.8 });
+  tl.fromTo("#paper", { x: 0, y: 0 }, { x: -36, y: -36, duration: DURATION, ease: "none", immediateRender: false }, 0);
+  gsap.set("#cam", { transformOrigin: "50% 40%" });
+  // =====================================================================
+  // LES SCÈNES · « Commander en Chine, peu importe ton pays »
+  // =====================================================================
+  const tFab = S("ne fabrique"), tRien = S("rien"), tBeaucoup = S("beaucoup"), tChine = S("chine"), tToi = S("et toi aussi"), tPeu = S("peu importe"), tPays = S("pays");
+  const tVoici = S("voici"), tQuatre = S("quatre"), tEnr = S("enregistre");
+  const tE1 = S("etape un"), tTaobao = S("taobao"), tAutre = S("une autre plateforme"), tPrix = S("les prix"), tBas = S("bas");
+  const tE2 = S("etape deux"), tLis = S("lis"), tAvis = S("avis"), tSurtout = S("surtout"), tAcheteurs = S("acheteurs"), iPasLes = find("pas les belles"), tPasLes = S("pas les belles"), tQualite = S("qualite");
+  const tE3 = S("etape trois"), tTrans = S("transitaire"), tRecup = S("recupere"), tVenir = S("venir"), tPays2 = S("pays", 0, find("jusque"));
+  const tE4 = S("etape quatre"), tRecep = S("receptionnes"), tVends = S("tu vends"), tMarche2 = S("au marche"), tProches = S("proches"), tLigne = S("en ligne");
+  const tDit = S("dit comme"), tSimple = S("simple"), tMais = S("mais certaines"), tTrouver = S("trouver"), tParler = S("parler"), tChoisir = S("choisir"), tPlupart = S("plupart"), tPerdent = S("perdent");
+  const tAlors = S("alors je te"), tEtape = S("etape par etape"), tPremier = S("premier"), tPour = S("pour moins"), tAriar = S("ariar");
+  const tEcris = S("ecris"), tCHINE = S("chine", 0, find("ecris")), tComm = S("commentaire"), tRep = S("reponds"), tEnvoie = S("et envoie"), tRappelle = S("et rappelle-lui");
+  // un objet qui suit la courbe Chine → ton pays (même courbe que le trait pointillé)
+  const bez = (u, a, b, c, d) => (1 - u) ** 3 * a + 3 * (1 - u) ** 2 * u * b + 3 * (1 - u) * u * u * c + u ** 3 * d;
+  const RIDE = (id, t, d) => { const o = { u: 0 }, el = $(id);
+    tl.set(el, { x: 0, y: 0 }, 0);
+    tl.fromTo(o, { u: 0 }, { u: 1, duration: d, ease: "power1.inOut", immediateRender: false, onUpdate: () => gsap.set(el, { x: bez(o.u, 120, 300, 680, 860) - 120, y: bez(o.u, 300, 40, 40, 300) - 300, rotation: (o.u - 0.5) * 30 }) }, t); };
+
+  // ========== 1 · L'ÉTAL DU MARCHÉ (première et dernière image) ==========
+  tl.set("#stall", { autoAlpha: 1, x: 0, y: 0, scale: 1 }, 0);
+  IN("#fact", tFab - 0.1, { y: 40 }); DRAW("#xf1", tRien, 0.2); DRAW("#xf2", tRien + 0.14, 0.2); SFX("error", tRien + 0.05, -23);
+  tl.to("#stall", { autoAlpha: 0, y: -80, scale: 0.9, filter: B(10), duration: 0.4, ease: "power3.in" }, tBeaucoup - 0.35); OUT("#fact", tBeaucoup - 0.35);
+  IN("#routeW", tBeaucoup - 0.05, { y: 30 }); DRAW("#rp", tBeaucoup + 0.1, 0.9); RIDE("mover", tChine - 0.2, 1.4); SFX("whip", tChine, -22);
+  IN("#tPays", tPeu - 0.1, { y: 24 }); HL("kPays", tPays); SFX("pop", tPays, -22);
+  OUT("#routeW, #tPays", tVoici - 0.3);
+
+  // ========== 2 · QUATRE ÉTAPES ==========
+  IN("#t4", tVoici - 0.05, { y: 26 });
+  ["#d1", "#d2", "#d3", "#d4"].forEach((d, i) => { POP(d, tQuatre - 0.1 + i * 0.12, 0.35); SFX("tick", tQuatre + i * 0.12, -24); });
+  hide("#save"); tl.fromTo("#save", { autoAlpha: 0, y: -120, rotation: -8 }, { autoAlpha: 1, y: 0, rotation: 0, duration: 0.5, ease: "bounce.out", immediateRender: false }, tEnr - 0.1); SFX("thud", tEnr + 0.25, -22);
+  OUT("#t4, #d1, #d2, #d3, #d4, #save", tE1 - 0.3);
+
+  // ========== 3 · ÉTAPE 1 : LA PLATEFORME ==========
+  IN("#b1", tE1 - 0.05, { y: -30 }); SFX("whip", tE1, -22);
+  IN("#appW", tTaobao - 0.3, { y: 60, s: 0.92 }); SFX("card", tTaobao, -22);
+  ["#it1", "#it2", "#it3", "#it4"].forEach((s, i) => { hide(s); tl.fromTo(s, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "back.out(2)", immediateRender: false }, tAutre + i * 0.12); });
+  STAMP("#bas", tBas + 0.05, -5); SFX("stamp", tBas + 0.05, -19);
+  OUT("#b1, #appW, #bas", tE2 - 0.3);
+
+  // ========== 4 · ÉTAPE 2 : AVIS ET VRAIES PHOTOS ==========
+  IN("#b2", tE2 - 0.05, { y: -30 }); SFX("whip", tE2, -22);
+  IN("#avis", tLis - 0.1, { x: -60, y: 0 }); SFX("pop", tAvis, -22);
+  IN("#phC", tAcheteurs - 0.6, { x: 60, y: 0 }); XPOP("#phC .ok", tAcheteurs + 0.1); SFX("ding1", tAcheteurs + 0.1, -21);
+  IN("#phV", tPasLes - 0.1, { x: -60, y: 0 }); XPOP("#spV", tPasLes + 0.3); SFX("shimmer", tPasLes + 0.3, -24);
+  DRAW("#xv1", tPasLes + 1.4, 0.2); DRAW("#xv2", tPasLes + 1.54, 0.2); SFX("error", tPasLes + 1.45, -24);
+  IN("#tQual", tQualite - 0.6, { y: 24 }); HL("kQual", tQualite); PULSE("#phC", tQualite, 1.06);
+  OUT("#b2, #avis, #phC, #phV, #spV, #tQual", tE3 - 0.3);
+
+  // ========== 5 · ÉTAPE 3 : LE TRANSITAIRE ==========
+  IN("#b3", tE3 - 0.05, { y: -30 }); SFX("whip", tE3, -22);
+  IN("#route2W", tTrans - 0.1, { y: 30 }); DRAW("#rp2", tRecup - 0.2, 0.8); RIDE("truck2", tVenir - 0.6, 1.6); SFX("whip", tVenir, -23);
+  PULSE("#route2W .pinL:nth-of-type(2)", tPays2, 1.15); SFX("ding2", tPays2, -21);
+  OUT("#b3, #route2W", tE4 - 0.3);
+
+  // ========== 6 · ÉTAPE 4 : RÉCEPTIONNE ET VENDS ==========
+  IN("#b4", tE4 - 0.05, { y: -30 }); SFX("whip", tE4, -22);
+  hide("#colis"); tl.fromTo("#colis", { autoAlpha: 0, y: -200 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: "bounce.out", immediateRender: false }, tRecep - 0.1); SFX("thud", tRecep + 0.3, -21);
+  XPOP("#colis .ok", tVends); SFX("ding0", tVends, -22);
+  [["#v1", tMarche2], ["#v2", tProches], ["#v3", tLigne]].forEach(([v, t]) => { IN(v, t - 0.15, { x: -60, y: 0 }); SFX("tick", t, -23); });
+  OUT("#b4, #colis, #v1, #v2, #v3", tDit - 0.3);
+
+  // ========== 7 · ÇA A L'AIR SIMPLE… ==========
+  IN("#tSimple", tDit - 0.05, { y: 26 });
+  tl.set("#stkS", { scaleX: 0 }, 0); tl.fromTo("#stkS", { scaleX: 0 }, { scaleX: 1, duration: 0.25, ease: "power3.out", immediateRender: false }, tMais); SFX("strike", tMais, -21);
+  [["#w1", tTrouver], ["#w2", tParler], ["#w3", tChoisir]].forEach(([w, t]) => { IN(w, t - 0.1, { x: -60, y: 0 }); SFX("error", t + 0.1, -26); });
+  ["#cL1", "#cL2", "#cL3"].forEach((c, i) => { hide(c); tl.fromTo(c, { autoAlpha: 1, y: -60 }, { y: 300, autoAlpha: 0, rotation: 120, duration: 0.8, ease: "power2.in", immediateRender: false }, tPerdent - 0.1 + i * 0.1); });
+  SFX("coins", tPerdent, -24);
+  OUT("#tSimple, #w1, #w2, #w3", tAlors - 0.3);
+
+  // ========== 8 · L'OFFRE ==========
+  IN("#accomp", tAlors - 0.05, { y: 50, s: 0.94 }); SFX("card", tAlors, -21);
+  [["#sa", "#la"], ["#sb", "#lb"], ["#sc", "#lc"], ["#sd", null]].forEach(([s, l], i) => { const t = tEtape - 0.1 + i * 0.3;
+    tl.fromTo(s, { backgroundColor: "#ffffff", color: "#141414" }, { backgroundColor: "#141414", color: "#ffffff", duration: 0.2, immediateRender: false }, t); SFX("tick", t, -24);
+    if (l) { tl.set(l, { scaleX: 0 }, 0); tl.fromTo(l, { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power2.out", immediateRender: false }, t + 0.1); } });
+  hide("#fin1"); tl.fromTo("#fin1", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.3, immediateRender: false }, tPremier - 0.4); HL("kArt", tPremier); SFX("ding2", tPremier, -20);
+  STAMP("#prix", tPour + 0.3, -5); SFX("stamp", tPour + 0.3, -18);
+  OUT("#accomp, #prix", tEcris - 0.3);
+
+  // ========== 9 · ÉCRIS « CHINE » ==========
+  IN("#cIn", tEcris - 0.05, { y: 30 });
+  ["C", "CH", "CHI", "CHIN", "CHINE"].forEach((s, i) => tl.set("#typed", { textContent: s }, tCHINE - 0.2 + i * 0.07)); tl.set("#typed", { textContent: "" }, 0); SFX("keys", tCHINE - 0.2, -24);
+  [["#r1", tComm], ["#r2", tRep - 0.2], ["#r3", tRep + 0.3]].forEach(([r, t]) => { IN(r, t, { x: -60, y: 0, d: 0.35 }); SFX("notif", t + 0.05, -22); });
+  POP("#shareB", tEnvoie, 0.4); tl.to("#shareB", { x: 140, y: -160, rotation: 20, autoAlpha: 0, duration: 0.6, ease: "power2.in" }, tEnvoie + 1.0); SFX("whip", tEnvoie + 1.0, -22);
+  OUT("#cIn, #r1, #r2, #r3", tRappelle - 0.3);
+  // l'étal revient : dernière image = première image
+  tl.fromTo("#stall", { autoAlpha: 0, y: 90, scale: 0.9, filter: B(10) }, { autoAlpha: 1, y: 0, scale: 1, filter: B(0), duration: 0.55, ease: "back.out(1.4)", immediateRender: false }, tRappelle - 0.05); SFX("card", tRappelle + 0.05, -21);
+
+  // ---------- jeu d'acteur ----------
+  [[tFab - 0.1, "sceptique", "croise"], [tBeaucoup - 0.1, "parle", "pointe"], [tToi - 0.1, "content", "salue"], [tVoici - 0.05, "parle", "pointe"], [tEnr - 0.05, "content"],
+   [tE1 - 0.1, "insiste", "pointe"], [tPrix - 0.05, "malin", "croise"], [tE2 - 0.1, "parle", "pointe"], [tSurtout - 0.1, "insiste"], [tPasLes - 0.1, "sceptique", "croise"], [tQualite - 0.1, "content", "salue"],
+   [tE3 - 0.1, "parle", "pointe"], [tE4 - 0.1, "content", "salue"], [tDit - 0.05, "malin", "croise"], [tMais - 0.05, "inquiet"], [tPlupart - 0.1, "sceptique"],
+   [tAlors - 0.05, "content", "salue"], [tPour - 0.05, "malin", "pointe"], [tEcris - 0.05, "insiste", "pointe"], [tEnvoie - 0.05, "content", "salue"], [tRappelle - 0.1, INIT_EXPR, INIT_POSE]].forEach(([t, e, p]) => ACT(t, e, p));
+  // ---------- regard ----------
+  [[0, -2, -10], [tFab, -2, -4], [tBeaucoup, -8, -9], [tChine + 0.6, 8, -9], [tToi, 0, 0], [tVoici, 0, -8], [tEnr + 0.3, 0, -4], [tE1, 0, -9], [tPrix, 0, 0],
+   [tE2, -2, -9], [tAcheteurs - 0.5, 9, -6], [tPasLes, -9, -6], [tQualite, 9, -6], [tE3 + 0.3, 0, -9], [tRecup, -9, -8], [tVenir + 0.5, 9, -8], [tE4 - 0.1, 0, -9], [tMarche2, -2, -3],
+   [tDit, 0, 0], [tTrouver, -2, -6], [tPlupart, 0, 0], [tAlors, 0, -9], [tPremier + 0.3, 0, 0], [tEcris, -2, -9], [tComm, -6, -4], [tEnvoie, 6, -2], [tRappelle - 0.2, -2, -10]].forEach(([t, x, y]) => LOOK(t, x, y));
+
+  // grands changements de regard : un clignement (et on retire ceux qui tombent trop près)
+  for (let i = 1; i < GK.length; i++) { const d = Math.hypot(GK[i][1][0] - GK[i - 1][1][0], GK[i][1][1] - GK[i - 1][1][1]); if (d > 10 && GK[i][0] > 1.5 && GK[i][0] < DURATION - 1.2) BLINK.push(GK[i][0] - 0.02); }
+  BLINK.sort((a, b) => a - b); for (let i = BLINK.length - 1; i > 0; i--) if (BLINK[i] - BLINK[i - 1] < 0.9) BLINK.splice(i, 1);
+  gsap.set(".pill", { xPercent: -50, yPercent: -50 });
+  gsap.set(".ctr", { xPercent: -50 });
+  tl.set({}, {}, DURATION);
+  window.__duration = DURATION; window.__sfx = CUES.sort((a, b) => a.t - b.t);
+  // window.__seek ne doit rien renvoyer (sinon le rendu essaie de recopier la timeline et bloque)
+  // l'image 0 est calculée un millième de seconde plus loin : sinon GSAP n'applique pas les réglages posés à 0 et la boucle saute
+  window.__seek = (t) => { tl.seek(Math.max(t, 0.001), false); };
+  window.__ready = Promise.all([document.fonts.ready, ...[...document.images].map((im) => (im.complete ? 0 : new Promise((r) => (im.onload = im.onerror = r))))]).then(() => { window.__seek(0); return true; });
+  if (!new URLSearchParams(location.search).has("render")) { const au = new Audio("assets/audio/voix-final.mp3"); window.__ready.then(() => { document.body.onclick = () => { au.currentTime = 0; au.play(); tl.play(0); }; }); }
+})();
+
+</script>
+</body>
+</html>

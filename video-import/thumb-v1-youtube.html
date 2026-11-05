@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature YouTube</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  /* concept : la route en pointillé Chine → ton pays, un colis en vol, étiquette « ¥ 9 », le présentateur qui montre la route */
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --jaune:#F6C21C; }
+  html, body { margin:0; background:#000; }
+  .dots { background-color:var(--papier); background-image:radial-gradient(#CFC9BE 2.4px, transparent 2.9px); background-size:28px 28px; }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; color:var(--rouge); letter-spacing:-0.01em; }
+  .k { position:relative; display:inline-block; color:#fff; isolation:isolate; padding:0 .08em; }
+  .k::before { content:""; position:absolute; left:-.04em; right:-.04em; top:.1em; bottom:.04em; z-index:-1; border-radius:.08em; background:var(--rouge); }
+  #t { position:relative; width:1280px; height:720px; overflow:hidden; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; color:var(--encre); }
+  .t1 { position:absolute; left:60px; top:44px; font-weight:800; font-size:82px; letter-spacing:-0.05em; line-height:1.02; }
+  #route { position:absolute; left:40px; top:300px; width:620px; height:300px; overflow:visible; }
+  .pin { position:absolute; display:flex; flex-direction:column; align-items:center; gap:4px; font:800 32px/1 "Inter"; }
+  .pin svg { width:96px; height:96px; }
+  .price { position:absolute; left:280px; top:300px; padding:8px 20px; border-radius:14px; background:#fff; border:6px solid var(--encre); font:800 48px/1 "Inter"; color:var(--rouge); transform:rotate(-6deg); box-shadow:10px 8px 0 #141414; }
+  #perso { position:absolute; left:680px; top:20px; width:640px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-pin" viewBox="0 0 120 120"><path d="M60 112 C 40 86 18 64 18 42 A 42 42 0 0 1 102 42 C 102 64 80 86 60 112 Z" fill="#E0402A" stroke="#141414" stroke-width="7" stroke-linejoin="round"/><circle cx="60" cy="42" r="15" fill="#fff" stroke="#141414" stroke-width="6"/></symbol>
+  <symbol id="i-box" viewBox="0 0 120 120"><path d="M60 12 L104 34 L104 86 L60 108 L16 86 L16 34 Z" fill="#C98B5A" stroke="#141414" stroke-width="6" stroke-linejoin="round"/><path d="M16 34 L60 56 L104 34 M60 56 L60 108" fill="none" stroke="#141414" stroke-width="6"/></symbol>
+</svg>
+<div id="t" class="dots">
+  <div class="t1">Commande en <span class="k">Chine</span>,<br>revends <span class="it">chez toi</span>.</div>
+  <svg id="route" viewBox="0 0 620 300"><path d="M 70 240 C 190 20 430 20 550 240" fill="none" stroke="#141414" stroke-width="9" stroke-dasharray="3 22" stroke-linecap="round"/><use href="#i-box" x="250" y="40" width="100" height="100"/></svg>
+  <div class="pin" style="left:62px;top:540px"><svg viewBox="0 0 120 120"><use href="#i-pin"/></svg>CHINE</div>
+  <div class="pin" style="left:540px;top:540px"><svg viewBox="0 0 120 120"><use href="#i-pin"/></svg>TOI</div>
+  <img id="perso" src="assets/thumb-perso.png" alt="" />
+</div>
+</body>
+</html>
