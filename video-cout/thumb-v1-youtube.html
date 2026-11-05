@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature YouTube v1 · ticket géant</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  :root { --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --jaune:#F6C21C; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  #t { position:relative; width:1280px; height:720px; overflow:hidden; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; color:var(--encre);
+    background:repeating-conic-gradient(from 0deg at 30% 60%, #E0402A 0deg 9deg, #CF3620 9deg 18deg); }
+  .recu { position:absolute; left:56px; top:46px; width:470px; height:640px; transform:rotate(-6deg); filter:drop-shadow(14px 12px 0 #141414); }
+  .papier { position:absolute; inset:0; background:#FFFDF8; padding:44px 32px 0; box-sizing:border-box; font-family:var(--mono); }
+  .h { text-align:center; font-weight:800; font-size:23px; }
+  .sep { border-bottom:4px dashed var(--encre); margin:16px 0 8px; }
+  .l { display:flex; align-items:center; gap:8px; height:44px; font-weight:700; font-size:23px; white-space:nowrap; }
+  .l i { flex:1; border-bottom:4px dotted #B8B2A6; margin-top:10px; }
+  .l b { font-weight:800; }
+  .l.red { background:var(--rouge); color:#fff; margin:0 -12px; padding:0 12px; border-radius:8px; }
+  .l.red i { border-color:rgba(255,255,255,.6); }
+  .tot { margin-top:4px; font-weight:800; font-size:24px; }
+  .flou { filter:blur(9px); }
+  .val { position:relative; margin-top:6px; font-family:"Inter", sans-serif; font-weight:800; font-size:56px; letter-spacing:-0.045em; white-space:nowrap; }
+  .entoure { position:absolute; left:-44px; top:-22px; width:490px; height:112px; overflow:visible; }
+  .t1 { position:absolute; left:580px; top:58px; font-weight:800; font-size:96px; line-height:1; letter-spacing:-0.045em; color:#fff; text-shadow:6px 6px 0 var(--encre); white-space:nowrap; }
+  .t1 .v { color:var(--jaune); }
+  .t2 { position:absolute; left:582px; top:172px; font-weight:800; font-size:56px; letter-spacing:-0.035em; color:#fff; text-shadow:5px 5px 0 var(--encre); white-space:nowrap; }
+  .t3 { position:absolute; left:576px; top:252px; padding:4px 20px 8px; background:var(--jaune); border:6px solid var(--encre); border-radius:14px; transform:rotate(-3deg);
+    font-weight:800; font-size:56px; letter-spacing:-0.035em; box-shadow:9px 9px 0 var(--encre); white-space:nowrap; }
+  #perso { position:absolute; left:790px; top:250px; width:520px; }
+</style>
+</head>
+<body>
+<div id="t">
+  <div class="recu"><div class="papier" id="papier">
+    <div class="h">★ DROPSHIPPING MADA ★</div>
+    <div class="sep"></div>
+    <div class="l"><span>LLC (SOCIÉTÉ US)</span><i></i><b>???</b></div>
+    <div class="l"><span>NOM DE DOMAINE</span><i></i><b>???</b></div>
+    <div class="l"><span>SHOPIFY / MOIS</span><i></i><b>???</b></div>
+    <div class="l red"><span>PUBLICITÉ</span><i></i><b>???</b></div>
+    <div class="l"><span>FRAIS STRIPE</span><i></i><b>%</b></div>
+    <div class="sep"></div>
+    <div class="tot">TOTAL · À PARTIR DE</div>
+    <div class="val"><span class="flou">3 000 000</span> Ar
+      <svg class="entoure" viewBox="0 0 460 112"><path d="M26 60 C 26 20, 190 6, 330 12 C 440 18, 456 60, 410 86 C 360 112, 140 110, 58 92 C 12 82, 8 46, 58 28" fill="none" stroke="#E0402A" stroke-width="8" stroke-linecap="round"/></svg>
+    </div>
+  </div></div>
+  <div class="t1">Le <span class="v">VRAI</span> prix</div>
+  <div class="t2">du dropshipping</div>
+  <div class="t3">à Madagascar</div>
+  <img id="perso" src="assets/thumb-perso.png" alt="">
+</div>
+<script>
+  const z = []; for (let x = 0; x <= 470; x += 18) z.push(`${x}px ${(x / 18) % 2 ? 0 : 14}px`);
+  const b = []; for (let x = 470; x >= 0; x -= 18) b.push(`${x}px calc(100% - ${(x / 18) % 2 ? 0 : 14}px)`);
+  document.getElementById("papier").style.clipPath = `polygon(${z.join(",")}, ${b.join(",")})`;
+</script>
+</body>
+</html>

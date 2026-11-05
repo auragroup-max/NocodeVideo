@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature YouTube v1 · le titre censuré</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  /* concept : le titre est censuré par une grosse barre « BIP », le présentateur sourit en coin */
+
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --jaune:#F6C21C; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  .dots { background-color:var(--papier); background-image:radial-gradient(#CFC9BE 2.4px, transparent 2.9px); background-size:28px 28px; }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; color:var(--rouge); letter-spacing:-0.01em; }
+  .bar { position:absolute; display:flex; align-items:center; justify-content:center; background:var(--encre); color:#fff; font-family:var(--mono); font-weight:800; }
+  .bar::before { content:""; position:absolute; inset:0; border-radius:inherit; z-index:-1; background:radial-gradient(circle, #161616 2.2px, transparent 2.8px) 0 0 / 8px 8px; transform:translate(12px, 10px); }
+  .bar em { font-style:normal; color:var(--jaune); }
+  .k { position:relative; display:inline-block; color:#fff; isolation:isolate; padding:0 .08em; }
+  .k::before { content:""; position:absolute; left:-.04em; right:-.04em; top:.1em; bottom:.04em; z-index:-1; border-radius:.08em; background:var(--rouge); }
+  .stamp { position:absolute; padding:8px 16px; border:6px solid var(--rouge); border-radius:10px; color:var(--rouge); background:#fff; font-weight:800; letter-spacing:.05em; white-space:nowrap; }
+
+  #t { position:relative; width:1280px; height:720px; overflow:hidden; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; color:var(--encre); }
+  .t1 { position:absolute; left:64px; top:70px; font-weight:800; font-size:104px; letter-spacing:-0.055em; line-height:1; }
+  .bar { left:70px; top:200px; width:600px; height:140px; border-radius:20px; font-size:84px; letter-spacing:.14em; gap:28px; transform:rotate(-3deg); isolation:isolate; }
+  .stamp { left:520px; top:318px; font-size:30px; transform:rotate(-8deg); }
+  .t3 { position:absolute; left:64px; top:400px; font-weight:800; font-size:78px; letter-spacing:-0.05em; line-height:1.08; }
+  #perso { position:absolute; left:690px; top:40px; width:640px; transform:scaleX(-1); }
+</style>
+</head>
+<body>
+<div id="t" class="dots">
+  <div class="t1">Arrête de te</div>
+  <div class="bar"><em>✱</em>BIP<em>✱</em></div>
+  <div class="stamp">SANS FILTRE</div>
+  <div class="t3">…et commence<br>ton <span class="k">business</span>.</div>
+  <img id="perso" src="assets/thumb-perso.png" alt="" />
+</div>
+</body>
+</html>
