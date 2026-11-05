@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature YouTube v1 · la main de cartes</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  /* concept : une main de 5 cartes en éventail, la cinquième encore cachée et tamponnée « RARE » */
+
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --carte:#FFFFFF; --jaune:#F6C21C; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  .ico { fill:none; stroke:currentColor; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
+  .dots { background-color:var(--papier); background-image:radial-gradient(#CFC9BE 3px, transparent 3.6px); background-size:36px 36px; }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; color:var(--rouge); letter-spacing:-0.01em; }
+  .fan { position:absolute; }
+  .c { position:absolute; left:0; top:0; transform-origin:50% 150%; }
+  .c .f { position:absolute; inset:0; border-radius:var(--r); border:var(--b) solid var(--encre); box-sizing:border-box; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--g); box-shadow:var(--sh) var(--sh) 0 var(--encre); }
+  .c .f svg { width:var(--ic); height:var(--ic); color:var(--encre); }
+  .c .f b { font-weight:800; font-size:var(--fs); letter-spacing:-0.02em; text-align:center; line-height:1.05; }
+  .c .f .n { position:absolute; left:var(--np); top:var(--np); font:700 var(--nf)/1 var(--mono); color:var(--gris); }
+  .c .bk { background:var(--rouge); color:#fff; font-weight:800; font-size:var(--q); line-height:1; background-image:radial-gradient(rgba(255,255,255,.22) 3px, transparent 3.6px); background-size:22px 22px; }
+  .c .bk::after { content:""; position:absolute; inset:var(--np); border-radius:calc(var(--r) - 8px); border:4px solid rgba(255,255,255,.75); }
+  .stamp { position:absolute; border:var(--b) solid var(--rouge); border-radius:14px; color:var(--rouge); background:#fff; font-weight:800; letter-spacing:.04em; white-space:nowrap; }
+  .ban { position:absolute; background:var(--rouge); color:#fff; font-weight:800; letter-spacing:-0.02em; white-space:nowrap; border:5px solid var(--encre); box-shadow:10px 10px 0 var(--encre); }
+
+  #t { position:relative; width:1280px; height:720px; overflow:hidden; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; color:var(--encre); }
+  .t1 { position:absolute; left:56px; top:28px; font-weight:800; font-size:118px; letter-spacing:-0.05em; line-height:1; }
+  .t1 .it { font-size:1.55em; }
+  .t2 { position:absolute; left:60px; top:214px; font-weight:800; font-size:50px; letter-spacing:-0.035em; }
+  .ban { left:60px; top:300px; padding:10px 22px; border-radius:14px; font-size:36px; transform:rotate(-2deg); box-shadow:7px 7px 0 var(--encre); }
+  .fan { left:300px; top:456px; --r:20px; --b:5px; --g:8px; --sh:7px; --ic:66px; --fs:21px; --np:11px; --nf:16px; --q:92px; }
+  #perso { position:absolute; left:690px; top:70px; width:640px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-check" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#141414"/><path d="M19 33l9 9 17-19" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#E0402A" stroke="#141414" stroke-width="4"/><path d="M22 22 L42 42 M42 22 L22 42" stroke="#fff" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-person" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="40" r="18"/><path d="M24 104 Q24 68 60 68 Q96 68 96 104"/></g></symbol>
+  <symbol id="i-shop" viewBox="0 0 120 120"><g class="ico"><path d="M16 46 L26 18 L94 18 L104 46 Z"/><path d="M16 46 Q27 60 38 46 Q49 60 60 46 Q71 60 82 46 Q93 60 104 46"/><path d="M24 56 L24 102 L96 102 L96 56 M50 102 L50 74 L70 74 L70 102"/></g></symbol>
+  <symbol id="i-phone" viewBox="0 0 120 120"><g class="ico"><rect x="34" y="10" width="52" height="100" rx="12"/><path d="M52 94 L68 94"/></g><path d="M52 44 L72 58 L52 72 Z" fill="#E0402A" stroke="#141414" stroke-width="4" stroke-linejoin="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 120 120"><path d="M60 10 L74 44 L110 47 L82 70 L91 106 L60 86 L29 106 L38 70 L10 47 L46 44 Z" fill="#F6C21C" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 120 120"><path d="M10 56 L108 14 L80 106 L56 70 Z" fill="#fff" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M56 70 L108 14" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-live" viewBox="0 0 120 120"><g class="ico"><rect x="12" y="28" width="96" height="64" rx="12"/><path d="M60 50 L88 50 M60 70 L80 70"/></g><circle cx="36" cy="60" r="12" fill="#E0402A" stroke="#141414" stroke-width="4"/></symbol>
+  <symbol id="i-page" viewBox="0 0 120 120"><g class="ico"><rect x="14" y="14" width="92" height="92" rx="12"/><path d="M14 42 L106 42 M32 62 L88 62 M32 78 L88 78 M32 94 L64 94"/></g><circle cx="31" cy="28" r="6" fill="#E0402A"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="60" r="46"/><ellipse cx="60" cy="60" rx="20" ry="46"/><path d="M14 60 L106 60 M22 36 L98 36 M22 84 L98 84"/></g></symbol>
+  <symbol id="i-browser" viewBox="0 0 120 120"><g class="ico"><rect x="10" y="18" width="100" height="84" rx="12"/><path d="M10 40 L110 40 M70 58 L96 58 M70 72 L96 72 M70 86 L86 86"/></g><rect x="24" y="54" width="34" height="34" rx="5" fill="#E0402A" stroke="#141414" stroke-width="5"/><circle cx="23" cy="29" r="4.5" fill="currentColor"/><circle cx="36" cy="29" r="4.5" fill="currentColor"/></symbol>
+  <symbol id="i-shirt" viewBox="0 0 120 120"><path d="M40 20 L16 32 L6 56 L26 64 L32 52 L32 104 L88 104 L88 52 L94 64 L114 56 L104 32 L80 20 Q74 34 60 34 Q46 34 40 20 Z" fill="#F6C21C" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shoe" viewBox="0 0 120 120"><path d="M10 88 L10 50 Q28 54 42 40 L56 56 Q82 62 104 68 Q112 72 112 82 L112 92 L10 92 Z" fill="#E0402A" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/><path d="M10 80 L112 80" stroke="currentColor" stroke-width="6"/><path d="M50 54 L44 62 M60 60 L54 68" stroke="#fff" stroke-width="5" stroke-linecap="round"/></symbol>
+  <symbol id="i-lip" viewBox="0 0 120 120"><path d="M48 42 L48 20 L72 10 L72 42 Z" fill="#E0402A" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/><rect x="44" y="42" width="32" height="20" rx="3" fill="#F6C21C" stroke="currentColor" stroke-width="6"/><rect x="40" y="62" width="40" height="48" rx="6" fill="#141414" stroke="currentColor" stroke-width="6"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 120 120"><path d="M8 60 Q60 8 112 60 Q60 112 8 60 Z" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><circle cx="60" cy="60" r="16" fill="currentColor"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 120 120"><g class="ico"><rect x="22" y="12" width="76" height="96" rx="10"/><path d="M38 38 L82 38 M38 58 L82 58 M38 78 L66 78"/></g></symbol>
+  <symbol id="i-call" viewBox="0 0 120 120"><path d="M34 14 C 26 14 16 22 16 32 C 18 70 50 102 88 104 C 98 104 106 96 106 88 L106 76 L82 66 L72 78 C 58 72 48 62 42 48 L54 38 L46 14 Z" fill="currentColor"/></symbol>
+  <symbol id="i-search" viewBox="0 0 120 120"><g class="ico" style="stroke-width:10"><circle cx="50" cy="50" r="30"/><path d="M73 73 L104 104"/></g></symbol>
+  <symbol id="i-pin" viewBox="0 0 120 120"><path d="M60 112 C 40 86 18 64 18 42 A 42 42 0 0 1 102 42 C 102 64 80 86 60 112 Z" fill="#E0402A" stroke="#141414" stroke-width="7" stroke-linejoin="round"/><circle cx="60" cy="42" r="15" fill="#fff" stroke="#141414" stroke-width="6"/></symbol>
+  <symbol id="i-plate" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="64" r="42"/><circle cx="60" cy="64" r="26"/><path d="M46 14 Q52 8 46 2 M62 14 Q68 8 62 2 M78 14 Q84 8 78 2" style="stroke-width:5"/></g></symbol>
+  <symbol id="i-chat" viewBox="0 0 120 120"><path d="M60 12 C 32 12 12 32 12 58 C 12 70 16 80 24 88 L18 108 L40 100 C 46 103 53 104 60 104 C 88 104 108 84 108 58 C 108 32 88 12 60 12 Z" fill="#fff" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M42 44 Q44 72 76 78" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 120 120"><path d="M60 8 C 64 44 76 56 112 60 C 76 64 64 76 60 112 C 56 76 44 64 8 60 C 44 56 56 44 60 8 Z" fill="currentColor"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 120 120"><path d="M60 104 C 20 76 8 56 8 38 C 8 22 20 12 34 12 C 46 12 54 20 60 30 C 66 20 74 12 86 12 C 100 12 112 22 112 38 C 112 56 100 76 60 104 Z" fill="#E0402A" stroke="#fff" stroke-width="7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 120 120"><path d="M28 12 L106 60 L28 108 Z" fill="#fff" stroke-linejoin="round"/></symbol>
+  <symbol id="i-box" viewBox="0 0 120 120"><g class="ico"><path d="M60 12 L104 34 L104 86 L60 108 L16 86 L16 34 Z"/><path d="M16 34 L60 56 L104 34 M60 56 L60 108"/></g></symbol>
+  <symbol id="i-clock" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="60" r="46"/><path d="M60 30 L60 60 L80 72"/></g></symbol>
+</svg>
+
+<div id="t" class="dots">
+  <div class="t1"><span class="it">5</span> business</div>
+  <div class="t2">à lancer à Madagascar</div>
+  <div class="ban">le 5e : presque personne ne le fait</div>
+  <div class="fan">
+<div class="c" style="width:150px;height:212px;transform:translateX(-144px) rotate(-24deg)"><div class="f"><span class="n">01</span><svg><use href="#i-live"/></svg><b>live</b></div></div>
+<div class="c" style="width:150px;height:212px;transform:translateX(-72px) rotate(-12deg)"><div class="f"><span class="n">02</span><svg><use href="#i-page"/></svg><b>page<br>Facebook</b></div></div>
+<div class="c" style="width:150px;height:212px;transform:translateX(0px) rotate(0deg)"><div class="f"><span class="n">03</span><svg><use href="#i-phone"/></svg><b>vidéos</b></div></div>
+<div class="c" style="width:150px;height:212px;transform:translateX(72px) rotate(12deg)"><div class="f"><span class="n">04</span><svg><use href="#i-globe"/></svg><b>étranger</b></div></div>
+<div class="c" style="width:150px;height:212px;transform:translateX(144px) translateY(-44px) rotate(24deg) scale(1.12)"><div class="f bk">?<div class="stamp" style="left:8%;top:62%;transform:rotate(-14deg);font-size:calc(var(--q) * .3);padding:6px 14px">RARE</div></div></div>
+  </div>
+  <img id="perso" src="assets/thumb-perso.png" alt="" />
+</div>
+</body>
+</html>

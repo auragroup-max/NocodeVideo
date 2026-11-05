@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature TikTok v2 · cahier d'écolier</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  /* concept : une page de cahier d'écolier corrigée par la maîtresse */
+  :root { --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --jaune:#F6C21C; --ligne:#9CC3E6; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  #t { position:relative; width:1080px; height:1920px; overflow:hidden; color:var(--encre); font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased;
+    background-color:#FBF8F1; background-image:repeating-linear-gradient(transparent 0 46px, var(--ligne) 46px 48px); }
+  .marge { position:absolute; left:130px; top:0; bottom:0; width:4px; background:var(--rouge); opacity:.8; }
+  .trous i { position:absolute; left:42px; width:44px; height:44px; border-radius:50%; background:#E9E3D6; box-shadow:inset 3px 3px 0 rgba(0,0,0,.18); }
+  .label { position:absolute; left:170px; top:250px; font:600 30px/1 var(--mono); letter-spacing:.04em; color:var(--gris); }
+  h1 { position:absolute; left:164px; top:300px; margin:0; font-weight:800; letter-spacing:-0.045em; line-height:1.02; }
+  h1 span { display:block; font-size:118px; }
+  h1 .huit { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; font-size:300px; line-height:.85; color:var(--rouge); letter-spacing:-0.02em; }
+  .souligne { position:absolute; left:160px; top:748px; width:420px; height:40px; overflow:visible; }
+  .tampon { position:absolute; left:745px; top:270px; width:300px; height:300px; transform:rotate(-14deg); }
+  .etoile { position:absolute; left:735px; top:590px; width:120px; height:120px; transform:rotate(12deg); filter:drop-shadow(6px 6px 0 #141414); }
+  #perso { position:absolute; left:40px; top:820px; width:1080px; transform:scaleX(-1); transform-origin:50% 50%; }
+</style>
+</head>
+<body>
+<div id="t">
+  <div class="marge"></div>
+  <div class="trous"><i style="top:300px"></i><i style="top:900px"></i><i style="top:1500px"></i></div>
+  <div class="label">// leçon n°1 — le dropshipping</div>
+  <h1><span>Même un</span><span>enfant de</span><span class="huit">8 ans</span><span>comprend.</span></h1>
+  <svg class="souligne" viewBox="0 0 420 40"><path d="M6 26 C 90 8, 180 34, 260 18 S 380 10, 414 22" fill="none" stroke="#E0402A" stroke-width="10" stroke-linecap="round"/></svg>
+  <svg class="etoile" viewBox="0 0 120 120"><path d="M60 6 L75 42 L114 45 L84 70 L94 108 L60 87 L26 108 L36 70 L6 45 L45 42 Z" fill="#F6C21C" stroke="#141414" stroke-width="6" stroke-linejoin="round"/></svg>
+  <svg class="tampon" viewBox="0 0 330 330">
+    <circle cx="165" cy="165" r="150" fill="rgba(224,64,42,.08)" stroke="#E0402A" stroke-width="10"/>
+    <circle cx="165" cy="165" r="124" fill="none" stroke="#E0402A" stroke-width="4" stroke-dasharray="10 9"/>
+    <text x="165" y="150" text-anchor="middle" font-family="Inter" font-weight="800" font-size="46" fill="#E0402A" letter-spacing="1">4 ÉTAPES</text>
+    <text x="165" y="214" text-anchor="middle" font-family="Instrument Serif" font-style="italic" font-size="64" fill="#E0402A">très bien !</text>
+  </svg>
+  <img id="perso" src="assets/thumb-perso.png" alt="">
+</div>
+</body>
+</html>

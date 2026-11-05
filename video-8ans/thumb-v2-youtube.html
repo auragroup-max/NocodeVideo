@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature YouTube v2 · cahier d'écolier</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  :root { --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --ligne:#9CC3E6; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  #t { position:relative; width:1280px; height:720px; overflow:hidden; color:var(--encre); font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased;
+    background-color:#FBF8F1; background-image:repeating-linear-gradient(transparent 0 34px, var(--ligne) 34px 36px); }
+  .marge { position:absolute; left:84px; top:0; bottom:0; width:3px; background:var(--rouge); opacity:.8; }
+  .label { position:absolute; left:110px; top:76px; font:600 22px/1 var(--mono); letter-spacing:.04em; color:var(--gris); }
+  h1 { position:absolute; left:106px; top:112px; margin:0; font-weight:800; letter-spacing:-0.045em; line-height:1.02; }
+  h1 span { display:block; font-size:70px; }
+  h1 .huit { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; font-size:190px; line-height:.85; color:var(--rouge); letter-spacing:-0.02em; }
+  .tampon { position:absolute; left:470px; top:300px; width:210px; height:210px; transform:rotate(-14deg); }
+  .etoile { position:absolute; left:480px; top:196px; width:80px; height:80px; transform:rotate(12deg); filter:drop-shadow(4px 4px 0 #141414); }
+  #perso { position:absolute; left:620px; top:-20px; width:700px; transform:scaleX(-1); }
+</style>
+</head>
+<body>
+<div id="t">
+  <div class="marge"></div>
+  <div class="label">// leçon n°1 — le dropshipping</div>
+  <h1><span>Même un</span><span>enfant de</span><span class="huit">8 ans</span><span>comprend.</span></h1>
+  <svg class="etoile" viewBox="0 0 120 120"><path d="M60 6 L75 42 L114 45 L84 70 L94 108 L60 87 L26 108 L36 70 L6 45 L45 42 Z" fill="#F6C21C" stroke="#141414" stroke-width="6" stroke-linejoin="round"/></svg>
+  <svg class="tampon" viewBox="0 0 330 330">
+    <circle cx="165" cy="165" r="150" fill="rgba(224,64,42,.08)" stroke="#E0402A" stroke-width="10"/>
+    <circle cx="165" cy="165" r="124" fill="none" stroke="#E0402A" stroke-width="4" stroke-dasharray="10 9"/>
+    <text x="165" y="150" text-anchor="middle" font-family="Inter" font-weight="800" font-size="46" fill="#E0402A" letter-spacing="1">4 ÉTAPES</text>
+    <text x="165" y="214" text-anchor="middle" font-family="Instrument Serif" font-style="italic" font-size="64" fill="#E0402A">très bien !</text>
+  </svg>
+  <img id="perso" src="assets/thumb-perso.png" alt="">
+</div>
+</body>
+</html>
