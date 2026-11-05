@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature YouTube</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  /* MODÈLE : même concept que la miniature TikTok, mis en page en 16:9 (titre à gauche, présentateur à droite). */
+
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --jaune:#F6C21C; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  .dots { background-color:var(--papier); background-image:radial-gradient(#CFC9BE 2.4px, transparent 2.9px); background-size:28px 28px; }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; color:var(--rouge); letter-spacing:-0.01em; }
+  .k { position:relative; display:inline-block; color:#fff; isolation:isolate; padding:0 .08em; }
+  .k::before { content:""; position:absolute; left:-.04em; right:-.04em; top:.1em; bottom:.04em; z-index:-1; border-radius:.08em; background:var(--rouge); }
+  .stamp { position:absolute; padding:8px 16px; border:6px solid var(--rouge); border-radius:10px; color:var(--rouge); background:#fff; font-weight:800; letter-spacing:.05em; white-space:nowrap; }
+
+  #t { position:relative; width:1280px; height:720px; overflow:hidden; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; color:var(--encre); }
+  .tag { position:absolute; left:68px; top:80px; font:600 28px/1 var(--mono); letter-spacing:.06em; color:var(--gris); }
+  .t1 { position:absolute; left:64px; top:140px; font-weight:800; font-size:110px; letter-spacing:-0.055em; line-height:1; }
+  .t2 { position:absolute; left:64px; top:280px; font-weight:800; font-size:96px; letter-spacing:-0.05em; line-height:1.05; }
+  .stamp { left:80px; top:470px; font-size:32px; transform:rotate(-6deg); }
+  #perso { position:absolute; left:690px; top:40px; width:640px; transform:scaleX(-1); }
+</style>
+</head>
+<body>
+<div id="t" class="dots">
+  <div class="tag">// ton sujet</div>
+  <div class="t1">Ton titre</div>
+  <div class="t2">en <span class="k">5 mots</span> <span class="it">max.</span></div>
+  <div class="stamp">TAMPON</div>
+  <img id="perso" src="assets/thumb-perso.png" alt="" />
+</div>
+</body>
+</html>

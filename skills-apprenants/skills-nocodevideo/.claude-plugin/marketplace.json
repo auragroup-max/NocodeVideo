@@ -1,0 +1,13 @@
+{
+  "name": "nocodevideo",
+  "owner": {
+    "name": "NocodeVideo"
+  },
+  "plugins": [
+    {
+      "name": "nocodevideo",
+      "source": "./",
+      "description": "Skills vidéo de NocodeVideo (explicatives papier et Nuit bleue, showreel en code, analyse de vidéo, UI/UX)."
+    }
+  ]
+}

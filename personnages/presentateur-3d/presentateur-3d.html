@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Présentateur 3D</title>
+<style>
+  /* Présentateur 3D animé (DA papier). Ouvre ce fichier dans Chrome : il parle, regarde, cligne, hoche la tête et change de geste en boucle.
+     Glisse pour tourner autour de lui, molette ou pincement pour zoomer. Il faut internet (Three.js vient d'unpkg). */
+  html, body { margin:0; height:100%; background:#F1EEE8; overflow:hidden; font-family:system-ui, sans-serif; }
+  body { background-color:#F1EEE8; background-image:radial-gradient(#CFC9BE 3px, transparent 3.6px); background-size:36px 36px; }
+  canvas { position:fixed; inset:0; width:100vw; height:100vh; display:block; touch-action:none; }
+  #tag { position:fixed; left:16px; top:14px; font:600 13px/1 ui-monospace, Consolas, monospace; letter-spacing:.06em; color:#6B675F; pointer-events:none; }
+  #tag b { color:#E0402A; font-weight:600; }
+  #err { position:fixed; inset:auto 16px 16px 16px; color:#E0402A; font:600 14px/1.4 system-ui; }
+</style>
+<script type="importmap">{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }</script>
+</head>
+<body>
+<div id="tag">// présentateur 3D · <b>glisse pour tourner</b></div>
+<div id="err"></div>
+<script type="module">
+import * as THREE from "three";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+// ===================== scène, lumière, caméra =====================
+const RENDER = new URLSearchParams(location.search).has("render");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(RENDER ? 1 : Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+cam.position.set(2.2, 4.4, 21); const TARGET = new THREE.Vector3(0, 3.7, 0); cam.lookAt(TARGET);
+scene.add(new THREE.HemisphereLight(0xFFF6EA, 0xC9BFAE, 1.5));
+const key = new THREE.DirectionalLight(0xFFF1DE, 2.6); key.position.set(-5, 10, 8); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -0.0005; Object.assign(key.shadow.camera, { left: -9, right: 9, top: 12, bottom: -6 }); scene.add(key);
+const rim = new THREE.DirectionalLight(0xFFD9A8, 1.2); rim.position.set(6, 5, -6); scene.add(rim);
+const sol = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ opacity: 0.22 })); sol.rotation.x = -Math.PI / 2; sol.receiveShadow = true; scene.add(sol);
+
+// ===================== matières et petit outil « bloc arrondi » =====================
+const M = (c, r = 0.62) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: 0 });
+const PEAU = M(0xB9805A, 0.7), PEAU2 = M(0x9A6544, 0.7), CHEV = M(0x17110E, 0.8), CHEMISE = M(0x2F7F86), CHEMISE2 = M(0x266A70), COL = M(0x4E9AA0),
+  BLANC = M(0xFFFFFF, 0.35), NOIR = M(0x111111, 0.4), BOUCHE = M(0x6B1414, 0.6), LANGUE = M(0xE5484D), GRIS = M(0x9097A1, 0.45), GRIS2 = M(0x3E434A, 0.5), ROUGE = M(0xE0402A, 0.5),
+  JEAN = M(0x2E4A6B, 0.85), JEAN2 = M(0x22384F, 0.85), CUIR = M(0x5A3A26, 0.55), SEMELLE = M(0xF4F1EA, 0.5), GOMME = M(0xC98B5A, 0.7), LACET = M(0x1C1C1C, 0.6),
+  OR = new THREE.MeshStandardMaterial({ color: 0xD9B44A, roughness: 0.3, metalness: 0.8 });
+const box = (w, h, d, mat, x, y, z, rad, parent) => { const m = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 3, Math.min(rad, w / 2.1, h / 2.1, d / 2.1)), mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; parent.add(m); return m; };
+const grp = (parent, x = 0, y = 0, z = 0) => { const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g); return g; };
+
+// ===================== le personnage (squelette articulé) =====================
+const LEG = 2.7, root = grp(scene);
+// --- jambes, ceinture, baskets ---
+const legs = grp(root);
+[-1, 1].forEach((s) => { const x = s * 0.56;
+  box(0.98, 1.96, 1.0, JEAN, x, 1.8, 0, 0.16, legs); box(1.04, 0.24, 1.06, JEAN2, x, 0.9, 0, 0.1, legs);
+  box(0.06, 1.7, 0.04, JEAN2, x + s * 0.47, 1.85, 0.2, 0.02, legs); box(0.4, 0.04, 0.03, JEAN2, x, 2.45, 0.51, 0.015, legs);
+  box(0.7, 0.3, 0.7, M(0xFFFFFF, 0.8), x, 0.7, -0.05, 0.08, legs);
+  const sh = grp(legs, x, 0, 0.24);
+  box(1.08, 0.18, 1.74, SEMELLE, 0, 0.09, 0, 0.08, sh); box(1.1, 0.05, 1.76, GOMME, 0, 0.025, 0, 0.02, sh);
+  for (let k = 0; k < 7; k++) box(1.12, 0.025, 0.05, M(0xD9D3C6, 0.6), 0, 0.1, -0.72 + k * 0.24, 0.01, sh);
+  box(0.98, 0.32, 1.5, BLANC, 0, 0.34, -0.04, 0.15, sh); box(0.98, 0.3, 0.5, BLANC, 0, 0.5, -0.5, 0.14, sh);
+  box(1.0, 0.07, 0.52, M(0x1C1C1C, 0.7), 0, 0.66, -0.5, 0.03, sh); box(0.96, 0.18, 0.46, M(0xE9E5DC, 0.4), 0, 0.27, 0.6, 0.09, sh);
+  box(0.54, 0.34, 0.12, ROUGE, 0, 0.48, -0.8, 0.05, sh);
+  [-1, 1].forEach((t) => { box(0.04, 0.12, 0.86, ROUGE, t * 0.5, 0.33, -0.08, 0.02, sh).rotation.x = -0.28; box(0.04, 0.05, 0.6, ROUGE, t * 0.5, 0.2, 0.05, 0.02, sh); });
+  box(0.46, 0.08, 0.62, M(0xF7F5F0, 0.5), 0, 0.53, 0.08, 0.04, sh);
+  [0.32, 0.14, -0.04].forEach((dz) => { [-1, 1].forEach((t) => { const e = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.03, 12), GRIS2); e.position.set(t * 0.2, 0.52 + dz * 0.12, dz); sh.add(e); });
+    box(0.48, 0.035, 0.04, LACET, 0, 0.56 + dz * 0.12, dz - 0.05, 0.015, sh).rotation.y = 0.32; box(0.48, 0.035, 0.04, LACET, 0, 0.565 + dz * 0.12, dz - 0.05, 0.015, sh).rotation.y = -0.32; });
+  box(0.04, 0.03, 0.3, LACET, 0.1, 0.6, 0.42, 0.012, sh).rotation.set(0.4, 0.3, 0); box(0.04, 0.03, 0.3, LACET, -0.1, 0.6, 0.42, 0.012, sh).rotation.set(0.4, -0.3, 0); });
+box(2.34, 0.24, 1.3, CUIR, 0, LEG + 0.02, 0, 0.06, legs); box(0.34, 0.26, 0.06, OR, 0, LEG + 0.02, 0.66, 0.04, legs); box(0.2, 0.14, 0.08, CUIR, 0, LEG + 0.02, 0.68, 0.03, legs);
+
+// --- buste (respire, se balance) ---
+const body = grp(root, 0, LEG, 0);
+const chest = grp(body);
+box(2.3, 2.0, 1.25, CHEMISE, 0, 1.0, 0, 0.22, chest); box(0.36, 1.6, 0.06, CHEMISE2, 0, 1.0, 0.64, 0.02, chest);
+[1.55, 1.15, 0.75].forEach((y) => { const b = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.04, 16), BLANC); b.rotation.x = Math.PI / 2; b.position.set(0, y, 0.68); chest.add(b); });
+box(0.55, 0.5, 0.06, CHEMISE2, 0.62, 1.35, 0.64, 0.04, chest); box(0.08, 0.36, 0.08, ROUGE, 0.78, 1.62, 0.66, 0.03, chest);
+box(0.62, 0.34, 0.16, COL, -0.32, 2.02, 0.5, 0.06, chest).rotation.z = -0.35; box(0.62, 0.34, 0.16, COL, 0.32, 2.02, 0.5, 0.06, chest).rotation.z = 0.35;
+box(0.62, 0.5, 0.62, PEAU, 0, 2.2, 0, 0.12, chest);
+const arc = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.09, 16, 48, Math.PI), GRIS2); arc.rotation.set(Math.PI / 2 + 0.5, 0, Math.PI); arc.position.set(0, 2.3, 0.1); arc.castShadow = true; chest.add(arc);
+[-1, 1].forEach((s) => { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.24, 32), GRIS); c.rotation.set(0, s * 0.5, Math.PI / 2); c.position.set(s * 0.72, 2.3, 0.42); c.castShadow = true; chest.add(c);
+  const i = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.26, 32), GRIS2); i.rotation.copy(c.rotation); i.position.copy(c.position); chest.add(i); });
+
+// --- bras : épaule → coude → main (gauche de l'image = bras « g ») ---
+const ARM = {};
+[["g", -1], ["d", 1]].forEach(([n, s]) => {
+  const sh = grp(chest, s * 1.32, 1.78, 0); box(0.62, 1.1, 0.62, CHEMISE, 0, -0.45, 0, 0.18, sh);
+  const el = grp(sh, 0, -1.0, 0); box(0.58, 0.85, 0.58, CHEMISE, 0, -0.38, 0, 0.17, el);
+  const ha = grp(el, 0, -0.95, 0); box(0.5, 0.5, 0.5, PEAU, 0, 0, 0, 0.14, ha);
+  const idx = box(0.16, 0.42, 0.16, PEAU, s * -0.05, -0.38, 0.06, 0.07, ha); // index (sorti seulement quand il montre)
+  box(0.18, 0.2, 0.18, PEAU, s * -0.22, 0.02, 0.18, 0.07, ha);              // pouce
+  ARM[n] = { sh, el, ha, idx, s };
+});
+
+// --- tête : pivot au cou (oui, non, penché) ---
+const neck = grp(chest, 0, 2.45, 0), H = grp(neck);
+box(2.0, 2.0, 1.8, PEAU, 0, 1.0, 0, 0.22, H);
+[-1, 1].forEach((s) => box(0.22, 0.46, 0.34, PEAU, s * 1.06, 0.95, 0, 0.08, H));
+let sd = 3; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+const hair = grp(H);
+for (let ix = 0; ix < 6; ix++) for (let iz = 0; iz < 5; iz++) box(0.46 + rnd() * 0.1, 0.36 + rnd() * 0.22, 0.46 + rnd() * 0.1, CHEV, -0.92 + ix * 0.37 + (rnd() - 0.5) * 0.08, 2.05 + rnd() * 0.12, -0.78 + iz * 0.39 + (rnd() - 0.5) * 0.08, 0.14, hair);
+for (let ix = 0; ix < 6; ix++) box(0.42, 0.34 + rnd() * 0.14, 0.3, CHEV, -0.92 + ix * 0.37, 1.86 + rnd() * 0.06, 0.82, 0.12, hair);
+[-1, 1].forEach((s) => { for (let k = 0; k < 4; k++) box(0.24, 0.42, 0.42, CHEV, s * 0.98, 1.7 - k * 0.06, 0.55 - k * 0.42, 0.1, hair); });
+const F = 0.9, EYE = {};
+[["g", -1], ["d", 1]].forEach(([n, s]) => { const cx = s * 0.46;
+  box(0.5, 0.52, 0.08, BLANC, cx, 1.12, F, 0.07, H);
+  const pup = grp(H, cx, 1.1, F + 0.05); box(0.22, 0.26, 0.06, NOIR, 0, 0, 0, 0.04, pup); box(0.07, 0.07, 0.04, BLANC, 0.05, 0.08, 0.03, 0.02, pup);
+  // paupière : un bloc de peau qui descend depuis le haut de l'œil (origine en haut)
+  const lidG = new RoundedBoxGeometry(0.56, 0.56, 0.1, 2, 0.04); lidG.translate(0, -0.28, 0);
+  const lid = new THREE.Mesh(lidG, PEAU); lid.position.set(cx, 1.4, F + 0.08); lid.castShadow = true; H.add(lid);
+  const brow = grp(H, cx, 1.58, F + 0.06); box(0.58, 0.14, 0.12, CHEV, 0, 0, 0, 0.05, brow);
+  EYE[n] = { pup, lid, brow, s };
+});
+box(0.24, 0.34, 0.3, PEAU2, 0, 0.78, F + 0.08, 0.08, H);
+// lunettes
+const VERRE = new THREE.MeshPhysicalMaterial({ color: 0x2A2F3A, roughness: 0.08, transparent: true, opacity: 0.25, clearcoat: 1 });
+const lun = grp(H, 0, 1.12, F + 0.18);
+[-1, 1].forEach((s) => { const cx = s * 0.47;
+  box(0.78, 0.1, 0.1, NOIR, cx, 0.34, 0, 0.04, lun); box(0.78, 0.1, 0.1, NOIR, cx, -0.34, 0, 0.04, lun); box(0.1, 0.78, 0.1, NOIR, cx - 0.34, 0, 0, 0.04, lun); box(0.1, 0.78, 0.1, NOIR, cx + 0.34, 0, 0, 0.04, lun);
+  const v = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.02), VERRE); v.position.set(cx, 0, 0); lun.add(v);
+  const r = new THREE.Mesh(new THREE.PlaneGeometry(0.08, 0.5), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 })); r.position.set(cx - 0.12, 0.02, 0.02); r.rotation.z = -0.5; lun.add(r);
+  box(0.08, 0.08, 0.95, NOIR, s * 0.88, 0.28, -0.5, 0.03, lun); });
+box(0.24, 0.08, 0.08, NOIR, 0, 0.16, 0, 0.03, lun);
+// bouche : un trait (fermée, avec coins qui montent ou descendent) + l'intérieur qui s'ouvre
+const mouth = grp(H, 0, 0.4, F + 0.02);
+const lineC = box(0.4, 0.07, 0.06, BOUCHE, 0, 0, 0, 0.03, mouth);
+const cornerG = grp(mouth, -0.2, 0, 0), cornerD = grp(mouth, 0.2, 0, 0);
+box(0.16, 0.07, 0.06, BOUCHE, -0.07, 0, 0, 0.03, cornerG); box(0.16, 0.07, 0.06, BOUCHE, 0.07, 0, 0, 0.03, cornerD);
+const inner = grp(mouth); box(0.62, 0.34, 0.06, BOUCHE, 0, 0, -0.01, 0.1, inner); box(0.52, 0.07, 0.05, BLANC, 0, 0.12, 0.02, 0.03, inner); box(0.32, 0.1, 0.05, LANGUE, 0.03, -0.1, 0.02, 0.04, inner);
+box(0.7, 0.12, 0.1, CHEV, 0, 0.58, F + 0.04, 0.05, H);
+const barbe = M(0x3A2418, 0.9); barbe.transparent = true; barbe.opacity = 0.55;
+box(1.7, 0.36, 0.06, barbe, 0, 0.12, F - 0.01, 0.1, H);
+const chin = box(0.3, 0.22, 0.08, CHEV, 0, 0.06, F + 0.02, 0.06, H);
+
+// ===================== animation : tout dépend du temps t (rendu image par image possible) =====================
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const smooth = (a, b, x) => { const u = clamp((x - a) / (b - a)); return u * u * (3 - 2 * u); };
+const eIO = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+const eBack = (u) => { const c = 1.4; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); };
+const lerpA = (a, b, u) => a.map((x, i) => x + (b[i] - x) * u);
+const track = (keys, d, ease = eIO) => { keys.sort((a, b) => a[0] - b[0]); const st = [keys[0][1]];
+  const at = (t, i) => (i === 0 ? keys[0][1] : lerpA(st[i], keys[i][1], ease(clamp((t - keys[i][0]) / d))));
+  for (let i = 1; i < keys.length; i++) st[i] = at(keys[i][0], i - 1);
+  return (t) => { let i = 0; while (i + 1 < keys.length && keys[i + 1][0] <= t) i++; return at(t, i); }; };
+
+// gestes : [épaule x, épaule z, coude x, coude z, poignet z, index sorti] pour chaque bras
+const POSE = {
+  neutre:   { g: [0, -0.1, -0.15, 0, 0, 0],      d: [0, 0.1, -0.15, 0, 0, 0],       epaules: 0 },
+  pointe:   { g: [-0.2, -2.5, 0, -0.25, 0.1, 1], d: [0, 0.1, -0.2, 0, 0, 0],        epaules: 0.05 },
+  explique: { g: [0, -0.1, -0.15, 0, 0, 0],      d: [-0.55, 0.3, -1.25, 0.2, 0, 0], epaules: 0 },
+  question: { g: [-0.2, -0.55, -1.2, -0.3, 0, 0], d: [-0.2, 0.55, -1.2, 0.3, 0, 0], epaules: 0.12 },
+  salue:    { g: [0, -2.2, 0, -0.65, 0, 0],        d: [0, 0.1, -0.15, 0, 0, 0],       epaules: 0.03 },
+};
+// expressions : [paupière (0 ouverte, 1 fermée), sourcils y, sourcils rot, coins de bouche (+ sourire), pupilles échelle]
+const EXPR = { neutre: [0.12, 0, 0, 0.05, 1], content: [0.3, 0.04, 0, 0.45, 1], surpris: [0, 0.14, 0, -0.1, 0.75], sceptique: [0.32, -0.03, 0.18, 0.15, 1], question: [0.1, 0.1, -0.12, 0, 1], insiste: [0.22, -0.06, 0.2, 0, 1] };
+// la petite « scène » de démo : 12 s qui bouclent
+const DUR = 12;
+const SCRIPT = [ // [t, geste, expression, regard x, regard y]
+  [0, "neutre", "content", 0, 0], [1.8, "pointe", "surpris", -0.5, 0.45], [4.2, "explique", "neutre", 0, 0], [6.4, "question", "question", 0.15, 0.05],
+  [8.4, "salue", "content", 0, 0], [10.4, "neutre", "insiste", 0.35, -0.1], [11.4, "neutre", "content", 0, 0]];
+const armT = track(SCRIPT.map(([t, p]) => [t, [...POSE[p].g, ...POSE[p].d, POSE[p].epaules]]), 0.55, eBack);
+const exprT = track(SCRIPT.map(([t, , e]) => [t, EXPR[e]]), 0.3);
+const eyeT = track(SCRIPT.map(([t, , , x, y]) => [t - 0.12, [x, y]]).concat([[-1, [0, 0]]]), 0.12);
+const headT = track(SCRIPT.map(([t, , , x, y]) => [t, [x, y]]), 0.55);
+const TALK = [[0.3, 1.6], [2.2, 4.0], [4.6, 6.2], [6.9, 8.1], [8.8, 10.0], [10.5, 11.3]];
+const talkEnv = (t) => TALK.reduce((s, [a, b]) => Math.max(s, smooth(a - 0.05, a + 0.08, t) * (1 - smooth(b - 0.08, b + 0.05, t))), 0);
+const syll = (t) => Math.abs(Math.sin(Math.PI * 5.2 * t)) * (0.55 + 0.45 * Math.abs(Math.sin(Math.PI * 1.7 * t + 1)));
+const ACC = []; TALK.forEach(([a, b]) => { for (let t = a + 0.45; t < b; t += 0.62) ACC.push(t); ACC.push(b - 0.15); });
+const pulse = (x) => (x < 0 ? 0 : x < 0.1 ? Math.sin((x / 0.1) * Math.PI / 2) : x < 0.55 ? 0.5 + 0.5 * Math.cos(((x - 0.1) / 0.45) * Math.PI) : 0);
+const BLINK = [1.2, 3.9, 6.3, 8.35, 10.9];
+const blinkAt = (t) => { for (const b of BLINK) { const x = t - b; if (x >= 0 && x < 0.18) return x < 0.06 ? x / 0.06 : 1 - (x - 0.06) / 0.12; } return 0; };
+
+function pose(t) {
+  t = ((t % DUR) + DUR) % DUR;
+  const br = 0.5 + 0.5 * Math.sin((2 * Math.PI * t) / 3), sway = Math.sin((2 * Math.PI * t) / 6);
+  let nod = 0, roll = 0; ACC.forEach((a, i) => { const p = pulse(t - a); nod += p; roll += p * (i % 2 ? 1 : -1); });
+  const a = armT(t), e = exprT(t), [gx, gy] = eyeT(t), [hx, hy] = headT(t), talk = talkEnv(t), open = talk * syll(t);
+  // corps
+  root.rotation.y = 0.12 + 0.04 * sway; body.rotation.z = 0.012 * sway; chest.scale.set(1, 1 + 0.012 * br, 1 + 0.01 * br); chest.position.y = 0.02 * br;
+  // bras (épaules qui montent avec le geste)
+  [["g", 0], ["d", 6]].forEach(([n, o]) => { const A = ARM[n];
+    A.sh.rotation.set(a[o], 0, a[o + 1]); A.sh.position.y = 1.78 + a[12] * 0.6 + 0.02 * br;
+    A.el.rotation.set(a[o + 2], 0, a[o + 3]); A.ha.rotation.z = a[o + 4] + (n === "g" && a[o + 1] < -1.8 ? 0.25 * Math.sin(2 * Math.PI * t * 1.6) * smooth(-1.9, -2.2, a[o + 1]) * (a[o + 5] < 0.5 ? 1 : 0.15) : 0);
+    A.idx.scale.y = 0.05 + 0.95 * a[o + 5]; A.idx.visible = a[o + 5] > 0.05;
+    if (n === "d") A.el.rotation.x += -0.12 * nod * smooth(-0.6, -1.1, a[o + 2]); });
+  // tête : suit le regard avec retard, hoche sur les accents, penche aux questions
+  neck.rotation.set(-hy * 0.35 + 0.07 * nod, hx * 0.6, 0.05 * roll - 0.03 * sway + (e[2] < 0 ? 0.08 : 0));
+  // yeux, paupières, sourcils
+  const bl = blinkAt(t);
+  ["g", "d"].forEach((n) => { const E = EYE[n];
+    E.pup.position.x = E.s * 0.46 + gx * 0.12; E.pup.position.y = 1.1 + gy * 0.1; E.pup.scale.setScalar(e[4]);
+    E.lid.scale.y = clamp(e[0] + (1 - e[0]) * bl, 0.02, 1);
+    E.brow.position.y = 1.58 + e[1] + 0.06 * nod; E.brow.rotation.z = E.s * e[2]; });
+  // bouche : trait fermé ↔ intérieur ouvert, mâchoire
+  inner.scale.set(1 - 0.1 * open, 0.15 + 0.85 * open, 1); inner.visible = open > 0.04;
+  lineC.visible = cornerG.visible = cornerD.visible = open <= 0.04;
+  cornerG.rotation.z = -e[3]; cornerD.rotation.z = e[3]; chin.position.y = 0.06 - 0.06 * open;
+}
+
+// ===================== affichage =====================
+function resize() { const w = RENDER ? 1080 : innerWidth, h = RENDER ? 1920 : innerHeight; renderer.setSize(w, h, false); renderer.domElement.style.width = w + "px"; renderer.domElement.style.height = h + "px"; cam.aspect = w / h;
+  cam.position.z = w / h < 0.7 ? 21 : 15; cam.updateProjectionMatrix(); }
+resize(); addEventListener("resize", resize);
+window.__duration = DUR;
+window.__seek = (t) => { pose(t); renderer.render(scene, cam); };
+window.__ready = Promise.resolve(true);
+if (!RENDER) {
+  const ctl = new OrbitControls(cam, renderer.domElement); ctl.target.copy(TARGET); ctl.enableDamping = true; ctl.minDistance = 6; ctl.maxDistance = 40; ctl.maxPolarAngle = Math.PI * 0.52; ctl.update();
+  const t0 = performance.now();
+  renderer.setAnimationLoop(() => { pose((performance.now() - t0) / 1000); ctl.update(); renderer.render(scene, cam); });
+} else { document.getElementById("tag").remove(); window.__seek(0); }
+</script>
+<script>addEventListener("error", (e) => { document.getElementById("err").textContent = "Erreur : " + e.message + " (il faut une connexion internet pour charger Three.js)"; });</script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Le motion design avec Claude, pour débutants</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141726; --muted:#5b6178; --line:#e3e5ee; --soft:#f5f6fa;
+    --navy:#0b0d17; --accent:#ff6b4a; --accent2:#7c6cff; --mint:#22c39a;
+  }
+  @page{ size:A4; margin:18mm 18mm 20mm 18mm;
+    @bottom-left{ content:"Le motion design avec Claude · Guide débutant"; font-family:Inter,"Segoe UI",sans-serif; font-size:7.5pt; color:#8a90a8; }
+    @bottom-right{ content:counter(page) " / " counter(pages); font-family:Inter,"Segoe UI",sans-serif; font-size:7.5pt; color:#8a90a8; }
+  }
+  @page :first{ @bottom-left{ content:none; } @bottom-right{ content:none; } }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ font-family:Inter,"Segoe UI",Arial,sans-serif; color:var(--ink); font-size:11pt; line-height:1.6;
+        -webkit-print-color-adjust:exact; print-color-adjust:exact; background:#fff; }
+
+  /* couverture */
+  .cover{ height:259mm; position:relative; background:var(--navy); color:#fff; border-radius:6mm;
+          overflow:hidden; padding:24mm 18mm; display:flex; flex-direction:column; break-after:page; }
+  .cover .kicker{ font-size:9.5pt; letter-spacing:3px; text-transform:uppercase; color:#9aa3c7; font-weight:600; }
+  .cover h1{ font-size:44pt; line-height:1.03; margin:12mm 0 6mm; font-weight:800; letter-spacing:-1.5px; }
+  .cover h1 em{ font-style:normal; color:var(--accent); }
+  .cover .sub{ font-size:14pt; color:#c8cde3; max-width:135mm; line-height:1.45; }
+  .cover .art{ position:absolute; right:-6mm; top:118mm; width:96mm; }
+  .cover .pills{ margin-top:auto; display:flex; gap:3mm; flex-wrap:wrap; }
+  .cover .pill{ border:1px solid #2c3150; border-radius:20px; padding:2mm 4.5mm; font-size:9.5pt; color:#c8cde3; }
+
+  /* structure */
+  section{ margin-top:10mm; padding-top:7mm; border-top:1px solid var(--line); }
+  .cover + section{ margin-top:0; padding-top:0; border-top:0; }
+  .chap,.lead{ break-after:avoid; } .lead{ break-inside:avoid; }
+  .chap{ font-size:9.5pt; font-weight:700; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:1mm; }
+  h2{ font-size:24pt; line-height:1.15; margin:0 0 5mm; letter-spacing:-.5px; font-weight:800; break-after:avoid; }
+  h3{ font-size:13.5pt; margin:7mm 0 2mm; font-weight:700; break-after:avoid; }
+  p{ margin:0 0 3.5mm; }
+  .lead{ font-size:12.5pt; color:#2e3247; }
+  ul,ol{ margin:0 0 3.5mm; padding-left:6mm; }
+  li{ margin-bottom:1.8mm; }
+  code,kbd{ font-family:"JetBrains Mono",Consolas,monospace; font-size:9.5pt; background:var(--soft);
+        border:1px solid var(--line); border-radius:3px; padding:0 1.4mm; }
+  kbd{ border-bottom-width:2px; font-weight:600; }
+
+  .prompt{ background:#11141f; color:#e6e9f5; border-radius:3mm; padding:5mm 5.5mm 4.5mm; margin:3mm 0 5mm;
+           font-size:10.5pt; line-height:1.55; break-inside:avoid; position:relative; }
+  .prompt::before{ content:"À COPIER DANS CLAUDE"; display:block; font-size:7.5pt; letter-spacing:1.5px; font-weight:700;
+           color:var(--accent); margin-bottom:2mm; }
+  .prompt b{ color:#ffd2c6; font-weight:600; }
+
+  .box{ border-radius:3mm; padding:4.5mm 5.5mm; margin:4mm 0 5mm; break-inside:avoid; }
+  .box.tip{ background:#fff3ef; border-left:4px solid var(--accent); }
+  .box.info{ background:#f1efff; border-left:4px solid var(--accent2); }
+  .box.ok{ background:#eafaf4; border-left:4px solid var(--mint); }
+  .box .t{ font-weight:800; font-size:9.5pt; text-transform:uppercase; letter-spacing:1px; margin-bottom:1.5mm; display:block; }
+  .box p:last-child,.box ul:last-child{ margin-bottom:0; }
+
+  .steps{ counter-reset:s; list-style:none; padding:0; margin:3mm 0 5mm; }
+  .steps > li{ counter-increment:s; position:relative; padding:0 0 4mm 13mm; margin:0; break-inside:avoid; }
+  .steps > li::before{ content:counter(s); position:absolute; left:0; top:0; width:8.5mm; height:8.5mm; border-radius:50%;
+           background:var(--accent); color:#fff; font-weight:800; font-size:11pt; display:grid; place-items:center; }
+  .steps > li b.h{ display:block; font-size:12pt; margin-bottom:.5mm; }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:4mm; }
+  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:3.5mm; }
+  .card{ border:1px solid var(--line); border-radius:3mm; padding:4mm 4.5mm; break-inside:avoid; }
+  .card .ic{ font-size:20pt; line-height:1; margin-bottom:2mm; }
+  .card h4{ margin:0 0 1mm; font-size:11pt; }
+  .card p{ font-size:9.8pt; color:#383d55; margin:0; }
+
+  table{ width:100%; border-collapse:collapse; margin:3mm 0 5mm; font-size:10pt; }
+  th{ text-align:left; background:var(--soft); font-weight:700; padding:2.5mm 3mm; border-bottom:2px solid var(--line); }
+  td{ padding:2.5mm 3mm; border-bottom:1px solid var(--line); vertical-align:top; }
+  tr{ break-inside:avoid; }
+  .bad{ color:#c2412b; font-weight:600; } .good{ color:#138a6b; font-weight:600; }
+
+  .rule{ display:grid; grid-template-columns:52mm 1fr; gap:6mm; align-items:center; padding:4.5mm 0;
+         border-bottom:1px solid var(--line); break-inside:avoid; }
+  .rule:last-child{ border-bottom:0; }
+  .rule svg{ width:100%; height:auto; display:block; }
+  .rule h3{ margin:0 0 1.5mm; }
+  .rule p{ margin:0; font-size:10.5pt; }
+  figure{ margin:4mm 0 5mm; break-inside:avoid; }
+  figcaption{ font-size:9pt; color:var(--muted); margin-top:1.5mm; text-align:center; }
+  .gloss dt{ font-weight:700; margin-top:2.5mm; }
+  .gloss dd{ margin:0 0 0 0; color:#383d55; }
+</style>
+</head>
+<body>
+
+<!-- ============ COUVERTURE ============ -->
+<div class="cover">
+  <div class="kicker">Guide débutant · Zéro code à écrire</div>
+  <h1>Le motion design<br>avec <em>Claude</em>,<br>simplement</h1>
+  <div class="sub">Créez vos premières animations et vidéos en parlant à Claude Opus 5.5, sans logiciel compliqué, sans Remotion ni HyperFrames.</div>
+
+  <svg class="art" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6b4a"/><stop offset="1" stop-color="#7c6cff"/></linearGradient></defs>
+    <g fill="none" stroke="#2a2f4d"><circle cx="200" cy="200" r="190"/><circle cx="200" cy="200" r="130"/><circle cx="200" cy="200" r="70"/></g>
+    <path d="M30 330 C 140 330, 170 70, 370 70" fill="none" stroke="url(#g1)" stroke-width="6" stroke-linecap="round"/>
+    <g fill="#ff6b4a">
+      <circle cx="30" cy="330" r="7" opacity=".25"/><circle cx="92" cy="318" r="8" opacity=".4"/>
+      <circle cx="150" cy="262" r="9" opacity=".55"/><circle cx="202" cy="180" r="10" opacity=".7"/>
+      <circle cx="262" cy="112" r="11" opacity=".85"/><circle cx="370" cy="70" r="13"/>
+    </g>
+  </svg>
+
+  <div class="pills">
+    <span class="pill">C'est quoi le motion design ?</span><span class="pill">Votre 1re animation en 10 min</span>
+    <span class="pill">5 règles simples</span><span class="pill">Faire une vidéo</span><span class="pill">Prompts à copier</span>
+  </div>
+</div>
+
+<!-- ============ 1 ============ -->
+<section>
+  <div class="chap">Étape 1</div>
+  <h2>C'est quoi le motion design&nbsp;?</h2>
+  <p class="lead">Le motion design, c'est <strong>faire bouger du texte, des formes, des logos ou des images</strong> pour faire passer un message. C'est du graphisme… qui bouge.</p>
+
+  <p>Vous en voyez tous les jours sans y faire attention&nbsp;:</p>
+  <div class="grid3">
+    <div class="card"><div class="ic">✨</div><h4>Logo animé</h4><p>Le logo qui apparaît au début ou à la fin d'une vidéo.</p></div>
+    <div class="card"><div class="ic">📱</div><h4>Posts animés</h4><p>Les textes qui apparaissent mot par mot sur Instagram, TikTok, LinkedIn.</p></div>
+    <div class="card"><div class="ic">📊</div><h4>Chiffres et graphiques</h4><p>Les statistiques qui montent, les graphiques qui se dessinent.</p></div>
+    <div class="card"><div class="ic">💻</div><h4>Démo d'application</h4><p>La vidéo qui montre comment marche un site ou une appli.</p></div>
+    <div class="card"><div class="ic">🎬</div><h4>Titres de vidéo</h4><p>Le générique d'une vidéo YouTube ou d'une pub.</p></div>
+    <div class="card"><div class="ic">🌀</div><h4>Fonds animés</h4><p>Les formes ou particules qui bougent derrière un site web.</p></div>
+  </div>
+
+  <h3>Avant, c'était compliqué</h3>
+  <p>Il fallait apprendre des logiciels professionnels comme After Effects, qui demandent des mois de pratique.</p>
+
+  <h3>Aujourd'hui, vous pouvez le demander à Claude</h3>
+  <p>Claude sait créer des animations en écrivant du <strong>code web</strong> (HTML, CSS, JavaScript), le même langage que les sites internet. <strong>Vous n'avez pas besoin de comprendre ce code.</strong> Votre rôle, c'est de dire ce que vous voulez et de dire si le résultat vous plaît.</p>
+
+  <figure>
+    <svg viewBox="0 0 700 150" xmlns="http://www.w3.org/2000/svg" font-family="Inter, Segoe UI, sans-serif" text-anchor="middle">
+      <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#141726"/></marker></defs>
+      <rect x="10" y="20" width="190" height="80" rx="14" fill="#fff3ef" stroke="#ff6b4a" stroke-width="1.5"/>
+      <text x="105" y="52" font-size="16" font-weight="800" fill="#141726">1. Vous décrivez</text>
+      <text x="105" y="76" font-size="12" fill="#5b6178">« Je veux mon logo qui… »</text>
+      <rect x="255" y="20" width="190" height="80" rx="14" fill="#f1efff" stroke="#7c6cff" stroke-width="1.5"/>
+      <text x="350" y="52" font-size="16" font-weight="800" fill="#141726">2. Claude crée</text>
+      <text x="350" y="76" font-size="12" fill="#5b6178">il écrit l'animation</text>
+      <rect x="500" y="20" width="190" height="80" rx="14" fill="#eafaf4" stroke="#22c39a" stroke-width="1.5"/>
+      <text x="595" y="52" font-size="16" font-weight="800" fill="#141726">3. Vous regardez</text>
+      <text x="595" y="76" font-size="12" fill="#5b6178">et donnez votre avis</text>
+      <g stroke="#141726" stroke-width="2" marker-end="url(#ar)"><path d="M203 60 H250"/><path d="M448 60 H495"/></g>
+      <path d="M595 104 C 595 124, 105 124, 105 106" fill="none" stroke="#ff6b4a" stroke-width="1.6" stroke-dasharray="5 4"/>
+      <text x="350" y="142" font-size="11" fill="#ff6b4a">on recommence jusqu'à ce que ce soit parfait</text>
+    </svg>
+  </figure>
+
+  <div class="box ok">
+    <span class="t">Bonne nouvelle</span>
+    <p>Pas besoin de Remotion, d'HyperFrames, d'After Effects ni d'aucun logiciel payant. Un compte Claude et un navigateur internet suffisent pour commencer.</p>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section>
+  <div class="chap">Étape 2</div>
+  <h2>Ce qu'il vous faut</h2>
+  <p class="lead">Il existe deux façons d'utiliser Claude. Commencez par la première&nbsp;: c'est la plus simple.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="ic">💬</div>
+      <h4>Niveau 1 : Claude.ai (pour commencer)</h4>
+      <p style="margin-bottom:2mm">Le site ou l'application Claude, comme une conversation.</p>
+      <p>✅ Rien à installer<br>✅ L'animation s'affiche directement dans la conversation<br>✅ Parfait pour tester des idées</p>
+    </div>
+    <div class="card">
+      <div class="ic">⚙️</div>
+      <h4>Niveau 2 : Claude Code (pour aller plus loin)</h4>
+      <p style="margin-bottom:2mm">Claude travaille directement sur votre ordinateur.</p>
+      <p>✅ Il fabrique le fichier vidéo MP4 à votre place<br>✅ Il ajoute la musique, change le format<br>✅ Parfait pour la version finale</p>
+    </div>
+  </div>
+
+  <h3>Choisir le bon modèle</h3>
+  <p>Dans Claude, choisissez <strong>Opus 5.5</strong> dans la liste des modèles. C'est le modèle le plus avancé de Claude&nbsp;: il a plus de goût pour le design et fait moins d'erreurs sur les animations longues.</p>
+
+  <h3>Le vocabulaire minimum</h3>
+  <p>Juste quatre mots à connaître pour bien parler avec Claude&nbsp;:</p>
+  <table>
+    <thead><tr><th style="width:38mm">Mot</th><th>Ce que ça veut dire</th></tr></thead>
+    <tr><td><strong>Animation</strong></td><td>Un élément qui bouge, apparaît ou disparaît.</td></tr>
+    <tr><td><strong>Plan</strong></td><td>Un « moment » de la vidéo, comme une scène. Une vidéo de 10 secondes a souvent 3 ou 4 plans.</td></tr>
+    <tr><td><strong>Transition</strong></td><td>Le passage d'un plan au suivant.</td></tr>
+    <tr><td><strong>Format</strong></td><td>La forme de la vidéo&nbsp;: horizontale (YouTube), verticale (TikTok, Reels) ou carrée.</td></tr>
+  </table>
+
+  <h3>Les formats les plus utilisés</h3>
+  <table>
+    <thead><tr><th style="width:38mm">Format</th><th>Taille à demander</th><th>Pour</th></tr></thead>
+    <tr><td><strong>Horizontal</strong></td><td>1920 × 1080</td><td>YouTube, site web, présentation</td></tr>
+    <tr><td><strong>Vertical</strong></td><td>1080 × 1920</td><td>TikTok, Reels, Shorts, Stories</td></tr>
+    <tr><td><strong>Carré</strong></td><td>1080 × 1080</td><td>Instagram, LinkedIn, Facebook</td></tr>
+  </table>
+</section>
+
+<!-- ============ 3 ============ -->
+<section>
+  <div class="chap">Étape 3</div>
+  <h2>Votre première animation en 10 minutes</h2>
+  <p class="lead">On va créer ensemble une petite animation&nbsp;: le nom de votre marque qui apparaît, avec une phrase en dessous.</p>
+
+  <ol class="steps">
+    <li><b class="h">Ouvrez Claude</b>Allez sur claude.ai (ou ouvrez l'application), démarrez une nouvelle conversation et choisissez le modèle Opus 5.5.</li>
+    <li><b class="h">Copiez ce message</b>Remplacez simplement les mots en couleur par les vôtres.
+      <div class="prompt">Crée-moi une animation en HTML de 6 secondes, au format 1920x1080.<br>
+      Le nom <b>« NOVA »</b> apparaît lettre par lettre au centre de l'écran,<br>
+      puis la phrase <b>« Le futur, en mouvement »</b> apparaît en dessous.<br>
+      Fond <b>bleu nuit</b>, texte blanc, une couleur d'accent <b>orange</b>.<br>
+      Style moderne et élégant. Les mouvements doivent être fluides et naturels.<br>
+      L'animation doit tourner en boucle pour que je puisse la regarder.</div>
+    </li>
+    <li><b class="h">Envoyez et attendez</b>Claude écrit le code. Après quelques secondes, l'animation s'affiche dans un panneau à côté de la conversation. Vous n'avez rien d'autre à faire.</li>
+    <li><b class="h">Regardez le résultat</b>Regardez-la plusieurs fois. Demandez-vous&nbsp;: est-ce que c'est trop rapide&nbsp;? trop lent&nbsp;? est-ce que les couleurs me plaisent&nbsp;?</li>
+    <li><b class="h">Demandez des retouches</b>Écrivez simplement ce que vous voulez changer, comme à un graphiste&nbsp;:
+      <div class="prompt">C'est bien ! Mais le nom apparaît trop vite, ralentis-le un peu.<br>
+      Et ajoute une fine ligne orange qui se dessine sous le nom.</div>
+    </li>
+    <li><b class="h">Recommencez jusqu'à ce que ça vous plaise</b>En général, 3 ou 4 allers-retours suffisent pour obtenir un très beau résultat.</li>
+  </ol>
+
+  <div class="box tip">
+    <span class="t">Astuce</span>
+    <p>Si vous avez un logo, donnez-le à Claude (au format SVG de préférence, sinon en PNG) en le glissant dans la conversation et écrivez «&nbsp;utilise mon logo&nbsp;».</p>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section>
+  <div class="chap">Étape 4</div>
+  <h2>5 règles simples pour une belle animation</h2>
+  <p class="lead">Ces règles sont celles des professionnels. Vous n'avez pas à les appliquer vous-même&nbsp;: servez-vous-en pour juger le résultat et pour guider Claude.</p>
+
+  <div class="rule">
+    <svg viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif" font-size="11">
+      <text x="0" y="14" fill="#9aa0b8" font-weight="700">Robot</text>
+      <g fill="#9aa0b8"><circle cx="20" cy="34" r="7"/><circle cx="60" cy="34" r="7"/><circle cx="100" cy="34" r="7"/><circle cx="140" cy="34" r="7"/><circle cx="180" cy="34" r="7"/></g>
+      <text x="0" y="70" fill="#ff6b4a" font-weight="700">Naturel</text>
+      <g fill="#ff6b4a"><circle cx="20" cy="90" r="7" opacity=".3"/><circle cx="95" cy="90" r="7" opacity=".45"/><circle cx="145" cy="90" r="7" opacity=".6"/><circle cx="172" cy="90" r="7" opacity=".8"/><circle cx="185" cy="90" r="7"/></g>
+    </svg>
+    <div><h3>1. Rien ne bouge comme un robot</h3><p>Dans la vraie vie, les objets démarrent vite et <strong>ralentissent en douceur</strong> en arrivant. Si une animation paraît mécanique, dites à Claude&nbsp;: «&nbsp;rends les mouvements plus naturels, avec un ralenti à l'arrivée&nbsp;».</p></div>
+  </div>
+
+  <div class="rule">
+    <svg viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+      <rect x="5" y="15" width="95" height="80" rx="8" fill="#f5f6fa" stroke="#e3e5ee"/>
+      <rect x="20" y="30" width="60" height="10" rx="3" fill="#c7cbd9"/><rect x="20" y="48" width="40" height="8" rx="3" fill="#c7cbd9"/><circle cx="75" cy="72" r="10" fill="#c7cbd9"/><rect x="20" y="66" width="30" height="16" rx="3" fill="#c7cbd9"/>
+      <text x="52" y="108" font-size="10" fill="#9aa0b8" text-anchor="middle">tout bouge</text>
+      <rect x="120" y="15" width="95" height="80" rx="8" fill="#f5f6fa" stroke="#e3e5ee"/>
+      <rect x="135" y="45" width="65" height="14" rx="4" fill="#ff6b4a"/>
+      <text x="167" y="108" font-size="10" fill="#ff6b4a" text-anchor="middle">une seule chose</text>
+    </svg>
+    <div><h3>2. Une chose à la fois</h3><p>À chaque instant, le spectateur doit savoir <strong>où regarder</strong>. Si tout bouge en même temps, il est perdu. Un plan = une idée.</p></div>
+  </div>
+
+  <div class="rule">
+    <svg viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+      <g fill="#7c6cff"><rect x="10" y="40" width="34" height="34" rx="6" opacity="1"/><rect x="52" y="48" width="34" height="34" rx="6" opacity=".75"/><rect x="94" y="56" width="34" height="34" rx="6" opacity=".5"/><rect x="136" y="64" width="34" height="34" rx="6" opacity=".3"/><rect x="178" y="72" width="34" height="34" rx="6" opacity=".15"/></g>
+      <text x="110" y="24" font-size="11" fill="#7c6cff" text-anchor="middle" font-weight="700">l'un après l'autre</text>
+    </svg>
+    <div><h3>3. Décalez les apparitions</h3><p>Quand plusieurs éléments apparaissent, faites-les arriver <strong>l'un après l'autre</strong>, avec un tout petit décalage. Ça crée une jolie vague au lieu d'un bloc qui surgit.</p></div>
+  </div>
+
+  <div class="rule">
+    <svg viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+      <rect x="5" y="25" width="210" height="60" rx="8" fill="#f5f6fa" stroke="#e3e5ee"/>
+      <text x="110" y="52" font-size="14" font-weight="800" fill="#141726" text-anchor="middle">Lisez-moi</text>
+      <text x="110" y="72" font-size="11" fill="#22c39a" text-anchor="middle">⏱ 1 s + 0,3 s par mot</text>
+    </svg>
+    <div><h3>4. Laissez le temps de lire</h3><p>Un texte doit rester à l'écran <strong>au moins 1 seconde, plus 0,3 seconde par mot</strong>. Une phrase de 8 mots&nbsp;: environ 3,5 secondes. Et gardez des textes très courts.</p></div>
+  </div>
+
+  <div class="rule">
+    <svg viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+      <circle cx="40" cy="55" r="26" fill="#0b0d17"/><circle cx="110" cy="55" r="26" fill="#ff6b4a"/><circle cx="180" cy="55" r="26" fill="#ffffff" stroke="#e3e5ee"/>
+      <text x="110" y="104" font-size="11" fill="#5b6178" text-anchor="middle">2 ou 3 couleurs, 1 police</text>
+    </svg>
+    <div><h3>5. Restez simple</h3><p>2 ou 3 couleurs, une seule police d'écriture, un seul style de mouvement. La simplicité fait <strong>plus professionnel</strong> que les effets spéciaux.</p></div>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section>
+  <div class="chap">Étape 5</div>
+  <h2>Bien demander des modifications</h2>
+  <p class="lead">C'est la compétence la plus importante. Plus vous êtes précis, plus Claude vous comprend vite.</p>
+
+  <h3>La formule magique</h3>
+  <div class="box info">
+    <p style="font-size:13pt; text-align:center; margin:1mm 0"><strong>QUAND</strong> (à quel moment) &nbsp;+&nbsp; <strong>QUOI</strong> (quel élément) &nbsp;+&nbsp; <strong>COMMENT</strong> (ce que vous voulez)</p>
+  </div>
+
+  <table>
+    <thead><tr><th style="width:50%">❌ Trop vague</th><th>✅ Clair</th></tr></thead>
+    <tr><td class="bad">« Ça ne me plaît pas. »</td><td class="good">« Au début, le titre arrive trop vite. Ralentis-le de moitié. »</td></tr>
+    <tr><td class="bad">« Fais plus joli. »</td><td class="good">« Utilise un fond plus sombre et mets le titre en plus gros. »</td></tr>
+    <tr><td class="bad">« Il y a trop de choses. »</td><td class="good">« Vers 3 secondes, fais apparaître les icônes après le texte, pas en même temps. »</td></tr>
+    <tr><td class="bad">« Change la fin. »</td><td class="good">« À la fin, garde le logo affiché 2 secondes de plus avant de disparaître. »</td></tr>
+    <tr><td class="bad">« Plus dynamique. »</td><td class="good">« Fais rebondir légèrement chaque mot quand il arrive. »</td></tr>
+  </table>
+
+  <h3>Les mots utiles pour décrire un style</h3>
+  <div class="grid3">
+    <div class="card"><h4>Élégant, premium</h4><p>mouvements lents et doux, beaucoup d'espace, peu de couleurs</p></div>
+    <div class="card"><h4>Dynamique, énergique</h4><p>mouvements rapides, couleurs vives, rythme soutenu</p></div>
+    <div class="card"><h4>Ludique, fun</h4><p>petits rebonds, formes rondes, couleurs joyeuses</p></div>
+  </div>
+
+  <div class="box tip">
+    <span class="t">Astuce</span>
+    <p>Vous ne savez pas ce que vous voulez&nbsp;? Demandez à Claude&nbsp;: «&nbsp;Propose-moi 3 idées différentes pour cette animation, décris-les en quelques lignes avant de les créer.&nbsp;» Choisissez celle qui vous plaît, puis demandez-lui de la réaliser.</p>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section>
+  <div class="chap">Étape 6</div>
+  <h2>Transformer l'animation en vidéo</h2>
+  <p class="lead">Votre animation vous plaît&nbsp;? Il faut maintenant la transformer en fichier vidéo (MP4) pour la publier. Deux méthodes&nbsp;: une très facile, une de qualité professionnelle.</p>
+
+  <h3>Méthode facile : l'enregistrement d'écran</h3>
+  <ol class="steps">
+    <li><b class="h">Demandez à Claude le fichier</b>Dites&nbsp;: «&nbsp;Donne-moi l'animation en fichier HTML à télécharger&nbsp;». Téléchargez-le et double-cliquez dessus&nbsp;: il s'ouvre dans votre navigateur.</li>
+    <li><b class="h">Passez en plein écran</b>Appuyez sur <kbd>F11</kbd> pour cacher les barres du navigateur.</li>
+    <li><b class="h">Enregistrez l'écran</b>Sous Windows 11&nbsp;: <kbd>Windows</kbd> + <kbd>Maj</kbd> + <kbd>R</kbd> (Outil Capture). Sur Mac&nbsp;: <kbd>Cmd</kbd> + <kbd>Maj</kbd> + <kbd>5</kbd>. Enregistrez une boucle complète, puis arrêtez.</li>
+    <li><b class="h">Coupez le début et la fin</b>Avec l'application Photos (Windows) ou QuickTime (Mac), ou n'importe quel éditeur comme CapCut.</li>
+  </ol>
+  <p>👍 Simple et rapide. 👎 La qualité dépend de votre ordinateur&nbsp;: la vidéo peut être un peu saccadée.</p>
+
+  <h3>Méthode pro : demander à Claude Code</h3>
+  <p>Avec Claude Code (niveau 2), Claude fabrique lui-même une vidéo parfaitement fluide&nbsp;: il calcule chaque image une par une, puis les assemble en MP4. Vous n'avez qu'à lui demander&nbsp;:</p>
+  <div class="prompt">Transforme mon animation en vidéo MP4 de qualité professionnelle,<br>
+  en 1920x1080 à 60 images par seconde. Capture-la image par image<br>
+  avec Playwright, puis assemble la vidéo avec FFmpeg. Installe ce qu'il faut<br>
+  si besoin, et vérifie que la vidéo se lit bien sur un téléphone.</div>
+  <p>👍 Qualité parfaite, aucune saccade. 👎 Il faut installer Claude Code sur votre ordinateur.</p>
+
+  <h3>Ajouter de la musique</h3>
+  <p>Avec Claude Code, donnez-lui votre fichier musique&nbsp;:</p>
+  <div class="prompt">Ajoute la musique <b>musique.mp3</b> à ma vidéo, avec un fondu à la fin.<br>
+  Cale les apparitions du texte sur le rythme de la musique.</div>
+  <div class="box info">
+    <span class="t">Attention aux droits</span>
+    <p>Utilisez uniquement une musique libre de droits ou que vous avez le droit d'utiliser. Et pensez que beaucoup de gens regardent les vidéos <strong>sans le son</strong>&nbsp;: votre message doit se comprendre avec l'image seule.</p>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section>
+  <div class="chap">Étape 7</div>
+  <h2>6 idées à copier-coller</h2>
+  <p class="lead">Copiez un de ces messages dans Claude, remplacez les mots en couleur, et c'est parti.</p>
+
+  <h3>✨ Logo animé</h3>
+  <div class="prompt">Voici mon logo (fichier joint). Crée une animation de 4 secondes où le logo<br>
+  se dessine, puis se remplit de couleur, puis le nom <b>« MA MARQUE »</b> apparaît<br>
+  dessous. Style élégant, fond <b>noir</b>. Format 1920x1080.</div>
+
+  <h3>📱 Texte pour TikTok ou Reels</h3>
+  <div class="prompt">Crée une animation verticale 1080x1920 de 8 secondes avec la phrase<br>
+  <b>« 3 astuces pour mieux dormir »</b>. Chaque mot apparaît l'un après l'autre,<br>
+  en gros et au centre. Style <b>dynamique</b>, couleurs <b>jaune et noir</b>.</div>
+
+  <h3>📊 Chiffres qui montent</h3>
+  <div class="prompt">Crée une animation carrée 1080x1080 qui montre 3 chiffres l'un après<br>
+  l'autre : <b>« 10 000 clients »</b>, <b>« 98 % satisfaits »</b>, <b>« 24h/24 »</b>.<br>
+  Chaque nombre compte de 0 jusqu'à sa valeur. Style propre et moderne.</div>
+
+  <h3>🎉 Annonce d'événement</h3>
+  <div class="prompt">Crée une animation de 10 secondes pour annoncer <b>« Soirée de lancement,<br>
+  vendredi 15 novembre, 19h »</b>. Ambiance <b>festive</b>, avec des confettis<br>
+  et des formes colorées. Format vertical 1080x1920.</div>
+
+  <h3>🌀 Fond animé pour site web</h3>
+  <div class="prompt">Crée un fond animé qui tourne en boucle parfaite : des formes géométriques<br>
+  douces qui flottent lentement, couleurs <b>bleu et violet</b>, très calme.<br>
+  Il doit rester discret pour qu'on puisse lire du texte par-dessus.</div>
+
+  <h3>💻 Présentation d'une appli</h3>
+  <div class="prompt">Crée une animation de 12 secondes qui présente mon appli <b>« TaskFlow »</b>.<br>
+  Dessine un écran de téléphone simplifié. On voit une liste de tâches,<br>
+  un curseur qui coche une tâche, puis un message « Bravo ! ». Style épuré.</div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section>
+  <div class="chap">Étape 8</div>
+  <h2>Les erreurs de débutant</h2>
+  <p class="lead">Tout le monde les fait au début. Les connaître vous fera gagner beaucoup de temps.</p>
+
+  <table>
+    <thead><tr><th style="width:42%">L'erreur</th><th>La solution</th></tr></thead>
+    <tr><td><strong>Trop de texte</strong> à l'écran</td><td>Maximum 6 à 8 mots par plan. Coupez, coupez, coupez.</td></tr>
+    <tr><td><strong>Tout demander d'un coup</strong> dans un énorme message</td><td>Commencez simple, puis ajoutez les détails petit à petit.</td></tr>
+    <tr><td><strong>Trop d'effets</strong> (rotations, explosions, arc-en-ciel)</td><td>Un seul style de mouvement, appliqué partout. Sobre = pro.</td></tr>
+    <tr><td><strong>Animation trop rapide</strong></td><td>Regardez-la comme quelqu'un qui la découvre. Si vous n'avez pas le temps de lire, ralentissez.</td></tr>
+    <tr><td><strong>Fin trop brutale</strong></td><td>Laissez le logo ou le message final affiché au moins 2 secondes.</td></tr>
+    <tr><td><strong>Mauvais format</strong> (horizontal pour TikTok)</td><td>Précisez toujours le format dès le premier message.</td></tr>
+    <tr><td><strong>Retours vagues</strong> («&nbsp;c'est bof&nbsp;»)</td><td>Utilisez la formule&nbsp;: quand + quoi + comment.</td></tr>
+  </table>
+
+  <h3>La petite check-list avant de publier</h3>
+  <ul style="list-style:none; padding-left:0">
+    <li>☐ &nbsp;Mon message se comprend <strong>sans le son</strong>.</li>
+    <li>☐ &nbsp;J'ai le temps de <strong>lire chaque texte</strong>.</li>
+    <li>☐ &nbsp;On sait toujours <strong>où regarder</strong>.</li>
+    <li>☐ &nbsp;Les <strong>couleurs</strong> et le <strong>logo</strong> sont les bons.</li>
+    <li>☐ &nbsp;Le <strong>format</strong> correspond à la plateforme.</li>
+    <li>☐ &nbsp;La fin reste affichée assez longtemps.</li>
+    <li>☐ &nbsp;J'ai le droit d'utiliser la musique.</li>
+  </ul>
+
+  <div class="box ok">
+    <span class="t">Pour progresser</span>
+    <ul>
+      <li>Regardez des vidéos de motion design qui vous plaisent et <strong>décrivez-les à Claude</strong>&nbsp;: «&nbsp;je veux un style comme celui-ci&nbsp;: …&nbsp;».</li>
+      <li>Demandez à Claude <strong>d'expliquer ses choix</strong>&nbsp;: «&nbsp;pourquoi as-tu fait apparaître le titre comme ça&nbsp;?&nbsp;». Vous apprendrez très vite.</li>
+      <li>Faites <strong>une petite animation par jour</strong> pendant une semaine. La 7<sup>e</sup> sera bien meilleure que la 1<sup>re</sup>.</li>
+    </ul>
+  </div>
+
+  <div class="box tip">
+    <span class="t">Le mot de la fin</span>
+    <p>Claude fait le travail technique. Vous, vous apportez l'idée et le regard. Pas besoin d'être expert&nbsp;: il suffit de savoir ce que vous voulez dire, et de le dire clairement.</p>
+  </div>
+</section>
+
+</body>
+</html>

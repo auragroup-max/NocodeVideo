@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Test d'animation · LLC expliquée (30 premières secondes)</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/audio/words-final.js"></script>
+<style>
+  :root { --red:#FF2D2D; --cyan:#39B6EE; --navy:#1B2A4A; }
+  html, body { margin:0; background:#000; }
+  #stage { position:relative; width:1080px; height:1920px; overflow:hidden; background:#03060f; color:#fff; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; }
+  .full { position:absolute; inset:0; }
+  .full > img { position:absolute; left:0; top:-8px; width:1080px; height:1935px; object-fit:cover; }
+  #bg img { top:0; height:1920px; }
+  #dim { background:#02050d; }
+  .shot { position:absolute; inset:0; visibility:hidden; }
+  .shot .cam { position:absolute; inset:0; transform-origin:50% 45%; }
+  .shade-top { position:absolute; left:0; right:0; top:0; height:900px; background:linear-gradient(#03060f 0%, rgba(3,6,15,.82) 40%, rgba(3,6,15,0) 100%); }
+  /* HUD : règle, coins, petites étiquettes (référence : intro « cold outreach is dead ») */
+  #hud { position:absolute; inset:0; pointer-events:none; z-index:18; }
+  #hud .rule { position:absolute; right:46px; top:330px; width:20px; height:1260px; background:repeating-linear-gradient(transparent 0 26px, rgba(255,255,255,.35) 26px 28px); transform-origin:top; }
+  #hud .corner { position:absolute; width:70px; height:70px; border:3px solid rgba(255,255,255,.55); }
+  #hud .tag { position:absolute; font-weight:700; font-size:22px; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,255,255,.55); }
+  #hud .line { position:absolute; height:2px; background:rgba(127,214,255,.5); transform-origin:left center; }
+  /* mots en 3D : la caméra avance au milieu d'eux */
+  #k3d { position:absolute; inset:0; perspective:1100px; perspective-origin:50% 45%; z-index:12; }
+  #cam3d { position:absolute; left:540px; top:860px; transform-style:preserve-3d; }
+  .w3 { position:absolute; left:0; top:0; white-space:nowrap; font-weight:700; letter-spacing:-0.045em; transform:translate(-50%,-50%); text-shadow:0 0 40px rgba(0,0,0,.6); }
+  .w3.llc { font-weight:800; font-size:330px; letter-spacing:-0.06em; color:#fff; text-shadow:0 0 60px rgba(255,45,45,.75), 0 0 140px rgba(255,45,45,.45); }
+  .flare { position:absolute; left:540px; top:980px; width:1500px; height:24px; margin-left:-750px; border-radius:50%; background:radial-gradient(closest-side, #fff 0%, rgba(255,120,110,.95) 30%, rgba(255,45,45,.45) 60%, transparent 100%); filter:blur(4px); mix-blend-mode:screen; z-index:13; }
+  /* cercle (référence : la bulle de conversation dans un rond) */
+  #rond { position:absolute; inset:0; z-index:8; visibility:hidden; }
+  .bulle { position:absolute; padding:24px 34px; border-radius:34px; font-weight:700; font-size:44px; white-space:nowrap; z-index:14; box-shadow:0 20px 50px -18px rgba(0,0,0,.8); }
+  .bulle.moi { background:#2f7fe0; border-bottom-right-radius:8px; }
+  .bulle.eux { background:#e9edf5; color:#1b2a4a; border-bottom-left-radius:8px; letter-spacing:.2em; }
+  /* textes posés : la phrase arrive du flou au net, le mot fort en italique */
+  .card { position:absolute; left:80px; right:80px; top:250px; height:520px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; z-index:15; visibility:hidden; }
+  .ln { display:block; white-space:nowrap; font-weight:700; font-size:92px; line-height:1.05; letter-spacing:-0.045em; text-shadow:0 6px 40px rgba(0,0,0,.6); }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; font-size:1.45em; letter-spacing:-0.02em; color:var(--red); text-shadow:0 0 50px rgba(255,45,45,.55); }
+  #trail { position:absolute; inset:0; z-index:11; pointer-events:none; overflow:visible; }
+  #fx { position:absolute; inset:0; z-index:30; pointer-events:none; mix-blend-mode:screen; visibility:hidden;
+    background:radial-gradient(40% 30% at 50% 50%, rgba(255,190,150,.95), rgba(255,60,50,.7) 45%, rgba(120,10,20,0) 80%); }
+  /* lettres L L C qui se déplient (plan définition) */
+  .col { position:absolute; top:330px; width:330px; margin-left:-165px; display:flex; flex-direction:column; align-items:center; z-index:15; }
+  .col .big { font-weight:800; font-size:200px; line-height:1; letter-spacing:-0.06em; text-shadow:0 0 50px rgba(0,0,0,.6); }
+  .col .stem { width:3px; height:70px; background:linear-gradient(rgba(127,214,255,.9), rgba(127,214,255,.2)); transform-origin:top; margin:6px 0 10px; }
+  .col .en { font-weight:700; font-size:40px; color:#7FD6FF; letter-spacing:-0.01em; }
+  .col .fr { margin-top:16px; padding:8px 18px; border-radius:10px; background:var(--red); font-weight:800; font-size:36px; letter-spacing:-0.02em; box-shadow:0 0 30px rgba(255,45,45,.6); white-space:nowrap; }
+  #enfr { position:absolute; left:0; right:0; top:775px; text-align:center; font-weight:700; font-size:24px; letter-spacing:.24em; color:rgba(255,255,255,.6); z-index:15; }
+  .seal { position:absolute; width:230px; height:230px; margin:-115px 0 0 -115px; border-radius:50%; border:8px solid var(--cyan); display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--cyan);
+    font-weight:800; font-size:64px; letter-spacing:-0.03em; background:rgba(6,14,32,.55); box-shadow:0 0 40px rgba(57,182,238,.6), inset 0 0 30px rgba(57,182,238,.35); transform:rotate(-12deg); }
+  .seal small { font-size:24px; letter-spacing:.2em; font-weight:800; }
+  /* schéma « responsabilité limitée » en perspective */
+  #diag { position:absolute; left:0; right:0; top:700px; height:900px; perspective:1400px; z-index:10; }
+  #plan { position:absolute; inset:0; transform-style:preserve-3d; transform-origin:50% 60%; }
+  .box { position:absolute; top:150px; width:400px; height:470px; margin-left:-200px; border-radius:36px; background:rgba(8,16,36,.78); border:3px solid; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:40px; box-sizing:border-box;
+    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); box-shadow:0 30px 70px -25px rgba(0,0,0,.85); }
+  .box h3 { margin:0 0 26px; font-weight:800; font-size:40px; letter-spacing:.12em; }
+  .box.soc { left:280px; border-color:var(--red); box-shadow:0 0 50px rgba(255,45,45,.35), 0 30px 70px -25px rgba(0,0,0,.85); } .box.soc h3 { color:#FF6B6B; }
+  .box.toi { left:800px; border-color:var(--cyan); box-shadow:0 0 50px rgba(57,182,238,.35), 0 30px 70px -25px rgba(0,0,0,.85); } .box.toi h3 { color:#7FD6FF; }
+  .avatar { width:190px; height:190px; border-radius:50%; border:5px solid var(--cyan); background:url(assets/img/nuit-05.jpg) no-repeat; background-size:620px auto; background-position:-292px -470px; }
+  #mur { position:absolute; left:540px; top:110px; width:14px; height:560px; margin-left:-7px; border-radius:7px; background:linear-gradient(#bff0ff, var(--cyan)); box-shadow:0 0 30px 8px rgba(57,182,238,.75), 0 0 90px 20px rgba(57,182,238,.35); transform-origin:50% 50%; }
+  .bill { position:absolute; left:0; top:0; padding:12px 20px; border-radius:12px; background:#2a0a0f; border:3px solid var(--red); color:#FF6B6B; font-weight:800; font-size:34px; white-space:nowrap; transform:translate(-50%,-50%); box-shadow:0 0 24px rgba(255,45,45,.5); }
+  .stamp { position:absolute; left:280px; top:520px; transform:translate(-50%,-50%) rotate(-8deg); padding:10px 22px; border:5px solid var(--red); border-radius:12px; color:var(--red); font-weight:800; font-size:40px; letter-spacing:.1em; background:rgba(20,4,8,.7); }
+  .ok { position:absolute; display:flex; align-items:center; gap:14px; transform:translate(-50%,-50%); padding:14px 24px; border-radius:999px; background:rgba(8,16,36,.85); border:2px solid rgba(57,182,238,.8); font-weight:800; font-size:34px; white-space:nowrap; box-shadow:0 0 30px rgba(57,182,238,.4); }
+  .ok svg { width:38px; height:38px; }
+  /* sous-titres courts (2 à 3 mots), comme la référence */
+  #subs { position:absolute; left:60px; right:60px; top:1640px; height:200px; z-index:20; }
+  .sub { position:absolute; left:0; right:0; top:0; text-align:center; font-weight:800; font-size:64px; letter-spacing:-0.035em; line-height:1.05; text-shadow:0 4px 24px rgba(0,0,0,.85), 0 0 2px #000; visibility:hidden; }
+  /* barre de progression à chapitres, du début à la fin */
+  #prog { position:absolute; left:70px; right:70px; top:74px; z-index:25; }
+  #prog .segs { display:flex; gap:12px; }
+  #prog .seg { position:relative; height:10px; border-radius:5px; background:rgba(255,255,255,.16); overflow:hidden; }
+  #prog .seg b { position:absolute; inset:0; background:var(--red); transform-origin:left center; transform:scaleX(0); box-shadow:0 0 16px rgba(255,45,45,.8); }
+  #prog .lab { margin-top:18px; font-weight:700; font-size:24px; letter-spacing:.16em; text-transform:uppercase; color:#fff; }
+  #prog .lab span { color:rgba(255,255,255,.45); }
+  #vig { position:absolute; inset:0; pointer-events:none; z-index:22; background:radial-gradient(120% 85% at 50% 50%, transparent 55%, rgba(2,5,14,.7) 100%); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><symbol id="i-check" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#39B6EE"/><path d="M19 33l9 9 17-19" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
+<div id="stage">
+  <div class="full" id="bg"><img src="assets/img/fond.jpg" alt=""></div>
+  <div class="full" id="dim"></div>
+
+  <!-- plan 1 : l'homme au bureau, d'abord dans un rond, puis plein écran -->
+  <div id="rond"><div class="full" id="rondImg"><img src="assets/img/nuit-01.jpg" alt=""></div><div class="shade-top" id="rondShade"></div></div>
+  <!-- plan 2 : l'homme lit le document -->
+  <div class="shot" id="s2"><div class="cam" id="cam2"><div class="full"><img src="assets/img/nuit-05.jpg" alt=""></div><div class="seal" id="seal" style="left:400px;top:1500px">LLC<small>USA</small></div></div><div class="shade-top"></div></div>
+
+  <svg id="trail" viewBox="0 0 1080 1920"><defs><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <path id="trailP" d="M-80 1700 C 260 1560, 180 1180, 520 1100 S 900 760, 1180 820" fill="none" stroke="#FF3B3B" stroke-width="10" stroke-linecap="round" filter="url(#glow)"/></svg>
+
+  <div id="k3d"><div id="cam3d">
+    <div class="w3" id="a1" style="font-size:64px">Tu as sûrement déjà</div>
+    <div class="w3" id="a2" style="font-size:140px">entendu</div>
+    <div class="w3" id="a3" style="font-size:72px;color:rgba(255,255,255,.75)">le mot</div>
+    <div class="w3 llc" id="a4">LLC</div>
+  </div></div>
+  <div class="flare" id="flare"></div>
+
+  <div class="bulle moi" id="b1" style="left:250px;top:520px">C'est quoi, une LLC ?</div>
+  <div class="bulle eux" id="b2" style="left:640px;top:1260px">• • •</div>
+
+  <div class="card" id="c1"><span class="ln">Aujourd'hui,</span><span class="ln">je t'explique <span class="it">tout.</span></span></div>
+  <div class="card" id="c2"><span class="ln">Simplement,</span><span class="ln">et <span class="it">honnêtement.</span></span></div>
+
+  <!-- plan 2 : L L C qui se déplient en anglais puis en français -->
+  <div id="llc">
+    <div class="col" style="left:230px"><div class="big">L</div><div class="stem"></div><div class="en">Limited</div><div class="fr">limitée</div></div>
+    <div class="col" style="left:540px"><div class="big">L</div><div class="stem"></div><div class="en">Liability</div><div class="fr">responsabilité</div></div>
+    <div class="col" style="left:850px"><div class="big">C</div><div class="stem"></div><div class="en">Company</div><div class="fr">société</div></div>
+    <div id="enfr">EN FRANÇAIS, ON LIT À L'ENVERS</div>
+  </div>
+
+  <!-- plan 3 : responsabilité limitée -->
+  <div class="card" id="c3" style="top:200px;height:520px"><span class="ln">Responsabilité</span><span class="ln"><span class="it" style="font-size:1.7em">limitée</span></span></div>
+  <div id="diag"><div id="plan">
+    <div class="box soc" id="bxS"><h3>TA SOCIÉTÉ</h3>
+      <svg viewBox="0 0 120 120" width="170" height="170"><path d="M20 42 L60 22 L100 42 L100 92 L60 112 L20 92 Z" fill="#3a0d14" stroke="#FF6B6B" stroke-width="5" stroke-linejoin="round"/><path d="M20 42 L60 62 L100 42 M60 62 L60 112" fill="none" stroke="#FF6B6B" stroke-width="5" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="box toi" id="bxT"><h3>TOI</h3><div class="avatar"></div>
+      <svg viewBox="0 0 120 100" width="120" height="100" style="margin-top:22px"><path d="M14 52 L60 14 L106 52 M26 44 L26 92 L94 92 L94 44" fill="none" stroke="#7FD6FF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/><rect x="50" y="62" width="20" height="30" fill="#7FD6FF"/></svg>
+    </div>
+    <div id="mur"></div>
+    <div class="stamp" id="resp">RESPONSABLE</div>
+    <div id="bills"></div>
+    <div class="ok" id="ok1" style="left:740px;top:680px"><svg><use href="#i-check"/></svg>Ta maison</div>
+    <div class="ok" id="ok2" style="left:740px;top:770px"><svg><use href="#i-check"/></svg>Tes biens personnels</div>
+  </div></div>
+
+  <div id="hud">
+    <div class="rule" id="rule"></div>
+    <div class="corner" style="left:46px;top:300px;border-right:0;border-bottom:0"></div>
+    <div class="corner" style="right:46px;bottom:150px;border-left:0;border-top:0"></div>
+    <div class="tag" id="tagA" style="left:60px;top:250px">Épisode 00 · La LLC</div>
+    <div class="tag" id="tagB" style="left:60px;bottom:110px">Madagascar → États-Unis</div>
+    <div class="line" id="lnA" style="left:60px;top:288px;width:300px"></div>
+  </div>
+  <div id="subs"></div>
+  <div id="fx"></div>
+  <div id="vig"></div>
+  <div id="prog"><div class="segs" id="segs"></div><div class="lab" id="lab"></div></div>
+</div>
+<script>
+(function () {
+  const WORDS = window.WORDS, $ = (id) => document.getElementById(id), DURATION = 29.4;
+  const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+  const at = (txt, from = 0) => { const n = norm(txt); for (let i = from; i < WORDS.length; i++) if (norm(WORDS[i].text) === n) return i; throw new Error("mot absent : " + txt); };
+  const T = (txt, from = 0) => WORDS[at(txt, from)].start;
+  const tl = gsap.timeline({ paused: true }), CUES = [], B = (px) => `blur(${px}px)`;
+  const SFX = (file, t, g = -18) => CUES.push({ n: "sfx", file, t: +Math.max(0, t).toFixed(3), g });
+  const show = (sel, a, b) => { tl.set(sel, { autoAlpha: 0 }, 0); tl.set(sel, { autoAlpha: 1 }, a); if (b != null) tl.set(sel, { autoAlpha: 0 }, b); };
+  const IN = (sel, t, o = {}) => tl.fromTo(sel, { autoAlpha: 0, y: o.y ?? 40, scale: o.s ?? 0.94, filter: B(o.b ?? 14) }, { autoAlpha: 1, y: 0, scale: 1, filter: B(0), duration: o.d ?? 0.5, ease: "power3.out", immediateRender: false, stagger: o.st ?? 0 }, t);
+  const OUT = (sel, t, d = 0.35) => tl.to(sel, { autoAlpha: 0, y: -40, filter: B(12), duration: d, ease: "power2.in" }, t);
+
+  const tEnt = T("entendu"), tLLC = T("llc"), tMais = T("mais"), tAuj = T("aujourdhui"), tTout = T("tout"), tSimp = T("simplement"), tHon = T("honnetement");
+  const iDef = at("llc", at("llc") + 1), tDef = WORDS[iDef].start, tLim = T("limited"), tLia = T("liability"), tCom = T("company"), tFr = T("francais");
+  const tSoc = T("societe", at("francais")), tResp = T("responsabilite"), tLimitee = T("limitee"), tCest = T("cest", at("limitee")), tAm = T("americaine");
+  const iR2 = at("responsabilite", at("responsabilite") + 1), tR2 = WORDS[iR2].start, tLim2 = T("limitee", iR2), tSi = T("si", iR2), tDet = T("dettes"), tSoc2 = T("societe", at("dettes")), tRespo = T("responsable", at("dettes"));
+  const tPas = T("pas", at("responsable", at("dettes"))), tMaison = T("maison"), tBiens = T("biens"), tEt = T("et", at("personnels"));
+
+  // ---------- barre de progression : chapitres de la vidéo entière (VOICE_END) ----------
+  const CH = [["C'est quoi", 0], ["Pourquoi", 28.4], ["Impôts", 53.8], ["Démarches", 103.9], ["Avant de te lancer", 130.3]], END = window.VOICE_END;
+  CH.forEach(([name, a], k) => { const b = k < CH.length - 1 ? CH[k + 1][1] : END, d = document.createElement("div"); d.className = "seg"; d.style.flex = String(b - a); d.innerHTML = "<b></b>"; $("segs").appendChild(d);
+    if (a < DURATION) tl.fromTo(d.firstChild, { scaleX: 0 }, { scaleX: Math.min(1, (DURATION - a) / (b - a)), duration: Math.min(b, DURATION) - a, ease: "none", immediateRender: false }, a); });
+  $("lab").innerHTML = "1 · C'est quoi une LLC <span>· 5 parties</span>";
+  tl.fromTo("#prog", { autoAlpha: 0, y: -20 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out", immediateRender: false }, 0.2);
+
+  // ---------- 1 · intro : mots en 3D, la caméra avance au milieu d'eux ----------
+  gsap.set("#dim", { opacity: 0.72 });
+  tl.fromTo("#stage", { filter: B(24) }, { filter: B(0), duration: 0.9, ease: "power2.out", immediateRender: false }, 0);
+  tl.fromTo("#bg img", { scale: 1.15 }, { scale: 1.02, duration: DURATION, ease: "none", immediateRender: false }, 0);
+  tl.fromTo("#rule", { scaleY: 0 }, { scaleY: 1, duration: 1.2, ease: "power3.out", immediateRender: false }, 0.1);
+  tl.fromTo("#lnA", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power3.out", immediateRender: false }, 0.3);
+  IN("#tagA, #tagB, #hud .corner", 0.25, { y: 0, s: 1, b: 6 });
+  const P3 = { a1: [-150, -330, -250, 0.02], a2: [90, -190, -120, tEnt - 0.05], a3: [-230, -40, -380, T("mot") - 0.2], a4: [0, 150, 0, tLLC - 0.05] };
+  Object.entries(P3).forEach(([id, [x, y, z, t]]) => { tl.set("#" + id, { x, y, z, xPercent: -50, yPercent: -50 }, 0); show("#" + id, t);
+    tl.fromTo("#" + id, { opacity: 0, filter: B(18), scale: id === "a4" ? 1.6 : 0.8 }, { opacity: 1, filter: B(id === "a3" || id === "a1" ? 2 : 0), scale: 1, duration: id === "a4" ? 0.45 : 0.5, ease: id === "a4" ? "power4.out" : "power3.out", immediateRender: false }, t); SFX(id === "a4" ? "syn-bloom" : "syn-tick", t, id === "a4" ? -14 : -24); });
+  tl.fromTo("#cam3d", { z: -200, rotationY: 8 }, { z: 160, rotationY: -4, duration: tMais - 0.3, ease: "none", immediateRender: false }, 0);
+  // passage à travers les mots
+  tl.to("#cam3d", { z: 1250, duration: 0.55, ease: "power3.in" }, tMais - 0.35); tl.to("#k3d", { filter: B(10), opacity: 0, duration: 0.3 }, tMais - 0.05);
+  SFX("syn-whip", tMais - 0.3, -22);
+  show("#flare", tLLC - 0.05, tMais + 0.1); tl.fromTo("#flare", { scaleX: 0.1, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.5, ease: "power3.out", immediateRender: false }, tLLC - 0.05); tl.to("#flare", { opacity: 0, scaleX: 1.3, duration: 0.4 }, tMais - 0.3);
+
+  // le rond : l'homme au bureau, la question sans réponse
+  show("#rond", tMais - 0.1);
+  tl.fromTo("#rondImg", { clipPath: "circle(0px at 540px 960px)" }, { clipPath: "circle(370px at 540px 960px)", duration: 0.6, ease: "back.out(1.6)", immediateRender: false }, tMais - 0.1);
+  tl.fromTo("#rondImg img", { scale: 1.25 }, { scale: 1.08, duration: 3.2, ease: "power1.out", immediateRender: false }, tMais - 0.1);
+  tl.set("#rondShade", { opacity: 0 }, 0);
+  show("#b1", T("personne") + 0.1, tAuj - 0.2); tl.fromTo("#b1", { scale: 0.4, xPercent: -10, rotation: -6 }, { scale: 1, xPercent: 0, rotation: 0, duration: 0.45, ease: "back.out(2.4)", immediateRender: false }, T("personne") + 0.1); SFX("syn-notif", T("personne") + 0.1, -18);
+  show("#b2", T("explique") - 0.1, tAuj - 0.2); tl.fromTo("#b2", { scale: 0.4 }, { scale: 1, duration: 0.4, ease: "back.out(2.4)", immediateRender: false }, T("explique") - 0.1); SFX("syn-keys", T("explique"), -22);
+  tl.to("#b2", { opacity: 0.55, duration: 0.3, yoyo: true, repeat: 3, ease: "sine.inOut" }, T("explique") + 0.3);
+  // le rond s'ouvre en plein écran
+  tl.to("#rondImg", { clipPath: "circle(1300px at 540px 960px)", duration: 0.75, ease: "power3.inOut" }, tAuj - 0.25);
+  tl.to("#rondShade", { opacity: 1, duration: 0.6 }, tAuj - 0.1);
+  tl.to("#rondImg img", { scale: 1.16, duration: 4, ease: "none" }, tAuj + 0.5);
+  SFX("syn-swell", tAuj - 0.25, -22);
+  show("#c1", tAuj - 0.05); IN("#c1", tAuj - 0.05); OUT("#c1", tSimp - 0.3); SFX("syn-pop", T("tout") , -20);
+  tl.fromTo("#c1 .it", { scale: 0.6, filter: B(10) }, { scale: 1, filter: B(0), duration: 0.45, ease: "power4.out", immediateRender: false }, tTout - 0.05);
+  show("#c2", tSimp - 0.05); IN("#c2", tSimp - 0.05);
+  tl.fromTo("#c2 .it", { scale: 0.6, filter: B(10), opacity: 0 }, { scale: 1, filter: B(0), opacity: 1, duration: 0.5, ease: "power4.out", immediateRender: false }, tHon - 0.05);
+  // le trait de lumière rouge (référence : courbes lumineuses)
+  const len = $("trailP").getTotalLength(); gsap.set("#trailP", { strokeDasharray: len, strokeDashoffset: len });
+  tl.fromTo("#trailP", { strokeDashoffset: len }, { strokeDashoffset: 0, duration: 1.3, ease: "power2.inOut", immediateRender: false }, tSimp - 0.1);
+  tl.to("#trail", { opacity: 0, duration: 0.3 }, tDef - 0.2); SFX("syn-shimmer", tSimp - 0.05, -22);
+
+  // ---------- la seule transition marquée : lueur rouge de lentille ----------
+  show("#fx", tDef - 0.35, tDef + 0.45);
+  tl.fromTo("#fx", { opacity: 0, scale: 0.6, xPercent: -40 }, { opacity: 1, scale: 1.8, xPercent: 0, duration: 0.35, ease: "power2.in", immediateRender: false }, tDef - 0.35);
+  tl.to("#fx", { opacity: 0, scale: 2.4, xPercent: 30, duration: 0.45, ease: "power2.out" }, tDef);
+  OUT("#c2", tDef - 0.3, 0.25); tl.set("#rond, #k3d, #flare", { autoAlpha: 0 }, tDef); SFX("deep-whoosh", tDef - 0.35, -18);
+
+  // ---------- 2 · définition : L L C se déplient ----------
+  show("#s2", tDef, tR2 + 0.3);
+  tl.fromTo("#cam2", { scale: 1.12, y: 40 }, { scale: 1.0, y: 0, duration: tR2 - tDef, ease: "none", immediateRender: false }, tDef);
+  show("#llc", tDef, tCest + 0.4);
+  const cols = [...document.querySelectorAll(".col")];
+  cols.forEach((c, k) => { IN(c.querySelector(".big"), tDef + k * 0.12, { y: 60, s: 0.7 }); SFX("syn-card", tDef + k * 0.12, -22); });
+  [[0, tLim], [1, tLia], [2, tCom]].forEach(([k, t]) => { const c = cols[k];
+    tl.fromTo(c.querySelector(".stem"), { scaleY: 0 }, { scaleY: 1, duration: 0.3, ease: "power2.out", immediateRender: false }, t - 0.1);
+    IN(c.querySelector(".en"), t - 0.02, { y: -20, s: 1, b: 8, d: 0.35 }); SFX("syn-tick", t, -22); });
+  IN("#enfr", tFr - 0.1, { y: 10, s: 1, b: 6 });
+  [[2, tSoc], [1, tResp], [0, tLimitee]].forEach(([k, t]) => { tl.fromTo(cols[k].querySelector(".fr"), { autoAlpha: 0, scale: 0.5, y: -10 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.4, ease: "back.out(2.2)", immediateRender: false }, t - 0.05); SFX("syn-pop", t, -20); });
+  tl.set(".col .fr, .col .en, .col .stem, #enfr", { autoAlpha: 0 }, 0); tl.set(".col .stem", { autoAlpha: 1 }, 0.01);
+  tl.to("#llc", { autoAlpha: 0, y: -60, filter: B(12), duration: 0.4, ease: "power2.in" }, tCest - 0.1);
+  // le tampon « LLC · USA » sur le document
+  show("#seal", tAm - 0.3); tl.fromTo("#seal", { scale: 2.6, rotation: -40, opacity: 0 }, { scale: 1, rotation: -12, opacity: 1, duration: 0.32, ease: "power4.in", immediateRender: false }, tAm - 0.3);
+  tl.fromTo("#cam2", { x: 0 }, { x: 10, duration: 0.05, yoyo: true, repeat: 3, immediateRender: false }, tAm + 0.02); SFX("syn-stamp", tAm + 0.02, -12);
+  tl.to("#cam2", { scale: 1.25, transformOrigin: "400px 1500px", duration: 1.2, ease: "power2.inOut" }, tAm + 0.1);
+
+  // ---------- 3 · responsabilité limitée : le mur qui protège ----------
+  tl.to("#dim", { opacity: 0.25, duration: 0.5 }, tR2 - 0.2);
+  show("#c3", tR2 - 0.05); IN("#c3", tR2 - 0.05);
+  tl.fromTo("#c3 .it", { opacity: 0, scale: 0.6, filter: B(12) }, { opacity: 1, scale: 1, filter: B(0), duration: 0.5, ease: "power4.out", immediateRender: false }, tLim2 - 0.05);
+  tl.to("#c3", { scale: 0.62, y: -60, duration: 0.6, ease: "power3.inOut" }, tSi - 0.4);
+  show("#diag", tSi - 0.3);
+  tl.fromTo("#plan", { rotationX: 30, rotationY: -14, y: 120, opacity: 0 }, { rotationX: 14, rotationY: -6, y: 0, opacity: 1, duration: 0.8, ease: "power3.out", immediateRender: false }, tSi - 0.3);
+  tl.to("#plan", { rotationY: 6, duration: DURATION - tSi, ease: "none" }, tSi + 0.5);
+  tl.set("#bxS, #bxT, #ok1, #ok2", { autoAlpha: 0 }, 0);
+  IN("#bxS", tSi - 0.2, { y: 60, s: 0.9 }); IN("#bxT", tSi, { y: 60, s: 0.9 }); SFX("syn-card", tSi - 0.2, -20);
+  tl.fromTo("#mur", { scaleY: 0, autoAlpha: 0 }, { scaleY: 1, autoAlpha: 1, duration: 0.5, ease: "power3.out", immediateRender: false }, tSi + 0.3); SFX("syn-glass", tSi + 0.3, -20);
+  // les dettes tombent sur la société
+  for (let i = 0; i < 3; i++) { const b = document.createElement("div"); b.className = "bill"; b.textContent = ["− 2 000 $", "− 800 $", "− 5 000 $"][i]; $("bills").appendChild(b);
+    const t = tDet - 0.1 + i * 0.22; show(b, t);
+    tl.fromTo(b, { x: 280 + (i - 1) * 60, y: -200, rotation: (i - 1) * 20 }, { x: 280 + (i - 1) * 70, y: 330 + i * 50, rotation: (i - 1) * 8, duration: 0.45, ease: "bounce.out", immediateRender: false }, t); SFX("syn-thud", t + 0.3, -20); }
+  tl.fromTo("#bxS", { x: 0 }, { x: 10, duration: 0.05, yoyo: true, repeat: 5, immediateRender: false }, tSoc2);
+  show("#resp", tRespo - 0.1); tl.fromTo("#resp", { scale: 2.2, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "power4.in", immediateRender: false }, tRespo - 0.1); SFX("syn-stamp", tRespo + 0.2, -14);
+  // une dette essaie de passer chez toi : le mur la renvoie
+  const lob = document.createElement("div"); lob.className = "bill"; lob.textContent = "− 2 000 $"; $("bills").appendChild(lob); show(lob, tPas - 0.1, tMaison + 0.9);
+  tl.fromTo(lob, { x: 330, y: 300, rotation: 0 }, { keyframes: [{ x: 520, y: 260, rotation: 12, duration: 0.35, ease: "power2.in" }, { x: 330, y: 420, rotation: -30, duration: 0.5, ease: "power2.out" }, { opacity: 0, duration: 0.2 }], immediateRender: false }, tPas - 0.1);
+  tl.fromTo("#mur", { boxShadow: "0 0 30px 8px rgba(57,182,238,.75), 0 0 90px 20px rgba(57,182,238,.35)" }, { boxShadow: "0 0 60px 26px rgba(160,230,255,.95), 0 0 160px 60px rgba(57,182,238,.6)", duration: 0.12, yoyo: true, repeat: 1, immediateRender: false }, tPas + 0.25);
+  SFX("syn-glass", tPas + 0.25, -14);
+  IN("#ok1", tMaison - 0.05, { y: 20, s: 0.8, b: 8, d: 0.4 }); SFX("syn-ding1", tMaison, -20);
+  IN("#ok2", tBiens - 0.1, { y: 20, s: 0.8, b: 8, d: 0.4 }); SFX("syn-ding2", tBiens, -20);
+  tl.to("#stage", { filter: B(16), opacity: 0, duration: 0.6, ease: "power2.in" }, DURATION - 0.6);
+
+  // ---------- sous-titres courts, coupés quand un grand texte dit déjà la même chose ----------
+  const MUTE = [[0, tMais - 0.05], [tAuj - 0.3, tDef + 4.2], [tSoc - 0.3, tCest - 0.1], [tR2 - 0.2, tLim2 + 0.6]];
+  const chunks = []; let cur = [];
+  WORDS.forEach((w, i) => { if (w.start >= DURATION - 0.3) return; const muted = MUTE.some(([a, b]) => w.start >= a && w.start < b);
+    if (muted) { if (cur.length) chunks.push(cur), (cur = []); return; }
+    cur.push(i); if (cur.length >= 3 || /[,.…?!:]$/.test(w.text)) chunks.push(cur), (cur = []); });
+  if (cur.length) chunks.push(cur);
+  chunks.forEach((c, k) => { const d = document.createElement("div"); d.className = "sub"; d.textContent = c.map((i) => WORDS[i].text.replace(/^L\.L\.C\.?/, "LLC")).join(" "); $("subs").appendChild(d);
+    const a = WORDS[c[0]].start - 0.05, nx = chunks[k + 1] ? WORDS[chunks[k + 1][0]].start - 0.05 : DURATION, b = Math.min(nx, WORDS[c[c.length - 1]].end + 0.45);
+    show(d, a, b); tl.fromTo(d, { y: 16, opacity: 0.2, filter: B(6) }, { y: 0, opacity: 1, filter: B(0), duration: 0.16, ease: "power2.out", immediateRender: false }, a); });
+
+  tl.set({}, {}, DURATION);
+  window.__duration = DURATION; window.__sfx = CUES.sort((a, b) => a.t - b.t);
+  // window.__seek ne doit rien renvoyer (sinon le rendu essaie de recopier la timeline et bloque)
+  window.__seek = (t) => { tl.seek(t, false); };
+  window.__ready = Promise.all([document.fonts.ready, ...[...document.images].map((im) => (im.complete ? 0 : new Promise((r) => (im.onload = im.onerror = r))))]).then(() => { window.__seek(0); return true; });
+  if (!new URLSearchParams(location.search).has("render")) { const au = new Audio("assets/audio/voix-final.mp3"); window.__ready.then(() => { document.body.onclick = () => { au.currentTime = 0; au.play(); tl.play(0); }; }); }
+})();
+</script>
+</body>
+</html>

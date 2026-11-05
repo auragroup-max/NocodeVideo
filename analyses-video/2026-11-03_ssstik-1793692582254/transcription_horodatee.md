@@ -1,0 +1,5 @@
+**[00:00]** Je sais que t'as pas envie d'entendre ça mais je vais quand même te le dire d'accord parce que tu en as besoin.  Ce que tu vis est difficile parce que ce qui t'attend est grand.  Je répète, ce que tu vis est difficile parce que ce qui t'attend est grand.  D'accord ? L'épreuve que t'es en train de vivre là, où elle est insupportable, ton coeur il est en train de se déchirer, tu souffres, t'as peur, tu pleures, tu passes des nuits blanches à réfléchir, tu stresses constamment.  Tu sais là, ça te prépare à un avenir qui est incroyable.
+
+**[00:29]** Je sais que tu vas te dire mais c'est des phrases bateaux qu'elle me dit mais je t'assure que c'est la vérité. Ok ? Là ça te prépare juste à un bel avenir, à un avenir incroyable.  Juste toi il faut que tu passes ça, que tu places ta confiance en Dieu, qui lui contrôle tout. Toi tu ne contrôles rien. D'accord ? Mais fais lui confiance.  Fais lui confiance, il a les meilleurs plans pour toi. Donc là t'es en train de souffrir mais je te promets que ce qui t'attend va être incroyable. Donc juste...
+
+**[00:59]** Passons, ok ? Bisous, je t'aime.

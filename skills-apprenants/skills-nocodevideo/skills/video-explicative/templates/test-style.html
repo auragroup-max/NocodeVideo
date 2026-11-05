@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Test de style · LLC expliquée à un enfant</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<script src="assets/lib/gsap.min.js"></script>
+<style>
+  :root { --red:#FF2D2D; --cyan:#39B6EE; --navy:#1B2A4A; }
+  html, body { margin:0; background:#000; }
+  #stage { position:relative; width:1080px; height:1920px; overflow:hidden; background:#060b19; color:#fff; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; }
+  .layer { position:absolute; inset:0; will-change:transform, filter; }
+  /* arrière-plan flou (profondeur de champ) + bokeh : tout reste DERRIÈRE les personnages */
+  #bg img { position:absolute; left:-60px; top:-60px; width:1200px; height:2040px; object-fit:cover; filter:blur(14px) brightness(.8); }
+  #bokeh i { position:absolute; border-radius:50%; mix-blend-mode:screen; }
+  #light { position:absolute; inset:0; pointer-events:none; mix-blend-mode:screen;
+    background:radial-gradient(55% 35% at 0% 60%, rgba(57,182,238,.18), transparent 70%), radial-gradient(50% 35% at 100% 65%, rgba(232,36,43,.2), transparent 70%); }
+  /* ombre douce derrière les personnages pour les détacher du fond */
+  #halo { position:absolute; left:140px; top:980px; width:800px; height:900px; border-radius:50%; background:radial-gradient(closest-side, rgba(2,6,16,.55), rgba(2,6,16,0)); }
+  #perso { position:absolute; left:60px; top:560px; width:960px; height:1500px; overflow:visible; }
+  #client { position:absolute; left:760px; top:1000px; width:460px; height:950px; overflow:visible; }
+  #stand { position:absolute; left:0; top:1680px; width:1080px; height:320px; overflow:visible; }
+  .coin { position:absolute; left:0; top:0; width:46px; height:46px; margin:-23px 0 0 -23px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff3c4 0 18%, #ffc94d 19% 60%, #d68a12 61%); box-shadow:0 0 22px rgba(255,201,77,.55); }
+  .pill { position:absolute; display:flex; align-items:center; gap:16px; padding:20px 32px; border-radius:999px; white-space:nowrap;
+    background:rgba(10,18,38,.78); border:2px solid rgba(57,182,238,.7); box-shadow:0 0 40px rgba(57,182,238,.35), 0 20px 50px -20px rgba(0,0,0,.8);
+    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); font-weight:800; font-size:44px; letter-spacing:-0.02em; transform:translate(-50%,-50%); }
+  .pill small { font-weight:600; font-size:30px; color:rgba(255,255,255,.7); }
+  #bulle { position:absolute; left:930px; top:1060px; transform:translate(-50%,-50%); padding:26px 36px; border-radius:36px 36px 8px 36px; background:var(--red);
+    font-weight:800; font-size:46px; letter-spacing:-0.02em; white-space:nowrap; box-shadow:0 0 50px rgba(255,45,45,.6); }
+  #prog { position:absolute; left:70px; right:70px; top:74px; z-index:20; }
+  #prog .segs { display:flex; gap:12px; }
+  #prog .seg { position:relative; flex:1; height:10px; border-radius:5px; background:rgba(255,255,255,.16); overflow:hidden; }
+  #prog .seg b { position:absolute; inset:0; background:var(--red); transform-origin:left center; transform:scaleX(0); box-shadow:0 0 16px rgba(255,45,45,.8); }
+  #prog .lab { margin-top:18px; display:flex; justify-content:space-between; font-weight:700; font-size:26px; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.45); }
+  #prog .lab span:first-child { color:#fff; }
+  .card { position:absolute; left:90px; right:90px; top:230px; height:470px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; z-index:15; visibility:hidden; }
+  .ln { display:block; white-space:nowrap; font-weight:700; font-size:86px; line-height:1.08; letter-spacing:-0.045em; text-shadow:0 6px 40px rgba(0,0,0,.55); }
+  .k { position:relative; display:inline-block; margin:0 .08em; color:#fff; isolation:isolate; }
+  .k i { position:absolute; left:-.1em; right:-.1em; top:.08em; bottom:.02em; z-index:-1; border-radius:.1em; background:var(--red); transform:scaleX(0); transform-origin:left center; box-shadow:0 0 34px rgba(255,45,45,.7); }
+  #vig { position:absolute; inset:0; pointer-events:none; z-index:14; background:radial-gradient(120% 80% at 50% 50%, transparent 60%, rgba(2,5,14,.6) 100%); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="rim" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+</svg>
+<div id="stage">
+  <div class="layer" id="bg"><img src="assets/img/fond.jpg" alt=""></div>
+  <div class="layer" id="bokeh"></div>
+  <div id="light"></div>
+  <div class="layer" id="mid">
+    <div id="halo"></div>
+    <!-- la cliente : même style que le personnage -->
+    <svg id="client" viewBox="0 0 460 950">
+      <g id="cl">
+        <path d="M50 950 Q40 520 230 455 Q420 520 410 950 Z" fill="#2a1730"/>
+        <path d="M50 950 Q40 520 230 455" fill="none" stroke="#6fd3ff" stroke-width="6" filter="url(#rim)" opacity=".9"/>
+        <path d="M230 455 Q420 520 410 950" fill="none" stroke="#ff3b3b" stroke-width="7" filter="url(#rim)" opacity=".9"/>
+        <path d="M156 478 Q230 560 304 478 L289 463 Q230 518 171 463 Z" fill="#e8242b"/>
+        <rect x="196" y="392" width="68" height="78" rx="26" fill="#94603f"/>
+        <g id="clTete">
+          <circle cx="230" cy="250" r="82" fill="#1a1210"/>
+          <circle cx="230" cy="150" r="48" fill="#1a1210"/>
+          <path d="M150 300 Q148 210 230 205 Q312 210 310 300 Q308 380 230 410 Q152 380 150 300 Z" fill="#a06a48"/>
+          <path d="M268 215 Q312 225 310 300 Q308 380 230 410 Q285 360 280 290 Z" fill="#6e3f29" opacity=".45"/>
+          <path d="M150 300 Q148 210 230 205" fill="none" stroke="#6fd3ff" stroke-width="5" filter="url(#rim)"/>
+          <path d="M148 250 Q160 196 230 192 Q300 196 314 250 Q290 222 230 226 Q170 222 148 250 Z" fill="#1a1210"/>
+          <g id="clYeux"><ellipse cx="200" cy="300" rx="11" ry="8" fill="#f3ece4"/><circle cx="200" cy="300" r="6" fill="#1a0f0b"/>
+            <ellipse cx="262" cy="300" rx="11" ry="8" fill="#f3ece4"/><circle cx="262" cy="300" r="6" fill="#1a0f0b"/></g>
+          <path d="M182 280 L216 290 M280 280 L246 290" stroke="#1a1210" stroke-width="8" stroke-linecap="round"/>
+          <ellipse id="clBouche" cx="231" cy="360" rx="18" ry="10" fill="#3a1012"/>
+        </g>
+        <g id="clBras"><path d="M110 640 Q60 560 30 470 L70 452 Q100 540 150 600 Z" fill="#2a1730"/>
+          <circle cx="44" cy="450" r="26" fill="#a06a48"/><rect x="2" y="436" width="40" height="16" rx="8" fill="#a06a48"/></g>
+      </g>
+    </svg>
+    <!-- le personnage principal : DA Nuit bleue, lumière cyan à gauche, rouge à droite -->
+    <svg id="perso" viewBox="0 0 640 1000">
+      <g id="corps">
+        <!-- bras gauche posé sur le stand -->
+        <path d="M150 600 Q105 690 112 800 L178 806 Q182 714 205 640 Z" fill="#1b2847"/>
+        <path d="M150 600 Q105 690 112 800" fill="none" stroke="#6fd3ff" stroke-width="6" filter="url(#rim)" opacity=".9"/>
+        <path d="M112 792 Q150 868 262 852 L268 806 Q195 812 176 778 Z" fill="#16213d"/>
+        <ellipse cx="282" cy="830" rx="36" ry="26" fill="#8a5536"/>
+        <!-- buste -->
+        <g id="buste">
+          <path d="M132 620 Q150 568 236 548 L310 600 L384 548 Q470 568 488 620 L528 1000 L92 1000 Z" fill="#1b2847"/>
+          <path d="M310 600 L384 548 Q470 568 488 620 L528 1000 L380 1000 Q400 760 340 640 Z" fill="#121b33" opacity=".7"/>
+          <path d="M132 620 Q150 568 236 548" fill="none" stroke="#6fd3ff" stroke-width="7" filter="url(#rim)"/>
+          <path d="M384 548 Q470 568 488 620 L528 1000" fill="none" stroke="#ff3b3b" stroke-width="8" filter="url(#rim)" opacity=".95"/>
+          <path d="M240 546 L310 610 L288 652 L226 588 Z M380 546 L310 610 L332 652 L394 588 Z" fill="#26375f"/>
+          <path d="M310 610 L310 1000" stroke="#0f1830" stroke-width="4"/>
+          <circle cx="310" cy="700" r="6" fill="#0f1830"/><circle cx="310" cy="780" r="6" fill="#0f1830"/>
+          <path id="poche" d="M355 640 L425 640 L421 705 Q390 715 359 705 Z" fill="#141e38" stroke="#2a3c66" stroke-width="4"/>
+        </g>
+        <!-- cou -->
+        <path d="M276 470 L344 470 L348 560 Q310 590 272 560 Z" fill="#8a5536"/>
+        <path d="M276 500 Q310 540 344 500 L346 548 Q310 570 274 548 Z" fill="#5a3220" opacity=".6"/>
+        <!-- tête -->
+        <g id="tete">
+          <ellipse cx="210" cy="388" rx="18" ry="30" fill="#7a4a2f"/>
+          <ellipse cx="410" cy="388" rx="18" ry="30" fill="#7a2a24"/>
+          <path d="M218 335 Q218 250 310 245 Q402 250 402 335 L404 410 Q400 470 310 500 Q220 470 216 410 Z" fill="#8a5536"/>
+          <path d="M345 252 Q402 262 402 335 L404 410 Q400 470 310 500 Q365 448 360 380 Z" fill="#5a3220" opacity=".45"/>
+          <path d="M218 335 Q218 250 310 245" fill="none" stroke="#6fd3ff" stroke-width="5" filter="url(#rim)" opacity=".9"/>
+          <path d="M402 300 L404 410 Q400 470 330 495" fill="none" stroke="#ff3b3b" stroke-width="6" filter="url(#rim)" opacity=".9"/>
+          <!-- nez -->
+          <path d="M312 370 Q306 408 296 424 Q310 434 326 424" fill="none" stroke="#5a3220" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- yeux -->
+          <g id="yeux">
+            <ellipse cx="268" cy="372" rx="16" ry="10" fill="#f3ece4"/><circle cx="270" cy="372" r="8" fill="#1a0f0b"/><circle cx="273" cy="369" r="2.6" fill="#fff"/>
+            <ellipse cx="352" cy="372" rx="16" ry="10" fill="#f3ece4"/><circle cx="354" cy="372" r="8" fill="#1a0f0b"/><circle cx="357" cy="369" r="2.6" fill="#fff"/>
+            <path d="M250 366 Q268 356 286 366 M334 366 Q352 356 370 366" stroke="#1a0f0b" stroke-width="5" fill="none" stroke-linecap="round"/>
+          </g>
+          <g id="sourcils">
+            <path d="M244 346 Q266 330 292 340" stroke="#17110e" stroke-width="12" stroke-linecap="round" fill="none"/>
+            <path d="M328 340 Q354 330 376 346" stroke="#17110e" stroke-width="12" stroke-linecap="round" fill="none"/>
+          </g>
+          <!-- barbe et moustache -->
+          <path d="M216 395 Q212 486 258 524 Q310 552 362 524 Q408 486 404 395 Q390 444 362 452 Q336 440 310 444 Q284 440 258 452 Q230 444 216 395 Z" fill="#17110e"/>
+          <path d="M226 470 Q236 500 250 512 M394 470 Q384 500 370 512" stroke="#2c201a" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M216 395 Q212 486 258 524" fill="none" stroke="#6fd3ff" stroke-width="4" filter="url(#rim)" opacity=".7"/>
+          <path d="M268 452 Q310 432 352 452 Q330 462 310 456 Q290 462 268 452 Z" fill="#17110e"/>
+          <g id="bouche"><ellipse id="bouchev" cx="310" cy="478" rx="28" ry="8" fill="#3a1012"/><rect id="dents" x="292" y="471" width="36" height="5" rx="2" fill="#efe6dc" opacity=".9"/></g>
+          <!-- cheveux ondulés -->
+          <path d="M206 360 Q192 270 238 232 Q270 204 310 206 Q356 204 388 232 Q426 270 412 360 Q406 312 388 296 Q392 276 368 272 Q348 256 326 270 Q306 254 282 270 Q258 260 246 280 Q220 292 206 360 Z" fill="#17110e"/>
+          <g fill="#17110e"><circle cx="246" cy="246" r="30"/><circle cx="288" cy="222" r="32"/><circle cx="334" cy="222" r="31"/><circle cx="376" cy="246" r="29"/><circle cx="222" cy="290" r="22"/><circle cx="398" cy="290" r="22"/></g>
+          <path d="M228 270 Q240 236 270 228 M206 340 Q200 300 220 280" stroke="#3f8fc0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
+          <path d="M360 226 Q392 236 404 268 M412 330 Q414 300 400 284" stroke="#c0262c" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
+        </g>
+        <!-- bras droit : il explique, main ouverte -->
+        <g id="bras">
+          <path d="M470 610 Q520 700 506 790 L446 794 Q450 712 432 650 Z" fill="#1b2847"/>
+          <path d="M488 620 Q520 700 506 790" fill="none" stroke="#ff3b3b" stroke-width="7" filter="url(#rim)" opacity=".9"/>
+          <g id="avantbras">
+            <path d="M446 800 Q528 772 552 660 L598 674 Q584 790 500 818 Z" fill="#16213d"/>
+            <path d="M552 660 L598 674 Q584 790 500 818" fill="none" stroke="#ff3b3b" stroke-width="6" filter="url(#rim)" opacity=".8"/>
+            <g id="main">
+              <rect x="546" y="626" width="74" height="42" rx="20" fill="#8a5536"/>
+              <rect x="604" y="628" width="54" height="30" rx="14" fill="#94603f"/>
+              <rect x="560" y="592" width="20" height="44" rx="10" fill="#7a4a2f" transform="rotate(-18 570 630)"/>
+              <path d="M618 632 L640 632 M618 643 L644 643 M618 653 L638 653" stroke="#6a3f27" stroke-width="3" stroke-linecap="round"/>
+              <path d="M612 668 Q640 666 656 656" fill="none" stroke="#ff3b3b" stroke-width="4" filter="url(#rim)"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+    <svg id="stand" viewBox="0 0 1080 320">
+      <defs><linearGradient id="panel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c4161f"/><stop offset="1" stop-color="#4a0a10"/></linearGradient></defs>
+      <rect x="110" y="40" width="860" height="300" fill="url(#panel)"/>
+      <rect x="90" y="10" width="900" height="40" rx="10" fill="#2a3d66"/>
+      <rect x="90" y="10" width="900" height="6" rx="3" fill="#7fd3ff" opacity=".8"/>
+      <path d="M250 -70 L310 -70 L302 10 L258 10 Z" fill="rgba(160,220,255,.25)" stroke="#9fdcff" stroke-width="3"/>
+      <path d="M254 -40 L306 -40 L302 10 L258 10 Z" fill="#e8242b"/>
+      <path d="M330 -70 L390 -70 L382 10 L338 10 Z" fill="rgba(160,220,255,.25)" stroke="#9fdcff" stroke-width="3"/>
+      <path d="M334 -40 L386 -40 L382 10 L338 10 Z" fill="#e8242b"/>
+      <path d="M290 -70 L300 -110" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+      <rect x="380" y="90" width="320" height="120" rx="18" fill="#0b1226" stroke="#fff" stroke-width="4"/>
+      <text x="540" y="172" text-anchor="middle" font-family="Inter" font-weight="800" font-size="64" fill="#fff" letter-spacing="-2">JUS</text>
+    </svg>
+    <div class="pill" id="compteur" style="left:250px;top:1010px"><small>Ta poche</small><span id="cpt">0 Ar</span></div>
+    <div id="bulle">Rembourse-moi !</div>
+    <div id="coins"></div>
+  </div>
+  <div id="vig"></div>
+  <div id="prog"><div class="segs"><div class="seg"><b></b></div><div class="seg"><b></b></div><div class="seg"><b></b></div></div>
+    <div class="lab"><span>1 · La boîte</span><span>2 · L'entretien</span><span>3 · Le dropshipping</span></div></div>
+  <div class="card" id="t1"><span class="ln">Imagine que tu vends</span><span class="ln">du <span class="k"><i></i>jus</span> devant chez toi.</span></div>
+  <div class="card" id="t2"><span class="ln">Tout l'argent va</span><span class="ln">dans <span class="k"><i></i>ta poche.</span></span></div>
+  <div class="card" id="t3"><span class="ln">Et si un client</span><span class="ln">réclame de <span class="k"><i></i>l'argent ?</span></span></div>
+</div>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id), DURATION = 10;
+  const tl = gsap.timeline({ paused: true }), CUES = [];
+  const SFX = (file, t, g = -18) => CUES.push({ n: "sfx", file, t: +t.toFixed(3), g });
+  const B = (px) => `blur(${px}px)`;
+  const SIN = "sine.inOut";
+
+  // bokeh derrière les personnages : ronds lumineux flous, jamais sur la zone du personnage
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const COLS = [[255, 59, 59], [57, 182, 238], [140, 200, 255], [255, 120, 110]];
+  let made = 0;
+  while (made < 26) { const s = 40 + rnd() * 190, x = rnd() * 1080, y = 250 + rnd() * 1500;
+    if (x > 200 && x < 900 && y > 750 && y < 1700) continue; // zone du personnage : on la laisse propre
+    const [r, g, b] = COLS[Math.floor(rnd() * COLS.length)], o = 0.25 + rnd() * 0.35, bl = 2 + (s / 230) * 10;
+    const i = document.createElement("i");
+    Object.assign(i.style, { left: x - s / 2 + "px", top: y - s / 2 + "px", width: s + "px", height: s + "px", filter: `blur(${bl}px)`, opacity: o,
+      background: `radial-gradient(circle, rgba(${r},${g},${b},.35) 0 58%, rgba(${r},${g},${b},.8) 66%, rgba(${r},${g},${b},0) 71%)` });
+    $("bokeh").appendChild(i);
+    const d = 2.6 + rnd() * 2.4;
+    tl.fromTo(i, { y: 0, opacity: o * 0.6 }, { y: -30 - rnd() * 50, opacity: o, duration: d, ease: SIN, yoyo: true, repeat: Math.ceil(DURATION / d), immediateRender: false }, 0);
+    made++; }
+
+  // ouverture : on sort du flou
+  tl.fromTo("#stage", { filter: B(20), opacity: 0 }, { filter: B(0), opacity: 1, duration: 0.9, ease: "power2.out", immediateRender: false }, 0);
+  SFX("syn-swell", 0, -22);
+
+  // caméra : fond, bokeh et personnages bougent chacun à leur vitesse
+  tl.fromTo("#bg", { scale: 1.04, x: 0 }, { scale: 1.1, x: -30, duration: 5.6, ease: "none", immediateRender: false }, 0);
+  tl.fromTo("#bokeh", { scale: 1, x: 0 }, { scale: 1.08, x: -50, duration: 5.6, ease: "none", immediateRender: false }, 0);
+  tl.fromTo("#mid", { scale: 1, x: 0, transformOrigin: "50% 80%" }, { scale: 1.05, duration: 5.6, ease: "none", immediateRender: false }, 0);
+
+  // personnage vivant et fluide : respiration, tête qui bouge doucement, bouche en continu, geste lent
+  gsap.set("#buste", { transformOrigin: "310px 1000px" }); gsap.set("#tete", { transformOrigin: "310px 520px" });
+  tl.to("#buste", { scaleY: 1.012, duration: 1.6, ease: SIN, yoyo: true, repeat: 6 }, 0);
+  tl.to("#tete", { y: -5, duration: 1.6, ease: SIN, yoyo: true, repeat: 6 }, 0);
+  tl.fromTo("#tete", { rotation: -1.5 }, { rotation: 1.8, duration: 2.4, ease: SIN, yoyo: true, repeat: 3, immediateRender: false }, 0);
+  const talk = (a, b) => { const p = { t: 0 }; tl.fromTo(p, { t: 0 }, { t: 1, duration: b - a, ease: "none", immediateRender: false,
+      onUpdate: () => { const s = p.t * (b - a), env = Math.min(1, s / 0.15, (b - a - s) / 0.15), v = env * (0.55 + 0.45 * Math.sin(s * 23)) * Math.abs(Math.sin(s * 7.3));
+        $("bouchev").setAttribute("ry", (7 + v * 12).toFixed(2)); $("dents").setAttribute("opacity", (0.3 + v * 0.7).toFixed(2)); } }, a);
+    tl.set("#bouchev", { attr: { ry: 7 } }, b); };
+  talk(0.45, 2.9); talk(3.45, 5.3); talk(5.85, 7.9);
+  [2.3, 6.2, 8.9].forEach((t) => tl.to("#yeux", { scaleY: 0.08, transformOrigin: "310px 372px", duration: 0.08, yoyo: true, repeat: 1, ease: "power1.inOut" }, t));
+  gsap.set("#avantbras", { transformOrigin: "476px 800px" });
+  tl.fromTo("#avantbras", { rotation: 34 }, { rotation: 0, duration: 0.9, ease: "power2.out", immediateRender: false }, 0.5);
+  tl.to("#avantbras", { rotation: -6, duration: 0.9, ease: SIN, yoyo: true, repeat: 3 }, 1.4);
+  tl.to("#avantbras", { rotation: 30, duration: 0.8, ease: SIN }, 5.2);
+
+  // textes : la phrase entière arrive du flou au net, puis dérive lentement
+  const TEXT = (id, a, b, kt) => {
+    tl.set("#" + id, { autoAlpha: 0 }, 0); tl.set("#" + id, { autoAlpha: 1 }, a);
+    tl.fromTo("#" + id, { y: 40, scale: 0.94, filter: B(14), opacity: 0 }, { y: 0, scale: 1, filter: B(0), opacity: 1, duration: 0.5, ease: "power3.out", immediateRender: false }, a);
+    tl.to("#" + id, { y: -18, duration: b - a - 0.5, ease: "none" }, a + 0.5);
+    tl.fromTo(`#${id} .k i`, { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power3.inOut", immediateRender: false }, kt);
+    tl.to("#" + id, { y: -50, filter: B(12), opacity: 0, duration: 0.35, ease: "power2.in" }, b - 0.35);
+    SFX("syn-pop", a, -24); SFX("syn-tick", kt, -20);
+  };
+  TEXT("t1", 0.35, 3.3, 1.6); TEXT("t2", 3.4, 5.6, 4.2); TEXT("t3", 5.75, 9.6, 7.0);
+
+  // l'argent va dans la poche
+  const S = 960 / 640, P = [60 + 390 * S, 560 + 672 * S];
+  tl.set("#compteur, #bulle", { autoAlpha: 0 }, 0); tl.set("#client", { x: 460 }, 0);
+  for (let i = 0; i < 9; i++) { const c = document.createElement("div"); c.className = "coin"; $("coins").appendChild(c);
+    const x0 = 280 + (i % 3) * 45, y0 = 1630, t = 3.7 + i * 0.09;
+    tl.set(c, { autoAlpha: 0 }, 0);
+    tl.fromTo(c, { x: x0, y: y0, scale: 0.4, autoAlpha: 1 }, { keyframes: [{ x: (x0 + P[0]) / 2, y: 1470 - (i % 3) * 30, scale: 1, duration: 0.38, ease: "power2.out" }, { x: P[0], y: P[1], scale: 0.5, duration: 0.32, ease: "power2.in" }, { autoAlpha: 0, duration: 0.05 }], immediateRender: false }, t); }
+  SFX("syn-coins", 3.75, -14);
+  tl.fromTo("#compteur", { autoAlpha: 0, scale: 0.6, filter: B(10) }, { autoAlpha: 1, scale: 1, filter: B(0), duration: 0.45, ease: "back.out(1.6)", immediateRender: false }, 3.6);
+  const n = { v: 0 }; tl.fromTo(n, { v: 0 }, { v: 5000, duration: 1.2, ease: "power2.out", immediateRender: false, onUpdate: () => ($("cpt").textContent = new Intl.NumberFormat("fr-FR").format(Math.round(n.v / 100) * 100).replace(/\s/g, " ") + " Ar") }, 3.9);
+  tl.fromTo("#poche", { attr: { fill: "#141e38" } }, { attr: { fill: "#4a3608" }, duration: 0.25, yoyo: true, repeat: 3, ease: SIN, immediateRender: false }, 4.2);
+  SFX("syn-ding1", 5.1, -20);
+  tl.to("#compteur", { autoAlpha: 0, scale: 0.9, duration: 0.3 }, 5.5);
+
+  // la cliente arrive : la caméra glisse vers elle, mise au point sur elle
+  tl.fromTo("#client", { x: 460 }, { x: 0, duration: 1.0, ease: "power3.out", immediateRender: false }, 5.6);
+  tl.to("#mid", { x: -170, scale: 1.1, duration: 1.2, ease: "power3.inOut" }, 5.6);
+  tl.to("#bg", { x: -90, duration: 1.2, ease: "power3.inOut" }, 5.6);
+  tl.to("#bokeh", { x: -160, duration: 1.2, ease: "power3.inOut" }, 5.6);
+  tl.fromTo("#perso, #stand", { filter: B(0) }, { filter: B(3), duration: 0.8, ease: "power2.inOut", immediateRender: false }, 6.0);
+  SFX("syn-whip", 5.6, -28);
+  gsap.set("#clBras", { transformOrigin: "130px 620px" });
+  tl.fromTo("#clBras", { rotation: 30 }, { rotation: 0, duration: 0.5, ease: "back.out(2)", immediateRender: false }, 6.4);
+  tl.to("#clBras", { rotation: -6, duration: 0.3, ease: SIN, yoyo: true, repeat: 5 }, 6.9);
+  tl.to("#clBouche", { attr: { ry: 16 }, duration: 0.18, ease: SIN, yoyo: true, repeat: 7 }, 6.5);
+  tl.fromTo("#bulle", { autoAlpha: 0, scale: 0.4, rotation: 8 }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2)", immediateRender: false }, 6.5);
+  SFX("syn-error", 6.5, -16);
+  tl.to("#bulle", { y: -10, duration: 0.6, ease: SIN, yoyo: true, repeat: 3 }, 7.0);
+  // le personnage s'inquiète
+  tl.to("#sourcils path:first-child", { attr: { d: "M244 340 Q266 338 292 350" }, duration: 0.35, ease: SIN }, 6.7);
+  tl.to("#sourcils path:last-child", { attr: { d: "M328 350 Q354 338 376 340" }, duration: 0.35, ease: SIN }, 6.7);
+
+  tl.fromTo("#prog .seg:first-child b", { scaleX: 0 }, { scaleX: 0.3, duration: DURATION, ease: "none", immediateRender: false }, 0);
+  tl.to("#stage", { opacity: 0, filter: B(10), duration: 0.5, ease: "power2.in" }, DURATION - 0.5);
+  tl.set({}, {}, DURATION);
+
+  window.__duration = DURATION; window.__sfx = CUES.sort((a, b) => a.t - b.t);
+  // window.__seek ne doit rien renvoyer (sinon le rendu essaie de recopier la timeline et bloque)
+  window.__seek = (t) => { tl.seek(t, false); };
+  window.__ready = Promise.all([document.fonts.ready, ...[...document.images].map((im) => (im.complete ? 0 : new Promise((r) => (im.onload = im.onerror = r))))]).then(() => { window.__seek(0); return true; });
+  if (!new URLSearchParams(location.search).has("render")) { window.__ready.then(() => tl.play()); }
+})();
+</script>
+</body>
+</html>

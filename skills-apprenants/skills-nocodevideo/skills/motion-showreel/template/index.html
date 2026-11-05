@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Un point devient une entreprise</title>
+<style>
+  @font-face { font-family:"Inter"; src:url(fonts/inter-400-800-latin.woff2) format("woff2"); font-weight:400 800; }
+  @font-face { font-family:"Inter"; src:url(fonts/inter-400-800-latin-ext.woff2) format("woff2"); font-weight:400 800; unicode-range:U+0100-024F, U+1E00-1EFF; }
+  html, body { margin:0; background:#000; }
+  #stage { position:relative; width:1920px; height:1080px; overflow:hidden; background:#000; font-family:"Inter", sans-serif; color:#fff; -webkit-font-smoothing:antialiased; }
+  #cam { position:absolute; inset:0; transform-origin:50% 50%; }
+  .a { position:absolute; left:0; top:0; display:none; transform-origin:50% 50%; }
+  .row { height:200px; line-height:200px; font-size:180px; font-weight:800; letter-spacing:-0.045em; white-space:nowrap; }
+  .lt { display:inline-block; text-align:center; transform-origin:50% 55%; }
+  #rowsP { position:absolute; inset:0; perspective:900px; }
+  .face { position:absolute; width:200px; height:200px; box-sizing:border-box; box-shadow:inset 0 0 0 3px rgba(0,0,0,.45); }
+  #persp { position:absolute; inset:0; perspective:2400px; display:none; }
+  #cube { position:absolute; left:0; top:0; width:200px; height:200px; transform-style:preserve-3d; transform-origin:100px 100px 100px; }
+  #cube .face, #cube .hinge { transform-style:preserve-3d; }
+  .lbl { font-weight:700; font-size:26px; letter-spacing:.2em; fill:rgba(255,255,255,.75); }
+  .big800 { font-weight:800; letter-spacing:-0.045em; white-space:nowrap; line-height:1; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs id="fdefs"></defs></svg>
+<div id="stage"><div id="cam">
+  <!-- 1 · point, lignes, mots -->
+  <div class="a" id="dot" style="background:#FF2D2D"></div>
+  <div id="rowsP">
+    <div class="a row" id="row0" style="color:#fff">UNE</div>
+    <div class="a row" id="row1" style="color:#FF2D2D"></div>
+    <div class="a row" id="row2" style="color:#39B6EE">DEVIENT</div>
+  </div>
+  <div class="a" id="cv0" style="background:#fff"></div>
+  <div class="a" id="cv1" style="background:#FF2D2D"></div>
+  <div class="a" id="cv2" style="background:#39B6EE"></div>
+  <div class="a row" id="bigO" style="color:#FF2D2D">O</div>
+  <!-- 3 · morphing -->
+  <svg class="a" id="shape" width="1920" height="1080" viewBox="0 0 1920 1080" style="display:none"><path id="shp" fill-rule="evenodd"/></svg>
+  <div class="a face" id="t0"></div><div class="a face" id="t1"></div><div class="a face" id="t2"></div><div class="a face" id="t3"></div>
+  <!-- 4 · patron et cube -->
+  <div id="persp"><div id="cube">
+    <div class="face" id="fFront" style="left:0;top:0">
+      <div class="face" id="fLeft" style="left:-200px;top:0;transform-origin:100% 50%"></div>
+      <div class="face" id="fTop" style="left:0;top:-200px;transform-origin:50% 100%"></div>
+      <div class="face" id="fBottom" style="left:0;top:200px;transform-origin:50% 0%"></div>
+      <div class="face" id="fRight" style="left:200px;top:0;transform-origin:0% 50%">
+        <div class="face" id="fBack" style="left:200px;top:0;transform-origin:0% 50%;overflow:hidden">
+          <div id="llc" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transform:rotateY(180deg)"><span id="llcT" class="big800" style="font-size:74px;color:#fff">LLC</span></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+  <!-- 5 · tableau de bord -->
+  <div class="a" id="panel" style="overflow:hidden">
+    <div id="pHead" class="big800" style="position:absolute;left:0;top:0;transform-origin:0 0;color:#fff">LLC</div>
+    <div id="pSub" style="position:absolute;left:180px;top:62px;font-weight:700;font-size:24px;letter-spacing:.2em;color:rgba(255,255,255,.6);white-space:nowrap">· REVENUS</div>
+    <div id="pCount" class="big800" style="position:absolute;right:60px;top:44px;font-size:92px;text-align:right">0 $</div>
+    <div id="pPct" style="position:absolute;right:62px;top:146px;font-weight:800;font-size:30px;color:#39B6EE;white-space:nowrap">+ 38 %</div>
+    <div id="pBase" style="position:absolute;left:60px;right:60px;top:600px;height:3px;background:rgba(255,255,255,.25);transform-origin:0 50%"></div>
+    <div id="bars"></div>
+    <svg id="pLine" width="1240" height="660" style="position:absolute;left:0;top:0;overflow:visible"><path id="pPath" fill="none" stroke="#FF2D2D" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <!-- 6 · réseau -->
+  <svg class="a" id="map" width="1920" height="1080" viewBox="0 0 1920 1080" style="display:none;overflow:visible"><g id="mapG"></g></svg>
+  <div class="a" id="node0" style="width:30px;height:30px;border-radius:50%;background:#FF2D2D;margin:-15px 0 0 -15px"></div>
+  <!-- 7 · moment fort -->
+  <div class="a big800" id="redTxt" style="font-size:250px;color:#FF2D2D">ENTREPRISE</div>
+  <div class="a" id="slab" style="background:#FF2D2D;overflow:hidden">
+    <div id="hTop" style="position:absolute;left:0;right:0;top:0;height:50%;overflow:hidden"><div class="big800 sTxt" style="position:absolute;left:0;width:1920px;text-align:center;font-size:250px;color:#000;top:0">ENTREPRISE</div></div>
+    <div id="hBot" style="position:absolute;left:0;right:0;bottom:0;height:50%;overflow:hidden"><div class="big800 sTxt" style="position:absolute;left:0;width:1920px;text-align:center;font-size:250px;color:#000;bottom:0">ENTREPRISE</div></div>
+  </div>
+  <!-- 8 · titre de fin -->
+  <div class="a" id="title" style="width:1920px;height:320px;text-align:center">
+    <div class="big800" style="font-size:150px;margin-top:40px">NOCODE VIDEO</div>
+    <div style="font-weight:700;font-size:30px;letter-spacing:.32em;color:#39B6EE;margin-top:26px">UN POINT DEVIENT UNE ENTREPRISE</div>
+  </div>
+  <div class="a" id="rb" style="background:#FF2D2D"></div>
+</div></div>
+<script>
+(function () {
+  "use strict";
+  const CX = 960, CY = 540, $ = (id) => document.getElementById(id);
+  const RED = [255, 45, 45], CYA = [57, 182, 238], NAV = [27, 42, 74], WHI = [255, 255, 255];
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const P = (t, a, d) => clamp((t - a) / d);
+  const lerp = (a, b, x) => a + (b - a) * x;
+  const expOut = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));
+  const expIn = (x) => (x <= 0 ? 0 : Math.pow(2, 10 * (x - 1)));
+  const expIO = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x < 0.5 ? Math.pow(2, 20 * x - 10) / 2 : (2 - Math.pow(2, -20 * x + 10)) / 2);
+  // ressort presque critique (dépassement ~1 %), réglé pour se poser à x = 1
+  const spring = (x, z = 0.82) => { if (x <= 0) return 0; if (x >= 1) return 1; const w = 10, wd = w * Math.sqrt(1 - z * z);
+    return 1 - Math.exp(-z * w * x) * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x)); };
+  const rgb = (a, b, x) => `rgb(${a.map((v, i) => Math.round(lerp(v, b[i], x))).join(",")})`;
+  // vitesse d'une fonction du temps → flou directionnel
+  const vel = (f, t) => (f(t + 0.004) - f(t - 0.004)) / 0.008;
+  const blurAmt = (v, k = 0.0042) => clamp(Math.abs(v) * k, 0, 40);
+
+  // filtres de flou directionnel, un par élément
+  const fdefs = $("fdefs"), FILT = {};
+  function mb(el, sx, sy) {
+    const id = el.id;
+    if (!FILT[id]) { const f = document.createElementNS("http://www.w3.org/2000/svg", "filter"); f.setAttribute("id", "mb-" + id);
+      f.setAttribute("x", "-50%"); f.setAttribute("y", "-50%"); f.setAttribute("width", "200%"); f.setAttribute("height", "200%");
+      f.setAttribute("color-interpolation-filters", "sRGB");
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "feGaussianBlur"); f.appendChild(g); fdefs.appendChild(f); FILT[id] = g; }
+    if (sx < 0.35 && sy < 0.35) { el.style.filter = "none"; return; }
+    FILT[id].setAttribute("stdDeviation", `${sx.toFixed(2)} ${sy.toFixed(2)}`); el.style.filter = `url(#mb-${id})`;
+  }
+  const ALL = [];
+  const show = (el) => { el.style.display = "block"; return el; };
+  const box = (el, x, y, w, h, extra = "") => { show(el); el.style.width = w + "px"; el.style.height = h + "px"; el.style.transform = `translate(${x}px,${y}px) ${extra}`; };
+
+  // ---------- mesures (une seule fois, police chargée) ----------
+  const M = {};
+  const OLD = "LIGNE", NEW = "FORME", NEWCOL = ["#fff", "#FF2D2D", "#fff", "#fff", "#fff"];
+  function measure() {
+    const tmp = document.createElement("span"); tmp.className = "row"; tmp.style.cssText = "position:absolute;visibility:hidden;left:0;top:0;display:inline-block";
+    document.body.appendChild(tmp);
+    const wOf = (s) => { tmp.textContent = s; return tmp.getBoundingClientRect().width; };
+    M.wRow = ["UNE", "LIGNE", "DEVIENT"].map(wOf);
+    M.lw = [...OLD].map((c, i) => Math.max(wOf(c), wOf(NEW[i])));
+    M.wO = wOf("O");
+    document.body.removeChild(tmp);
+    M.wMax = Math.max(...M.wRow); M.xL = CX - M.wMax / 2;
+    // lettres du mot du milieu, à largeur fixe pour que la bascule ne fasse pas bouger la ligne
+    const r1 = $("row1"); r1.innerHTML = [...OLD].map((c, i) => `<span class="lt" style="width:${M.lw[i]}px">${c}</span>`).join("");
+    M.w1 = M.lw.reduce((a, b) => a + b, 0);
+    // forme exacte du O (encre) : canvas
+    const cv = document.createElement("canvas"); cv.width = 400; cv.height = 400; const g = cv.getContext("2d");
+    g.font = "800 180px Inter"; g.fillStyle = "#fff"; g.textBaseline = "alphabetic"; g.fillText("O", 60, 300);
+    const d = g.getImageData(0, 0, 400, 400).data; let x0 = 400, x1 = 0, y0 = 400, y1 = 0;
+    for (let y = 0; y < 400; y++) for (let x = 0; x < 400; x++) if (d[(y * 400 + x) * 4 + 3] > 128) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+    const cy = Math.round((y0 + y1) / 2); let th = 0; for (let x = x0; x < x1; x++) { if (d[(cy * 400 + x) * 4 + 3] > 128) th++; else break; }
+    let thv = 0; const cx0 = Math.round((x0 + x1) / 2); for (let y = y0; y < y1; y++) { if (d[(y * 400 + cx0) * 4 + 3] > 128) thv++; else break; }
+    M.oW = x1 - x0; M.oH = y1 - y0; M.oTh = th; M.oThV = thv; M.oInkCx = (x0 + x1) / 2 - 60; // centre de l'encre depuis l'origine du glyphe
+    M.oInkCyFromBase = 300 - (y0 + y1) / 2;                                      // hauteur du centre au-dessus de la ligne de base
+    // ligne de base dans une boîte .row (hauteur 200)
+    const probe = document.createElement("div"); probe.className = "row"; probe.style.cssText = "position:absolute;left:0;top:0;visibility:hidden";
+    probe.innerHTML = 'O<span style="display:inline-block;width:1px;height:0;vertical-align:baseline"></span>'; document.body.appendChild(probe);
+    M.base = probe.lastChild.getBoundingClientRect().top - probe.getBoundingClientRect().top; document.body.removeChild(probe);
+    // le texte ENTREPRISE
+    const rt = $("redTxt"); rt.style.display = "block"; const rr = rt.getBoundingClientRect(); M.eW = rr.width; M.eH = rr.height; rt.style.display = "none";
+    const tt = $("title"); tt.style.display = "block"; M.tH = tt.getBoundingClientRect().height; tt.style.display = "none";
+  }
+
+  // ---------- réseau ----------
+  const CITIES = [["ANTANANARIVO", 1180, 720], ["PARIS", 880, 300, 10.5], ["NEW YORK", 400, 400, 11.0], ["MONTRÉAL", 520, 250, 11.06], ["DUBAÏ", 1290, 420, 11.5], ["TOKYO", 1660, 330, 11.56]];
+  const NS = "http://www.w3.org/2000/svg", ARC = [];
+  function buildMap() {
+    const G = $("mapG");
+    CITIES.forEach((c, i) => {
+      let path = null;
+      if (i > 0) { path = document.createElementNS(NS, "path"); const [x0, y0] = [CITIES[0][1], CITIES[0][2]], [x1, y1] = [c[1], c[2]];
+        const mx = (x0 + x1) / 2, my = Math.min(y0, y1) - 160 - Math.abs(x1 - x0) * 0.12;
+        path.setAttribute("d", `M${x0} ${y0} Q${mx} ${my} ${x1} ${y1}`); path.setAttribute("fill", "none"); path.setAttribute("stroke", i % 2 ? "#39B6EE" : "#fff"); path.setAttribute("stroke-width", "4"); G.appendChild(path); }
+      const dot = document.createElementNS(NS, "circle"); dot.setAttribute("cx", c[1]); dot.setAttribute("cy", c[2]); dot.setAttribute("r", i ? 11 : 15); dot.setAttribute("fill", i ? "#fff" : "#FF2D2D"); G.appendChild(dot);
+      const lab = document.createElementNS(NS, "text"); lab.setAttribute("class", "lbl"); lab.setAttribute("x", c[1] + 26); lab.setAttribute("y", c[2] + 8); lab.textContent = c[0]; G.appendChild(lab);
+      ARC.push({ path, len: path ? path.getTotalLength() : 0, dot, lab, t: c[3] || 0 });
+    });
+  }
+
+  // ---------- tableau de bord ----------
+  const BARH = [150, 235, 190, 335], BARC = ["#39B6EE", "#fff", "#39B6EE", "#FF2D2D"], CARD = { w: 1240, h: 660 };
+  const barX = (k) => 300 + k * 190, barW = 110, base = 600;
+  function buildPanel() {
+    const b = $("bars"); BARH.forEach((h, k) => { const d = document.createElement("div"); d.id = "bar" + k; d.style.cssText = `position:absolute;left:${barX(k)}px;top:${base - h}px;width:${barW}px;height:${h}px;background:${BARC[k]};transform-origin:50% 100%`; b.appendChild(d); });
+    const pts = BARH.map((h, k) => [barX(k) + barW / 2, base - h - 40]);
+    $("pPath").setAttribute("d", "M" + pts.map((p) => p.join(" ")).join(" L"));
+    M.pLen = $("pPath").getTotalLength(); M.endPt = pts[pts.length - 1];
+  }
+
+  // ---------- forme morphable (128 points) ----------
+  const NPT = 128;
+  function shapePath(rOut, sqA, n, morph, rot, hole) {
+    let d = "";
+    for (let i = 0; i < NPT; i++) { const th = (i / NPT) * Math.PI * 2 + rot;
+      const rs = sqA / Math.pow(Math.pow(Math.abs(Math.cos(th - rot)), n) + Math.pow(Math.abs(Math.sin(th - rot)), n), 1 / n);
+      const r = lerp(rOut, rs, morph); d += (i ? "L" : "M") + (CX + r * Math.cos(th)).toFixed(2) + " " + (CY + r * Math.sin(th)).toFixed(2); }
+    d += "Z";
+    if (hole && hole.rx > 0.5) d += `M${CX + hole.rx} ${CY} A${hole.rx} ${hole.ry} 0 1 0 ${CX - hole.rx} ${CY} A${hole.rx} ${hole.ry} 0 1 0 ${CX + hole.rx} ${CY}Z`;
+    return d;
+  }
+
+  // ---------- la scène, calculée uniquement à partir de t ----------
+  const U = 200;
+  let LID = null;
+  function seek(t) {
+    for (const el of document.querySelectorAll(".a")) { el.style.display = "none"; el.style.filter = "none"; }
+    $("persp").style.display = "none";
+    // caméra : poussée lente + léger roulis, périodiques sur 15 s (la boucle se raccorde)
+    const ph = (2 * Math.PI * t) / 15;
+    $("cam").style.transform = `scale(${1.03 - 0.03 * Math.cos(ph)}) rotate(${0.6 * Math.sin(ph)}deg)`;
+
+    // ===== mesure 1 : le point =====
+    if (t < 1.0 || t >= 14.45) {
+      const dot = $("dot");
+      if (t >= 14.45) { // retour du point : dernière image = première image
+        const s = spring(P(t, 14.62, 0.33)); const sz = 48 * s; box(dot, CX - sz / 2, CY - sz / 2, sz, sz); dot.style.borderRadius = "50%";
+      } else if (t < 0.5) {
+        const pulse = 1 + 0.3 * Math.sin(Math.PI * clamp(t / 0.25)); box(dot, CX - 24, CY - 24, 48, 48, `scale(${pulse})`); dot.style.borderRadius = "50%";
+      } else {
+        const wf = (tt) => lerp(48, 1400, expOut(P(tt, 0.5, 0.36)));
+        const w = wf(t), h = lerp(48, 36, expOut(P(t, 0.5, 0.2)));
+        box(dot, CX - w / 2, CY - h / 2, w, h); dot.style.borderRadius = Math.min(h / 2, lerp(24, 0, P(t, 0.5, 0.3))) + "px";
+        mb(dot, blurAmt(vel(wf, t) / 2), 0);
+      }
+    }
+
+    // ===== mesures 1-2 : lignes → blocs → mots =====
+    if (t >= 1.0 && t < 2.5) {
+      for (let i = 0; i < 3; i++) {
+        const el = $("cv" + i), yo = (i - 1) * 200;
+        const sp = i === 1 ? 1 : spring(P(t, 1.0, 0.4)), s2 = spring(P(t, 1.5, 0.42));
+        let w = lerp(1400, M.wRow[i] + 40, s2), x = lerp(CX - 700, M.xL - 20, s2);
+        const h = lerp(36, 212, expOut(P(t, 2.0, 0.2)));
+        const wp = expIO(P(t, 2.2 + i * 0.04, 0.24)); x += w * wp; w *= 1 - wp;
+        const yf = (tt) => yo * (i === 1 ? 1 : spring(P(tt, 1.0, 0.4)));
+        if (w > 0.5) { box(el, x, CY + yo * sp - h / 2, w, h); mb(el, 0, blurAmt(vel(yf, t))); }
+      }
+    }
+    if (t >= 2.0 && t < 4.0) {
+      for (let i = 0; i < 3; i++) {
+        const el = $("row" + i), yo = (i - 1) * 200;
+        const slide = [-260, 180, -120][i], s = expIO(P(t, 2.5, 0.35));
+        let xf = (tt) => M.xL + slide * expIO(P(tt, 2.5, 0.35));
+        let yf = (tt) => CY + yo + (i === 1 ? 0 : (i === 0 ? -760 : 760) * expIn(P(tt, 3.0, 0.32)));
+        let sc = 1, w = i === 1 ? M.w1 : M.wRow[i];
+        if (i === 1) { const k = expOut(P(t, 3.0, 0.4)); sc = lerp(1, 1.5, k);
+          xf = (tt) => lerp(M.xL + slide * expIO(P(tt, 2.5, 0.35)) + M.w1 / 2, CX, expOut(P(tt, 3.0, 0.4))) - M.w1 / 2; }
+        const x = xf(t), y = yf(t);
+        if (i !== 1 && y < -300 || y > 1400) continue;
+        const ch = t < 2.2 ? lerp(36, 212, expOut(P(t, 2.0, 0.2))) : 999, ins = Math.max(0, (200 - ch) / 2);
+        box(el, x, y - 100, w, 200, `scale(${sc})`); el.style.clipPath = `inset(${ins}px -40px ${ins}px -40px)`;
+        mb(el, blurAmt(vel(xf, t)), blurAmt(vel(yf, t)));
+        if (i === 1) {
+          [...el.children].forEach((sp, k) => {
+            const p = P(t, 3.22 + k * 0.05, 0.22); let ang, ch2, col;
+            if (p < 0.5) { ang = 90 * Math.pow(p * 2, 2); ch2 = OLD[k]; col = "#FF2D2D"; } else { ang = -90 * Math.pow(1 - (p - 0.5) * 2, 2); ch2 = NEW[k]; col = NEWCOL[k]; }
+            if (sp.textContent !== ch2) sp.textContent = ch2; sp.style.color = col;
+            // envol des lettres (sauf le O) au temps 8
+            const out = k === 1 ? 0 : expIn(P(t, 3.5 + Math.abs(k - 1) * 0.03, 0.3)) * (k === 0 ? -1300 : 1300);
+            sp.style.transform = `translateX(${out}px) rotateX(${ang}deg)`;
+            sp.style.visibility = k === 1 && t >= 3.5 ? "hidden" : "visible";
+          });
+        }
+      }
+    }
+    // le O se détache, grossit et vient au centre
+    if (t >= 3.5 && t < 4.0) {
+      const el = $("bigO");
+      const lx0 = CX + (M.lw[0] + (M.lw[1] - M.wO) / 2 + M.oInkCx - M.w1 / 2) * 1.5; // centre de l'encre du O, sur l'écran
+      const S1 = 1.5, S2 = 230 / (M.oH / 2), k = expOut(P(t, 3.5, 0.45)), S = lerp(S1, S2, k);
+      // centre de l'encre du O dans sa boîte (avant échelle) : x = largeur/2 (texte centré), y = ligne de base - hauteur du centre
+      const inkY = M.base - M.oInkCyFromBase;
+      const cx = lerp(lx0, CX, k), cy = lerp(CY + (inkY - 100) * 1.5, CY, k);  // position voulue du centre de l'encre
+      // la boîte fait M.wO de large, 200 de haut ; on l'échelonne autour du centre de l'encre
+      show(el); el.style.width = M.wO + "px"; el.style.height = "200px"; el.style.transformOrigin = `${M.oInkCx}px ${inkY}px`;
+      el.style.transform = `translate(${cx - M.oInkCx}px,${cy - inkY}px) scale(${S})`;
+      M.ringRx = (M.oW / 2) * S2; M.ringRy = (M.oH / 2) * S2; M.ringTh = M.oTh * S2; M.ringThV = M.oThV * S2;
+    }
+
+    // ===== mesure 3 : morphing =====
+    if (t >= 4.0 && t < 5.0) {
+      const el = $("shape"); show(el);
+      const k = expOut(P(t, 4.0, 0.34)), m = expIO(P(t, 4.5, 0.4));
+      const rOut = lerp(M.ringRy, 260, k), hole = { rx: lerp(M.ringRx - M.ringTh, 0, k), ry: lerp(M.ringRy - M.ringThV, 0, k) };
+      const rot = lerp(Math.PI / 4, 0, m);
+      let d = shapePath(rOut, 230 * Math.SQRT2 / Math.SQRT2, 9, m, rot, hole);
+      if (k < 1) { // anneau elliptique comme le O, puis disque
+        const rx = lerp(M.ringRx, 260, k), ry = lerp(M.ringRy, 260, k);
+        d = `M${CX + rx} ${CY} A${rx} ${ry} 0 1 0 ${CX - rx} ${CY} A${rx} ${ry} 0 1 0 ${CX + rx} ${CY}Z` + (hole.rx > 0.5 ? `M${CX + hole.rx} ${CY} A${hole.rx} ${hole.ry} 0 1 0 ${CX - hole.rx} ${CY} A${hole.rx} ${hole.ry} 0 1 0 ${CX + hole.rx} ${CY}Z` : "");
+      }
+      $("shp").setAttribute("d", d); $("shp").setAttribute("fill", rgb(RED, CYA, m));
+    }
+    const TILECOL = [CYA, WHI, RED, NAV];
+    if (t >= 5.0 && t < 5.5) {
+      const s = spring(P(t, 5.0, 0.4)), c = expIO(P(t, 5.0, 0.4));
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sy], i) => {
+        const el = $("t" + i), sz = lerp(230, 200, s), off = lerp(115, 112, s);
+        box(el, CX + sx * off - sz / 2, CY + sy * off - sz / 2, sz, sz); el.style.background = rgb(CYA, TILECOL[i], c);
+        const r = lerp(30, 10, s), z = lerp(0, 10, s);
+        el.style.borderRadius = `${sx < 0 && sy < 0 ? r : z}px ${sx > 0 && sy < 0 ? r : z}px ${sx > 0 && sy > 0 ? r : z}px ${sx < 0 && sy > 0 ? r : z}px`;
+      });
+    }
+
+    // ===== mesure 4 : patron → cube =====
+    if (t >= 5.5 && t < 8.2) {
+      $("persp").style.display = "block";
+      const cube = $("cube");
+      const a = spring(P(t, 5.5, 0.42)), col = expIO(P(t, 5.5, 0.42));
+      // centres des tuiles → centres des faces du patron (face avant au centre - 100)
+      const FX = CX - 100, FY = CY;
+      const FACES = { fFront: [CX + 112, CY + 112, NAV, NAV, FX, FY], fLeft: [CX - 112, CY + 112, RED, CYA, FX - U, FY], fTop: [CX - 112, CY - 112, CYA, CYA, FX, FY - U],
+        fRight: [CX + 112, CY - 112, WHI, WHI, FX + U, FY], fBack: [CX + 112, CY + 112, NAV, RED, FX + 2 * U, FY], fBottom: [CX + 112, CY + 112, NAV, WHI, FX, FY + U] };
+      // replis
+      const f1 = spring(P(t, 6.5, 0.42), 0.86), f2 = spring(P(t, 7.0, 0.42), 0.86);
+      const HINGE = { fLeft: `rotateY(${90 * f1}deg)`, fRight: `rotateY(${-90 * f1}deg)`, fTop: `rotateX(${-90 * f1}deg)`, fBottom: `rotateX(${90 * f1}deg)`, fBack: `rotateY(${-90 * f2}deg)`, fFront: "" };
+      // position locale de chaque face dans son parent, à plat
+      const PARENT = { fFront: [FX, FY], fLeft: [FX, FY], fTop: [FX, FY], fBottom: [FX, FY], fRight: [FX, FY], fBack: [FX + U, FY] };
+      for (const [id, [sx, sy, c0, c1, nx, ny]] of Object.entries(FACES)) {
+        const el = $(id); el.style.background = rgb(c0, c1, col); el.style.borderRadius = lerp(10, 0, a) + "px";
+        // décalage d'assemblage (en coordonnées écran = locales, tant que le cube est à plat)
+        let dx = (sx - nx) * (1 - a), dy = (sy - ny) * (1 - a), sc = 1;
+        if (id === "fBack" || id === "fBottom") sc = clamp(a * 1.05); // ces deux faces naissent derrière la tuile bleu nuit
+        // les faces sont imbriquées : on retire le décalage déjà porté par le parent
+        const par = id === "fBack" ? FACES.fRight : id === "fFront" ? null : FACES.fFront;
+        if (par) { dx -= (par[0] - par[4]) * (1 - a); dy -= (par[1] - par[5]) * (1 - a); }
+        el.style.transform = `translate(${dx}px,${dy}px) ${HINGE[id]} scale(${sc})`;
+      }
+      // caméra du cube
+      const tilt = spring(P(t, 6.0, 0.45)), turn = expIO(P(t, 7.5, 0.45)), face = expIO(P(t, 8.0, 0.2));
+      const ax = lerp(lerp(0, 52, tilt), -22, turn), ay = lerp(0, 34, turn), az = lerp(-26 * tilt, 0, turn);
+      const gx = lerp(FX - 100, CX - 100, tilt), sc = lerp(1.2, 1.7, f1);
+      const AX = lerp(ax, 0, face), AY = lerp(ay, 0, face), AZ = lerp(az, 0, face);
+      cube.style.transform = `translate3d(${gx}px,${FY - 100 + 150 * f1 * (1 - turn)}px,${-100 * f1}px) scale3d(${sc},${sc},${sc}) rotateX(${AX}deg) rotateY(${AY}deg) rotateZ(${AZ}deg)`;
+      $("llc").style.clipPath = `inset(0 ${100 - 100 * expOut(P(t, 7.62, 0.3))}% 0 0)`;
+    }
+
+    // ===== mesure 5 : tableau de bord =====
+    if (t >= 8.2 && t < 10.45) {
+      const el = $("panel"), k = expOut(P(t, 8.2, 0.3));
+      const L = LID || { x: CX - 155, y: CY - 155, w: 310, h: 310 };
+      const w = lerp(L.w, CARD.w, k), h = lerp(L.h, CARD.h, k), x = lerp(L.x, CX - CARD.w / 2, k), y = lerp(L.y, CY - CARD.h / 2, k);
+      // repli dans le point final (temps 21)
+      const q = expIn(P(t, 10.0, 0.36)), ox = M.endPt[0], oy = M.endPt[1];
+      box(el, x, y, w, h); el.style.transformOrigin = `${ox}px ${oy}px`; el.style.transform += ` scale(${1 - q})`;
+      el.style.background = rgb(RED, NAV, k); el.style.borderRadius = lerp(0, 28, k) + "px";
+      const hd = $("pHead"), fs = lerp(74 * (L.w / U), 44, k);
+      hd.style.fontSize = fs + "px"; hd.style.transform = `translate(${lerp(w / 2 - fs * 0.95, 60, k)}px,${lerp(h / 2 - fs * 0.5, 56, k)}px)`;
+      $("pSub").style.clipPath = `inset(0 ${100 - 100 * expOut(P(t, 8.35, 0.3))}% 0 0)`;
+      $("pBase").style.transform = `scaleX(${expOut(P(t, 8.4, 0.35))})`;
+      BARH.forEach((_, j) => { $("bar" + j).style.transform = `scaleY(${spring(P(t, 8.5 + j * 0.06, 0.42))})`; });
+      const n = Math.round(12480 * expOut(P(t, 9.0, 0.45)));
+      $("pCount").textContent = n.toLocaleString("fr-FR").replace(/\s/g, " ") + " $";
+      $("pCount").style.clipPath = `inset(0 0 ${100 - 100 * expOut(P(t, 8.95, 0.2))}% 0)`;
+      $("pPct").style.clipPath = `inset(0 ${100 - 100 * expOut(P(t, 9.25, 0.25))}% 0 0)`;
+      $("pPath").style.strokeDasharray = M.pLen; $("pPath").style.strokeDashoffset = M.pLen * (1 - expIO(P(t, 9.5, 0.4)));
+      if (q > 0) mb(el, 0, 0);
+    }
+    // le point final du graphique → Antananarivo
+    if (t >= 9.8 && t < 10.45) {
+      const el = $("node0");
+      // position du point final en coordonnées écran (carte centrée)
+      const ex = CX - CARD.w / 2 + M.endPt[0], ey = CY - CARD.h / 2 + M.endPt[1];
+      const a = expIO(P(t, 10.0, 0.42)), x = lerp(ex, CITIES[0][1], a), y = lerp(ey, CITIES[0][2], a);
+      const sc = spring(P(t, 9.8, 0.25));
+      box(el, x, y, 30, 30, `scale(${sc})`);
+      const xf = (tt) => lerp(ex, CITIES[0][1], expIO(P(tt, 10.0, 0.42)));
+      mb(el, blurAmt(vel(xf, t)), 0);
+    }
+
+    // ===== mesure 6 : le réseau =====
+    if (t >= 10.3 && t < 12.32) {
+      const el = $("map"); show(el); el.style.display = "block";
+      const sq = expIn(P(t, 12.0, 0.3)); // écrasement en ligne (temps 25)
+      const push = 1 + 0.06 * P(t, 10.3, 2.0);
+      $("mapG").setAttribute("transform", `translate(${CX} ${CY}) scale(${push} ${push * (1 - sq * 0.985)}) translate(${-CX} ${-CY})`);
+      ARC.forEach((a, i) => {
+        if (i === 0) { a.dot.setAttribute("r", 15); a.dot.style.opacity = t >= 10.42 ? 1 : 0; a.lab.style.clipPath = `inset(0 ${100 - 100 * expOut(P(t, 10.3, 0.3))}% 0 0)`; return; }
+        const d = expOut(P(t, a.t, 0.32)); a.path.style.strokeDasharray = a.len; a.path.style.strokeDashoffset = a.len * (1 - d);
+        const pop = spring(P(t, a.t + 0.22, 0.3)); a.dot.setAttribute("r", 11 * pop); a.lab.style.clipPath = `inset(0 ${100 - 100 * expOut(P(t, a.t + 0.26, 0.3))}% 0 0)`;
+      });
+      const sqf = (tt) => expIn(P(tt, 12.0, 0.3)) * 400; mb(el, 0, blurAmt(vel(sqf, t), 0.006));
+    }
+
+    // ===== mesure 7 : le moment fort =====
+    // la ligne rouge : 12,15 → 12,75 (naît de l'écrasement), 13,85 → 14,2 (ENTREPRISE écrasé), puis s'ouvre sur le titre
+    const rb = $("rb");
+    if (t >= 12.15 && t < 12.5) { const w = lerp(300, 1400, expOut(P(t, 12.15, 0.3))); box(rb, CX - w / 2, CY - 18, w, 36); }
+    if (t >= 12.5 && t < 13.0) {
+      const k = expOut(P(t, 12.5, 0.26)), w = lerp(1400, 1920, k), h = lerp(36, 1080, k);
+      const el = $("slab"); box(el, CX - w / 2, CY - h / 2, w, h);
+      const s = lerp(1.6, 1, expOut(P(t, 12.5, 0.32)));
+      el.querySelectorAll(".sTxt").forEach((x, i) => { x.style.left = -(1920 - w) / 2 + "px"; x.style.top = (i ? -M.eH / 2 : h / 2 - M.eH / 2) + "px"; x.style.bottom = "auto"; x.style.transformOrigin = "50% 50%"; x.style.transform = `scale(${s})`; });
+      const hf = (tt) => lerp(36, 1080, expOut(P(tt, 12.5, 0.26))); mb(el, 0, blurAmt(vel(hf, t) / 2, 0.003));
+    }
+    if (t >= 13.0 && t < 13.5) {
+      const el = $("slab"), up = expIO(P(t, 13.0, 0.36)), sp = expIn(P(t, 13.0, 0.3));
+      box(el, 0, -1080 * up, 1920, 1080);
+      el.querySelectorAll(".sTxt").forEach((x, i) => { x.style.left = "0px"; x.style.top = (i ? -M.eH / 2 : 540 - M.eH / 2) + "px"; x.style.bottom = "auto"; x.style.transform = `translateX(${(i ? 1 : -1) * 1500 * sp}px)`; });
+      const yf = (tt) => -1080 * expIO(P(tt, 13.0, 0.36)); mb(el, 0, blurAmt(vel(yf, t), 0.003));
+    }
+    if (t >= 13.0 && t < 13.85) {
+      const el = $("redTxt"), q = expIn(P(t, 13.5, 0.35));
+      const sx = lerp(1, 1400 / M.eW, q), sy = lerp(1, 36 / (M.eH * 0.73), q);
+      box(el, CX - M.eW / 2, CY - M.eH / 2, M.eW, M.eH, `scale(${sx},${sy})`);
+    }
+    if (t >= 13.85 && t < 14.45) {
+      const op = expOut(P(t, 14.0, 0.2)), h = lerp(36, 330, op);
+      const wp = expIO(P(t, 14.12, 0.26)), w = 1400 * (1 - wp), x = CX - 700 + 1400 * wp;
+      if (w > 0.5) box(rb, x, CY - h / 2, w, h);
+      if (t >= 14.0) { // titre de fin, révélé dans la bande
+        const ti = $("title"), ins = Math.max(0, (M.tH - h) / 2), q = expIn(P(t, 14.5, 0.3));
+        box(ti, 0, CY - M.tH / 2, 1920, M.tH, `scale(${1 - q})`); ti.style.clipPath = `inset(${ins}px 0 ${ins}px 0)`;
+      }
+    }
+    if (t >= 14.45 && t < 14.85) {
+      const ti = $("title"), q = expIn(P(t, 14.45, 0.32));
+      box(ti, 0, CY - M.tH / 2, 1920, M.tH, `scale(${1 - q},${1 - q * 0.98})`); ti.style.clipPath = "none";
+      const sf = (tt) => 900 * expIn(P(tt, 14.45, 0.32)); mb(ti, blurAmt(vel(sf, t), 0.004), 0);
+    }
+  }
+
+  window.seek = (t) => { seek(t); };
+  window.__duration = 15;
+  window.ready = document.fonts.load("800 180px Inter").then(() => document.fonts.ready).then(() => {
+    measure(); buildMap(); buildPanel();
+    seek(8.199); const r = $("fBack").getBoundingClientRect(); LID = { x: r.left, y: r.top, w: r.width, h: r.height };
+    seek(0); return true;
+  });
+
+  // ---------- bande-son (Web Audio, rendu hors ligne) ----------
+  window.renderAudio = async function () {
+    const sr = 48000, ctx = new OfflineAudioContext(2, sr * 15, sr);
+    // pas de compresseur : celui de Web Audio ajoute un gain automatique qui sature les attaques
+    const master = ctx.createGain(); master.gain.value = 0.5; master.connect(ctx.destination);
+    const nb = ctx.createBuffer(1, sr * 2, sr), nd = nb.getChannelData(0); let s = 1;
+    for (let i = 0; i < nd.length; i++) { s = (s * 16807) % 2147483647; nd[i] = (s / 2147483647) * 2 - 1; }
+    const noise = (t, dur, setup) => { const n = ctx.createBufferSource(); n.buffer = nb; const g = ctx.createGain(); setup(n, g); g.connect(master); n.start(t); n.stop(t + dur); };
+    const kick = (t, amp = 1) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(165, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.13);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.95 * amp, t + 0.004); g.gain.exponentialRampToValueAtTime(0.001, t + 0.42); o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.45);
+      noise(t, 0.02, (n, g2) => { const f = ctx.createBiquadFilter(); f.type = "highpass"; f.frequency.value = 2500; n.connect(f); f.connect(g2); g2.gain.setValueAtTime(0.25 * amp, t); g2.gain.exponentialRampToValueAtTime(0.001, t + 0.02); }); };
+    const hat = (t, a = 0.1) => noise(t, 0.06, (n, g) => { const f = ctx.createBiquadFilter(); f.type = "highpass"; f.frequency.value = 7500; n.connect(f); f.connect(g); g.gain.setValueAtTime(a, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.055); });
+    const bass = (t, fq, d = 0.44) => { const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = "sawtooth"; o.frequency.value = fq; f.type = "lowpass";
+      f.frequency.setValueAtTime(700, t); f.frequency.exponentialRampToValueAtTime(140, t + d); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16, t + 0.01); g.gain.exponentialRampToValueAtTime(0.001, t + d);
+      o.connect(f); f.connect(g); g.connect(master); o.start(t); o.stop(t + d + 0.02); };
+    const hit = (t, big = 1) => {
+      noise(t, 0.6, (n, g) => { const f = ctx.createBiquadFilter(); f.type = "bandpass"; f.frequency.setValueAtTime(2400, t); f.frequency.exponentialRampToValueAtTime(400, t + 0.5); f.Q.value = 0.7; n.connect(f); f.connect(g);
+        g.gain.setValueAtTime(0.55 * big, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.55); });
+      const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(90, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.5); g.gain.setValueAtTime(0.7 * big, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.7); o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.75);
+      const m = ctx.createOscillator(), mg = ctx.createGain(); m.type = "square"; m.frequency.value = 1320; mg.gain.setValueAtTime(0.05 * big, t); mg.gain.exponentialRampToValueAtTime(0.001, t + 0.12); m.connect(mg); mg.connect(master); m.start(t); m.stop(t + 0.14); };
+    const ROOT = [55, 55, 43.65, 49, 55, 55, 43.65, 49];
+    for (let k = 0; k < 30; k++) { const t = k * 0.5, bar = Math.floor(k / 4);
+      kick(t, k === 24 ? 1.05 : 1); hat(t + 0.25, bar >= 5 ? 0.14 : 0.09);
+      if (bar !== 5) bass(t + 0.25, ROOT[bar] * (k % 4 === 3 ? 2 : 1), 0.22); }
+    [2, 4, 6, 8, 10, 14].forEach((t) => hit(t, 0.8)); hit(12, 0.95);
+    // montée vers la dernière mesure pleine
+    noise(10, 2.0, (n, g) => { const f = ctx.createBiquadFilter(); f.type = "bandpass"; f.Q.value = 2; f.frequency.setValueAtTime(300, 10); f.frequency.exponentialRampToValueAtTime(7000, 12); n.connect(f); f.connect(g);
+      g.gain.setValueAtTime(0.0001, 10); g.gain.exponentialRampToValueAtTime(0.45, 11.95); g.gain.linearRampToValueAtTime(0, 12.0); });
+    { const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = "sawtooth"; o.frequency.setValueAtTime(110, 10); o.frequency.exponentialRampToValueAtTime(880, 12);
+      f.type = "lowpass"; f.frequency.setValueAtTime(400, 10); f.frequency.exponentialRampToValueAtTime(5000, 12); g.gain.setValueAtTime(0.0001, 10); g.gain.exponentialRampToValueAtTime(0.12, 11.95); g.gain.linearRampToValueAtTime(0, 12.0);
+      o.connect(f); f.connect(g); g.connect(master); o.start(10); o.stop(12.02); }
+    for (let k = 20; k < 24; k++) { hat(k * 0.5 + 0.125, 0.07); hat(k * 0.5 + 0.375, 0.07); }
+    const buf = await ctx.startRendering();
+    // encodage WAV 16 bits
+    const L = buf.getChannelData(0), Rr = buf.getChannelData(1), n = L.length, ab = new ArrayBuffer(44 + n * 4), v = new DataView(ab);
+    const ws = (o, str) => { for (let i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)); };
+    ws(0, "RIFF"); v.setUint32(4, 36 + n * 4, true); ws(8, "WAVE"); ws(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 2, true);
+    v.setUint32(24, sr, true); v.setUint32(28, sr * 4, true); v.setUint16(32, 4, true); v.setUint16(34, 16, true); ws(36, "data"); v.setUint32(40, n * 4, true);
+    let o = 44; for (let i = 0; i < n; i++) { v.setInt16(o, clamp(L[i], -1, 1) * 32767, true); v.setInt16(o + 2, clamp(Rr[i], -1, 1) * 32767, true); o += 4; }
+    let bin = ""; const u8 = new Uint8Array(ab); for (let i = 0; i < u8.length; i += 32768) bin += String.fromCharCode.apply(null, u8.subarray(i, i + 32768));
+    return btoa(bin);
+  };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,590 @@
+{
+  "meta": {
+    "blocked": [],
+    "elapsed_ms": 87200,
+    "from_cache": false,
+    "llm_calls": 0,
+    "pages_fetched": 13,
+    "partial": false,
+    "warnings": [
+      "module: tiktok-search: our search found 4 videos; a second source adds the rest"
+    ]
+  },
+  "recipe": "tiktok-search",
+  "rows": [
+    {
+      "author": {
+        "followers": 1974,
+        "name": "Mylah mihaingo",
+        "username": "mylah.mihaingo"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/ogAlDA5JElvEWu0iWY1ykiYsBAIaAiWz0BrAE~tplv-tiktokx-origin.image?dr=14575&x-expires=1793898000&x-signature=iC99im%2B1BTCwgc%2FNTQ9fipI28k4%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+      "created_at": "2026-10-31T09:22:42Z",
+      "description": "Manafatra entana CHINE \ud83c\udde8\ud83c\uddf3 #fyp #importationbusiness #etapeparetape",
+      "duration_s": 220.0,
+      "hashtags": [
+        "fyp",
+        "importationbusiness",
+        "etapeparetape"
+      ],
+      "music": {
+        "author": "Mylah mihaingo",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7702759937100811541",
+      "stats": {
+        "comments": 32,
+        "likes": 1081,
+        "plays": 18200,
+        "saves": 716,
+        "shares": 129
+      },
+      "url": "https://www.tiktok.com/@mylah.mihaingo/video/7702759937100811541"
+    },
+    {
+      "author": {
+        "followers": 5623,
+        "name": "Johane\ud83c\udf52\u2764\ufe0f\u200d\ud83d\udd25",
+        "username": "johanerat"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oM2ucFD1REB9hI2y2DEId7BAbCcg48vGgqffEu~tplv-tiktokx-origin.image?dr=9636&x-expires=1793898000&x-signature=3zzp9WWsGgJ0S1dIU5Xfhhv6U0U%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+      "created_at": "2026-08-17T20:31:09Z",
+      "description": "\u274cEnvoie-moi  directement vos commandes sur Whatsapp svp\u274c #pourtoi #chinemadagascar #import #madagascar\ud83c\uddf2\ud83c\uddec",
+      "duration_s": 35.0,
+      "hashtags": [
+        "pourtoi",
+        "chinemadagascar",
+        "import",
+        "madagascar"
+      ],
+      "music": {
+        "author": "Yagami Kaaze",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7675100801760644370",
+      "stats": {
+        "comments": 9,
+        "likes": 111,
+        "plays": 3776,
+        "saves": 20,
+        "shares": 3
+      },
+      "url": "https://www.tiktok.com/@johanerat/video/7675100801760644370"
+    },
+    {
+      "author": {
+        "followers": 3046,
+        "name": "Actualit\u00e9s de Madagascar",
+        "username": "madagascaractu"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/oYSfB4fDpE2nVbqCY3qmDybNICHAqExAFAA0Ig~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=%2BU7uDNUl09iZwnXUf74mD%2F2aAwg%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast2b",
+      "created_at": "2026-10-09T12:22:18Z",
+      "description": "Le tournant de Madagascar vers l'Est.",
+      "duration_s": 56.0,
+      "hashtags": [],
+      "music": {
+        "author": "Actualit\u00e9s de Madagascar",
+        "original": true,
+        "title": "original sound - Actualit\u00e9s de Madagascar"
+      },
+      "post_id": "7694642351230209300",
+      "stats": {
+        "comments": 13,
+        "likes": 297,
+        "plays": 6989,
+        "saves": 42,
+        "shares": 34
+      },
+      "url": "https://www.tiktok.com/@madagascaractu/video/7694642351230209300"
+    },
+    {
+      "author": {
+        "followers": 142,
+        "name": "\u6797\u4f51\u6cfd\ud83c\udde8\ud83c\uddf3\ud83c\uddf2\ud83c\uddec",
+        "username": "andofy878"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/ooemjq4hUIoIIFD5wC5L7r0IQqGCxAAl1Aeaf8~tplv-tiktokx-origin.image?dr=9636&x-expires=1793898000&x-signature=aHVi5N4bE6siNw9K%2BDLDNry69qk%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+      "created_at": "2026-08-05T16:16:48Z",
+      "description": "#chinamadagascar\ud83c\udde8\ud83c\uddf3\ud83c\uddf2\ud83c\uddec #malagasy\ud83c\uddf2\ud83c\uddec #importationbusiness #TRIO_EXPORTS",
+      "duration_s": 100.0,
+      "hashtags": [
+        "chinamadagascar",
+        "malagasy",
+        "importationbusiness",
+        "TRIO_EXPORTS"
+      ],
+      "music": {
+        "author": "FASSounds",
+        "original": false,
+        "title": "A Success Story"
+      },
+      "post_id": "7670582223480917256",
+      "stats": {
+        "comments": 1,
+        "likes": 5,
+        "plays": 55,
+        "saves": 0,
+        "shares": 0
+      },
+      "url": "https://www.tiktok.com/@andofy878/video/7670582223480917256"
+    },
+    {
+      "author": {
+        "followers": 2593,
+        "name": "koko_Landry",
+        "username": "koko_landry"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast2a-p-0037-euttp/okuJucQgQaAWRff8YiXwf9djAVefviAbMMwNCT~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=3KnbUK%2BKUOJImbwVrR%2Fgy9HEGxA%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-10-26T21:22:52Z",
+      "description": "\ud83d\udce6\u2764\ufe0f Unboxing de notre commande \ud83c\udde8\ud83c\uddf3\ud83c\uddf2\ud83c\uddec Toi aussi, tu veux commander sur Pinduoduo ? \ud83d\udc40\ud83d\udecd\ufe0f Envoie-nous la photo de l\u2019article qui te pla\u00eet, on s\u2019occupe du reste ! \ud83e\udd1d \ud83d\udce9 \u00c9cris-nous pour passer ta commande ! #PinduoduoMadagascar #ImportationChine #Madagascar #Unboxing",
+      "duration_s": 49.0,
+      "hashtags": [
+        "pinduoduomadagascar",
+        "importationchine",
+        "madagascar",
+        "unboxing"
+      ],
+      "music": {
+        "author": "TikTok Advertiser",
+        "original": false,
+        "title": "Original Sound"
+      },
+      "post_id": "7701090114247642400",
+      "stats": {
+        "comments": 20,
+        "likes": 239,
+        "plays": 4241,
+        "saves": 30,
+        "shares": 2
+      },
+      "url": "https://www.tiktok.com/@koko_landry/video/7701090114247642400"
+    },
+    {
+      "author": {
+        "followers": 3201,
+        "name": "Nariah \ud83d\udc3c",
+        "username": "nariah597"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/oU5HyDiIq9BaIlVgBxFEguDJEsARfNSQQsfNUA~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=7ScEMjKrTp7i9zlKi1b%2BEnzpezQ%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-09-20T16:53:35Z",
+      "description": "Importation Chine \ud83c\udde8\ud83c\uddf3 - Madagascar \ud83c\uddf2\ud83c\uddec  #importationbusiness #chinemada #business",
+      "duration_s": 178.0,
+      "hashtags": [
+        "importationbusiness",
+        "chinemada",
+        "business"
+      ],
+      "music": {
+        "author": "JENNIE",
+        "original": false,
+        "title": "like JENNIE"
+      },
+      "post_id": "7687661646218644757",
+      "stats": {
+        "comments": 6,
+        "likes": 81,
+        "plays": 1143,
+        "saves": 1,
+        "shares": 0
+      },
+      "url": "https://www.tiktok.com/@nariah597/video/7687661646218644757"
+    },
+    {
+      "author": {
+        "followers": 561,
+        "name": "Hanami \ud83c\udf38",
+        "username": "hanami_370"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/oAmyd5gIEWDAsUBFujBeGp5c1S5BRECkI67DfG~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=Z6apNpZoWo6f4QzAE3O5M4cQo8I%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-03-12T16:19:58Z",
+      "description": "Importation chine-Madagascar  Taxes sy douanes  #importationchinemadagascar  #douane #manafatraentana  #importationbusiness",
+      "duration_s": 57.0,
+      "hashtags": [
+        "importationchinemadagascar",
+        "douane",
+        "manafatraentana",
+        "importationbusiness"
+      ],
+      "music": {
+        "author": "Hanami \ud83c\udf38",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7616404599704014100",
+      "stats": {
+        "comments": 16,
+        "likes": 121,
+        "plays": 3148,
+        "saves": 53,
+        "shares": 7
+      },
+      "url": "https://www.tiktok.com/@hanami_370/video/7616404599704014100"
+    },
+    {
+      "author": {
+        "followers": 311,
+        "name": "\ud83c\uddf2\ud83c\uddecJess&Fy-in-China\ud83c\udde8\ud83c\uddf3",
+        "username": "jessnantenaina02"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast2a-p-0037-euttp/oIDpI1irELzO6SbUBGBAI2a1IL1onA7CpkiofS~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=rSe0lDzCENtlv60WKXE7cSvHP3I%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-10-18T10:15:19Z",
+      "description": "\ud83c\udde8\ud83c\uddf3\ud83e\udd1d\ud83c\uddf2\ud83c\uddec MADASIA SOURCING \u2014 LA CHINE \u00c0 VOTRE PORT\u00c9E ! \ud83d\udce6\ud83d\udd25 Vous \u00eates \u00e0 Madagascar et vous souhaitez acheter des produits directement en Chine ? Vous recherchez des fournisseurs fiables et des prix comp\u00e9titifs pour d\u00e9velopper votre business ? \ud83d\udc40 MADASIA SOURCING est l\u00e0 pour vous accompagner ! \ud83d\ude80 \ud83c\udde8\ud83c\uddf3 Pr\u00e9sents en Chine, nous facilitons vos achats et vos approvisionnements depuis les plateformes chinoises jusqu\u2019\u00e0 Madagascar. \ud83d\udecd\ufe0f NOS SERVICES : \u2705 Recherche de produits et de fournisseurs en Chine \u2705 Achats sur 1688, Pinduoduo et d\u2019autres plateformes chinoises \u2705 Sourcing de produits selon vos besoins \u2705 Accompagnement dans vos commandes \u2705 Organisation de l\u2019exp\u00e9dition vers Madagascar \ud83d\udce6\u2708\ufe0f \ud83d\udcbc Que vous soyez entrepreneur, commer\u00e7ant ou particulier, nous vous accompagnons pour concr\u00e9tiser vos projets d\u2019achat en Chine. \ud83c\udf0f La Chine est loin, mais vos opportunit\u00e9s sont \u00e0 port\u00e9e de main ! \ud83d\udce9 Vous avez un produit en t\u00eate ? Contactez-nous en message priv\u00e9 pour en discuter et obtenir plus d\u2019informations.  Facebook : MadAsia Sourcing WhatsApp: +86 18559253263 \ud83d\udd25 MADASIA SOURCING \u2014 De la Chine \u00e0 Madagascar, nous connectons vos ambitions ! \ud83c\udde8\ud83c\uddf3\u2764\ufe0f\ud83c\uddf2\ud83c\uddec #MadasiaSourcing #Sourcing #ChineMadagascar #ImportExport  \ud83d\udce6\ud83c\udf0d",
+      "duration_s": 62.0,
+      "hashtags": [
+        "madasiasourcing",
+        "sourcing",
+        "chinemadagascar",
+        "importexport"
+      ],
+      "music": {
+        "author": "\ud83c\uddf2\ud83c\uddecJess&Fy-in-China\ud83c\udde8\ud83c\uddf3",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7697949402559745312",
+      "stats": {
+        "comments": 0,
+        "likes": 18,
+        "plays": 447,
+        "saves": 1,
+        "shares": 1
+      },
+      "url": "https://www.tiktok.com/@jessnantenaina02/video/7697949402559745312"
+    },
+    {
+      "author": {
+        "followers": 50300,
+        "name": "\ud835\udc0c\ud835\udc22\ud835\udc2c\ud835\udc2c \ud835\udc15\ud835\udc28\ud835\udc27\ud835\udc32.",
+        "username": "vonyharilala"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/o4IIaFUWtEAIDFDMQfEUAoAAEO31AWnjqBfAje~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=viOSyqJFur9vrlVvN%2BTxarml%2BsU%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-06-13T14:57:44Z",
+      "description": "@\ud835\udc0c\ud835\udc22\ud835\udc2c\ud835\udc2c \ud835\udc15\ud835\udc28\ud835\udc27\ud835\udc32.  SAVE THE DATE ! 18 &20 JUIN \ud83e\udd29\u2728 Vous allez avoir les tips pour r\u00e9ussir vos achats et importations depuis la Chine : FORMATION ACHAT EN LIGNE : IMPORTATION CHINE \u27a1\ufe0f MADAGASCAR. \ud83d\ude4c\ud83c\udffc Commer\u00e7ant, entrepreneur ou particulier, FONCEZ ! \ud83d\ude09 \u0280\u00e9\ua731\u1d07\u0280\u1d20\u1d00\u1d1b\u026a\u1d0f\u0274 :  Fb : Innova Logistics Madagascar WhatsApp: +261 34 50 315 15 #dropshipping #importation #chine #achatsenligne #madagascar",
+      "duration_s": 62.0,
+      "hashtags": [
+        "@\ud835\udc0c\ud835\udc22\ud835\udc2c\ud835\udc2c \ud835\udc15\ud835\udc28\ud835\udc27\ud835\udc32.",
+        "dropshipping",
+        "importation",
+        "chine",
+        "achatsenligne",
+        "madagascar"
+      ],
+      "music": {
+        "author": "Daxzeal",
+        "original": false,
+        "title": "WATER - \"Tyla instrumental\""
+      },
+      "post_id": "7650894366013213970",
+      "stats": {
+        "comments": 6,
+        "likes": 435,
+        "plays": 11600,
+        "saves": 49,
+        "shares": 30
+      },
+      "url": "https://www.tiktok.com/@vonyharilala/video/7650894366013213970"
+    },
+    {
+      "author": {
+        "followers": 289300,
+        "name": "B\u00e9b\u00e969",
+        "username": "cadriahbru69"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-p-0068/oAIj1VIS2iQGetSEI3CP5OgQGeAfLCELQCBOvg~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=AXdOWR%2FpI9RTKOeUBzPy%2BRh7FFk%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2024-11-06T14:11:33Z",
+      "description": "ACHAT EN CHINE VERS MADAGASCAR \ud83c\uddf2\ud83c\uddecavec CHINA SOURCING MADA  #foryou #viral #pourtoi",
+      "duration_s": 42.0,
+      "hashtags": [
+        "foryou",
+        "viral",
+        "pourtoi"
+      ],
+      "music": {
+        "author": "B\u00e9b\u00e969",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7434168704092392760",
+      "stats": {
+        "comments": 12,
+        "likes": 1422,
+        "plays": 38200,
+        "saves": 130,
+        "shares": 49
+      },
+      "url": "https://www.tiktok.com/@cadriahbru69/video/7434168704092392760"
+    },
+    {
+      "author": {
+        "followers": 11000,
+        "name": "Daiky_Daiky",
+        "username": "daiky_daiky"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/oMIYIEAuI3CTApB1AiWdfbh8690CgiFwugGxAM~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=ZSDC7P2H26LCxlPqBZ8uKClRGSc%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-09-03T02:44:40Z",
+      "description": "T\u00e9l\u00e9charger l\u2019application Pinduoduo et commander ce que vous souhaitez\u2728\ud83d\udecd\ufe0f\u2705 #malagasy #pourtoi #vibe #tiktok #virale",
+      "duration_s": 18.0,
+      "hashtags": [
+        "malagasy",
+        "pourtoi",
+        "vibe",
+        "tiktok",
+        "virale"
+      ],
+      "music": {
+        "author": "Daiky_Daiky",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7681134418517363989",
+      "stats": {
+        "comments": 182,
+        "likes": 2002,
+        "plays": 59900,
+        "saves": 1022,
+        "shares": 307
+      },
+      "url": "https://www.tiktok.com/@daiky_daiky/video/7681134418517363989"
+    },
+    {
+      "author": {
+        "followers": 2046,
+        "name": "Lisa\ud83c\uddf2\ud83c\uddec\ud83c\uddee\ud83c\uddf3",
+        "username": "metiss401"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/o0aABnrGkVBPi75EuD5pQA9dE2AIAPiYvXsk5~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=gL1KgcWfnnIQd2G5yWg39yWtT8w%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-09-27T11:53:29Z",
+      "description": "\ud83c\udde8\ud83c\uddf3 COMMANDE CHINE \u2192 MADAGASCAR \ud83c\uddf2\ud83c\uddec \ud83d\udecd\ufe0f Envoyez-nous la photo ou le lien de votre article ! \u2708\ufe0f A\u00e9rien : 67 000 Ar/kg | 7\u201315 jours \ud83d\udea2 Maritime : 360 $/m\u00b3 | 45\u201360 jours \ud83d\udcb3 Paiement : 100 % \u00e0 la commande \ud83d\udce9 Commandez d\u00e8s maintenant !",
+      "duration_s": 67.0,
+      "hashtags": [],
+      "music": {
+        "author": "Lisa\ud83c\uddf2\ud83c\uddec\ud83c\uddee\ud83c\uddf3",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7690181903126760711",
+      "stats": {
+        "comments": 5,
+        "likes": 102,
+        "plays": 1281,
+        "saves": 8,
+        "shares": 1
+      },
+      "url": "https://www.tiktok.com/@metiss401/video/7690181903126760711"
+    },
+    {
+      "author": {
+        "followers": 142,
+        "name": "\u6797\u4f51\u6cfd\ud83c\udde8\ud83c\uddf3\ud83c\uddf2\ud83c\uddec",
+        "username": "andofy878"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/oAACTVn60hAuBI7oiVPBa2WlEiYJAiCI2XrJ5~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=%2FcUcQ5GCVa%2FYOvYg%2BpQpyE%2BNIWM%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-08-11T08:15:16Z",
+      "description": "#chinamadagascar\ud83c\udde8\ud83c\uddf3\ud83c\uddf2\ud83c\uddec #malagasy\ud83c\uddf2\ud83c\uddec #importationbusiness #TRIO_EXPORTS",
+      "duration_s": 65.0,
+      "hashtags": [
+        "chinamadagascar\ud83c\udde8\ud83c\uddf3\ud83c\uddf2\ud83c\uddec",
+        "malagasy\ud83c\uddf2\ud83c\uddec",
+        "importationbusiness",
+        "trio_exports"
+      ],
+      "music": {
+        "author": "FASSounds",
+        "original": false,
+        "title": "A Success Story"
+      },
+      "post_id": "7672684639877713160",
+      "stats": {
+        "comments": 0,
+        "likes": 2,
+        "plays": 292,
+        "saves": 0,
+        "shares": 0
+      },
+      "url": "https://www.tiktok.com/@andofy878/video/7672684639877713160"
+    },
+    {
+      "author": {
+        "followers": 1543,
+        "name": "FANIRY.NG",
+        "username": "faniry.r.mdg"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/ociIRDI88Bb2ALBhBwPHizAOAfEA0ABQAkP1nC~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=LQB62xREJMg0CtlnZDCspHDoweU%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-08-12T16:29:04Z",
+      "description": "Fanazavana momba ny service Importation produits plateforme Chinois Mandeha Madagascar\ud83c\udde8\ud83c\uddf3\u2708\ufe0f\ud83c\uddf2\ud83c\uddec #manafatra_etana_chine_madagascar\ud83c\uddf2\ud83c\uddec #taobao #importation #chine",
+      "duration_s": 35.0,
+      "hashtags": [
+        "manafatra_etana_chine_madagascar\ud83c\uddf2\ud83c\uddec",
+        "taobao",
+        "importation",
+        "chine"
+      ],
+      "music": {
+        "author": "Ny Antra",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7673183009436224786",
+      "stats": {
+        "comments": 6,
+        "likes": 359,
+        "plays": 8660,
+        "saves": 192,
+        "shares": 18
+      },
+      "url": "https://www.tiktok.com/@faniry.r.mdg/video/7673183009436224786"
+    },
+    {
+      "author": {
+        "followers": 16700,
+        "name": "Mbolaf\u00ff \ud83d\udce6\u2708\ufe0f\ud83c\udde8\ud83c\uddf3\ud83c\uddf2\ud83c\uddec",
+        "username": "mbolafy0"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-eu.com/tos-useast5-p-0068-tx/owfqqO4g8AaUo3JIsAFNGGAeffB3s9RpYQhs0q~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=tgi6N08U1d89EEzgsOxXdBwP4VE%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-05-30T09:56:32Z",
+      "description": "Partie 03 - Achat direct fournisseur Chine Jean\u2019s \u2022 Envoi colis Chine vers Madagascar: \u2022 a\u00e9rien EXPRESS: 85 000Ar/kg \u2022 aerien NORMAL: 71 100Ar/kg \u2022 maritime: 390$/m3 Achat Direct \u00e0 Guangzhou... WhatsApp: +86 195 8438 9051 Contact Mada: +26137 20 663 32 #mbolafy #colis #achatdirect #madagascar #viral",
+      "duration_s": 65.0,
+      "hashtags": [
+        "mbolafy",
+        "colis",
+        "achatdirect",
+        "madagascar",
+        "viral"
+      ],
+      "music": {
+        "author": "Mbolaf\u00ff \ud83d\udce6\u2708\ufe0f\ud83c\udde8\ud83c\uddf3\ud83c\uddf2\ud83c\uddec",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7645621091825716493",
+      "stats": {
+        "comments": 29,
+        "likes": 637,
+        "plays": 15700,
+        "saves": 199,
+        "shares": 39
+      },
+      "url": "https://www.tiktok.com/@mbolafy0/video/7645621091825716493"
+    },
+    {
+      "author": {
+        "followers": 1806,
+        "name": "MANAS GROUP IMPORT",
+        "username": "manasgroupimport"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/o8VeQNlIADE9FAyROSCCfFCnfD4iPQWOjoGkTF~tplv-tiktokx-origin.image?dr=10395&x-expires=1793898000&x-signature=J7xIxv%2Fx8SqXGUmOdrP%2F9dul63o%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-08-25T07:45:47Z",
+      "description": "Nos missions ! Nous sommes la solution pour vos importations \ud83c\udde8\ud83c\uddf3\ud83c\udde8\ud83c\uddee\ud83c\uddf2\ud83c\uddec #abidjan #ManasImport #Business #madagascar #importation",
+      "duration_s": 44.0,
+      "hashtags": [
+        "abidjan",
+        "manasimport",
+        "business",
+        "madagascar",
+        "importation"
+      ],
+      "music": {
+        "author": "MANAS GROUP IMPORT",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7677872235322936584",
+      "stats": {
+        "comments": 0,
+        "likes": 30,
+        "plays": 1137,
+        "saves": 8,
+        "shares": 3
+      },
+      "url": "https://www.tiktok.com/@manasgroupimport/video/7677872235322936584"
+    }
+  ],
+  "usage": {
+    "boxes": [
+      "gate",
+      "search",
+      "recipe"
+    ],
+    "cache": "miss",
+    "engine": "recipe",
+    "lines": [
+      {
+        "about": "the call",
+        "boxes": [
+          "gate"
+        ],
+        "cache": "miss",
+        "call": "recipes",
+        "engine": "gate",
+        "units": 1
+      },
+      {
+        "call": "serp",
+        "step": "site:tiktok.com importer de chine madagascar",
+        "units": 5
+      },
+      {
+        "call": "serp",
+        "step": "importer de chine madagascar tiktok",
+        "units": 2
+      },
+      {
+        "call": "serp",
+        "step": "importer de chine madagascar tiktok video",
+        "units": 2
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "cache": "miss",
+        "call": "records",
+        "records": 12,
+        "units": 0
+      }
+    ],
+    "records": 12,
+    "remaining_before": {
+      "concurrent": 1471,
+      "requests": 1483,
+      "search": 2992
+    },
+    "units": 14
+  },
+  "version": 3
+}

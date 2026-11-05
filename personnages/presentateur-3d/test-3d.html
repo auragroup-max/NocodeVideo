@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Présentateur 3D</title>
+<style>
+  /* test : le présentateur en blocs 3D (style jouet), rendu par Three.js. ?bg=nuit|papier &yaw=0.35 &pose=pointe|neutre */
+  html, body { margin:0; background:#000; }
+  #stage { position:relative; width:1080px; height:1920px; overflow:hidden; }
+  #stage.nuit { background:radial-gradient(ellipse at 50% 40%, #1E2A6B 0%, #0D1340 55%, #070A24 100%); }
+  #stage.papier { background-color:#F1EEE8; background-image:radial-gradient(#CFC9BE 3px, transparent 3.6px); background-size:36px 36px; }
+  .bk { position:absolute; border-radius:50%; filter:blur(10px); opacity:.55; }
+  canvas { position:absolute; inset:0; }
+</style>
+<script type="importmap">{ "imports": { "three": "./lib/three.module.js" } }</script>
+</head>
+<body>
+<div id="stage"></div>
+<script type="module">
+import * as THREE from "three";
+import { RoundedBoxGeometry } from "./lib/RoundedBoxGeometry.js";
+
+const Q = new URLSearchParams(location.search), BG = Q.get("bg") || "nuit", YAW = +(Q.get("yaw") ?? 0.35), POSE = Q.get("pose") || "pointe";
+const stage = document.getElementById("stage"); stage.className = BG;
+if (BG === "nuit") { const C = ["#F6C21C", "#E0402A", "#7CC8F2", "#B9A6E0", "#F2A07B"]; let s = 7; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 26; i++) { const d = document.createElement("div"), z = 18 + r() * 46; d.className = "bk"; Object.assign(d.style, { width: z + "px", height: z + "px", left: r() * 1080 + "px", top: r() * 1100 + "px", background: C[i % 5] }); stage.appendChild(d); } }
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(1080, 1920);
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(30, 1080 / 1920, 0.1, 100); if (Q.get("cam") === "pieds") { cam.fov = 30; cam.updateProjectionMatrix(); cam.position.set(5.2, 1.7, 8.6); cam.lookAt(0.15, 0.5, 0.3); }
+else { cam.position.set(0, 3.9, 21.5); cam.lookAt(0, 3.75, 0); }
+
+// lumière de studio : clé douce en haut à gauche, contre-jour froid (nuit) ou chaud (papier), remplissage du ciel
+scene.add(new THREE.HemisphereLight(BG === "nuit" ? 0xBFD0FF : 0xFFF6EA, BG === "nuit" ? 0x1A1F55 : 0xC9BFAE, BG === "nuit" ? 1.1 : 1.5));
+const key = new THREE.DirectionalLight(0xFFF1DE, 2.6); key.position.set(-5, 9, 8); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; Object.assign(key.shadow.camera, { left: -9, right: 9, top: 12, bottom: -6 }); key.shadow.bias = -0.0005; scene.add(key);
+const rim = new THREE.DirectionalLight(BG === "nuit" ? 0x5C8CFF : 0xFFD9A8, BG === "nuit" ? 3.2 : 1.2); rim.position.set(6, 5, -6); scene.add(rim);
+
+const M = (c, r = 0.62) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: 0 });
+const PEAU = M(0xB9805A, 0.7), PEAU2 = M(0x9A6544, 0.7), CHEV = M(0x17110E, 0.8), CHEMISE = M(0x2F7F86), CHEMISE2 = M(0x266A70), COL = M(0x4E9AA0),
+  BLANC = M(0xFFFFFF, 0.35), NOIR = M(0x111111, 0.4), BOUCHE = M(0x6B1414, 0.6), LANGUE = M(0xE5484D), GRIS = M(0x9097A1, 0.45), GRIS2 = M(0x3E434A, 0.5), ROUGE = M(0xE0402A, 0.5);
+const JEAN = M(0x2E4A6B, 0.85), JEAN2 = M(0x22384F, 0.85), CUIR = M(0x5A3A26, 0.55), SEMELLE = M(0xF4F1EA, 0.5), GOMME = M(0xC98B5A, 0.7), LACET = M(0x1C1C1C, 0.6), OR = new THREE.MeshStandardMaterial({ color: 0xD9B44A, roughness: 0.3, metalness: 0.8 });
+const box = (w, h, d, mat, x, y, z, rad = 0.06, parent = scene) => { const m = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 3, Math.min(rad, w / 2.1, h / 2.1, d / 2.1)), mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; parent.add(m); return m; };
+
+// sol
+const sol = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ opacity: BG === "nuit" ? 0.45 : 0.22 })); sol.rotation.x = -Math.PI / 2; sol.receiveShadow = true; scene.add(sol);
+if (BG === "nuit") { const g = new THREE.GridHelper(40, 40, 0x3E5BFF, 0x2A3AA8); g.material.transparent = true; g.material.opacity = 0.55; g.position.y = 0.01; scene.add(g); }
+
+// ---------- jambes : jean, ceinture, baskets détaillées ----------
+const LEG = 2.7;
+const legs = new THREE.Group(); scene.add(legs);
+[-1, 1].forEach((s) => {
+  const x = s * 0.56;
+  box(0.98, 1.96, 1.0, JEAN, x, 1.8, 0, 0.16, legs);                          // jambe de jean
+  box(1.04, 0.24, 1.06, JEAN2, x, 0.9, 0, 0.1, legs);                         // revers du bas
+  box(0.06, 1.9, 0.04, JEAN2, x + s * 0.47, 1.75, 0.2, 0.02, legs);            // couture extérieure
+  box(0.4, 0.04, 0.03, JEAN2, x, 2.45, 0.51, 0.015, legs);                     // poche avant
+  box(0.7, 0.3, 0.7, M(0xFFFFFF, 0.8), x, 0.7, -0.05, 0.08, legs);            // chaussette
+  // basket : semelle crantée, tige avec col plus haut derrière, bout renforcé, œillets, lacets croisés, bandes rouges
+  const z0 = 0.24, sh = new THREE.Group(); sh.position.set(x, 0, z0); legs.add(sh);
+  box(1.08, 0.18, 1.74, SEMELLE, 0, 0.09, 0, 0.08, sh);                               // semelle
+  box(1.1, 0.05, 1.76, GOMME, 0, 0.025, 0, 0.02, sh);                                 // gomme
+  for (let k = 0; k < 7; k++) box(1.12, 0.025, 0.05, M(0xD9D3C6, 0.6), 0, 0.1, -0.72 + k * 0.24, 0.01, sh); // crans de la semelle
+  box(0.98, 0.32, 1.5, BLANC, 0, 0.34, -0.04, 0.15, sh);                              // tige
+  box(0.98, 0.3, 0.5, BLANC, 0, 0.5, -0.5, 0.14, sh);                                 // col (plus haut derrière)
+  box(1.0, 0.07, 0.52, M(0x1C1C1C, 0.7), 0, 0.66, -0.5, 0.03, sh);                    // rembourrage du col
+  box(0.96, 0.18, 0.46, M(0xE9E5DC, 0.4), 0, 0.27, 0.6, 0.09, sh);                    // bout renforcé
+  box(0.54, 0.34, 0.12, ROUGE, 0, 0.48, -0.8, 0.05, sh);                              // talon rouge
+  [-1, 1].forEach((t) => { const b = box(0.04, 0.12, 0.86, ROUGE, t * 0.5, 0.33, -0.08, 0.02, sh); b.rotation.x = -0.28;   // bande latérale
+    box(0.04, 0.05, 0.6, ROUGE, t * 0.5, 0.2, 0.05, 0.02, sh); });
+  box(0.46, 0.08, 0.62, M(0xF7F5F0, 0.5), 0, 0.53, 0.08, 0.04, sh);                   // languette
+  [0.32, 0.14, -0.04].forEach((dz) => { [-1, 1].forEach((t) => { const e = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.03, 12), GRIS2); e.position.set(t * 0.2, 0.52 + dz * 0.12, dz); sh.add(e); });  // œillets
+    const l1 = box(0.48, 0.035, 0.04, LACET, 0, 0.56 + dz * 0.12, dz - 0.05, 0.015, sh); l1.rotation.y = 0.32;      // lacets croisés
+    const l2 = box(0.48, 0.035, 0.04, LACET, 0, 0.565 + dz * 0.12, dz - 0.05, 0.015, sh); l2.rotation.y = -0.32; });
+  const n1 = box(0.04, 0.03, 0.3, LACET, 0.1, 0.6, 0.42, 0.012, sh); n1.rotation.set(0.4, 0.3, 0); // nœud
+  const n2 = box(0.04, 0.03, 0.3, LACET, -0.1, 0.6, 0.42, 0.012, sh); n2.rotation.set(0.4, -0.3, 0);
+});
+box(2.34, 0.24, 1.3, CUIR, 0, LEG + 0.02, 0, 0.06, legs);                       // ceinture
+box(0.34, 0.26, 0.06, OR, 0, LEG + 0.02, 0.66, 0.04, legs);                     // boucle
+box(0.2, 0.14, 0.08, CUIR, 0, LEG + 0.02, 0.68, 0.03, legs);
+
+// ---------- corps ----------
+const body = new THREE.Group(); body.position.y = LEG; scene.add(body);
+box(2.3, 2.0, 1.25, CHEMISE, 0, 1.0, 0, 0.22, body);                       // buste
+box(0.36, 1.6, 0.06, CHEMISE2, 0, 1.0, 0.64, 0.02, body);                    // patte boutonnée
+[1.55, 1.15, 0.75].forEach((y) => { const b = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.04, 16), BLANC); b.rotation.x = Math.PI / 2; b.position.set(0, y, 0.68); body.add(b); });
+box(0.55, 0.5, 0.06, CHEMISE2, 0.62, 1.35, 0.64, 0.04, body);                // poche
+box(0.08, 0.36, 0.08, ROUGE, 0.78, 1.62, 0.66, 0.03, body);                  // stylo
+const colG = box(0.62, 0.34, 0.16, COL, -0.32, 2.02, 0.5, 0.06, body); colG.rotation.z = -0.35;
+const colD = box(0.62, 0.34, 0.16, COL, 0.32, 2.02, 0.5, 0.06, body); colD.rotation.z = 0.35;
+box(0.62, 0.5, 0.62, PEAU, 0, 2.2, 0, 0.12, body);                          // cou
+// casque autour du cou
+const arc = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.09, 16, 48, Math.PI), GRIS2); arc.rotation.set(Math.PI / 2 + 0.5, 0, Math.PI); arc.position.set(0, 2.3, 0.1); arc.castShadow = true; body.add(arc);
+[-1, 1].forEach((s) => { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.24, 32), GRIS); c.rotation.set(0, 0, Math.PI / 2); c.rotation.y = s * 0.5; c.position.set(s * 0.72, 2.3, 0.42); c.castShadow = true; body.add(c);
+  const i = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.24, 32), GRIS2); i.rotation.z = Math.PI / 2; i.position.set(s * 0.72, 2.3, 0.42); body.add(i); });
+// bras
+const brasD = new THREE.Group(); brasD.position.set(1.32, 1.75, 0); body.add(brasD);
+box(0.6, 1.5, 0.6, CHEMISE, 0, -0.62, 0, 0.18, brasD); box(0.5, 0.5, 0.5, PEAU, 0, -1.5, 0, 0.14, brasD); brasD.rotation.z = 0.08;
+const brasG = new THREE.Group(); brasG.position.set(-1.32, 1.75, 0); body.add(brasG);
+box(0.6, 1.5, 0.6, CHEMISE, 0, -0.62, 0, 0.18, brasG); const main = box(0.5, 0.5, 0.5, PEAU, 0, -1.5, 0, 0.14, brasG);
+if (POSE === "pointe") { brasG.rotation.set(0, 0, -2.75); brasG.position.set(-1.3, 1.85, 0.15); box(0.16, 0.42, 0.16, PEAU, 0.05, -1.92, 0, 0.07, brasG); } // index levé
+else brasG.rotation.z = -0.08;
+
+// ---------- tête (tourne sur elle-même : vraie 3D) ----------
+const head = new THREE.Group(); head.position.set(0, 2.45, 0); body.add(head);
+const H = new THREE.Group(); H.rotation.y = YAW; H.rotation.z = -0.04; head.add(H);
+box(2.0, 2.0, 1.8, PEAU, 0, 1.0, 0, 0.22, H);                              // crâne
+[-1, 1].forEach((s) => box(0.22, 0.46, 0.34, PEAU, s * 1.06, 0.95, 0, 0.08, H));  // oreilles
+// cheveux : blocs bouclés (graine fixe)
+let sd = 3; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+for (let ix = 0; ix < 6; ix++) for (let iz = 0; iz < 5; iz++) { const x = -0.92 + ix * 0.37 + (rnd() - 0.5) * 0.08, z = -0.78 + iz * 0.39 + (rnd() - 0.5) * 0.08;
+  box(0.46 + rnd() * 0.1, 0.36 + rnd() * 0.22, 0.46 + rnd() * 0.1, CHEV, x, 2.05 + rnd() * 0.12, z, 0.14, H); }
+for (let ix = 0; ix < 6; ix++) box(0.42, 0.34 + rnd() * 0.14, 0.3, CHEV, -0.92 + ix * 0.37, 1.86 + rnd() * 0.06, 0.82, 0.12, H);       // frange
+[-1, 1].forEach((s) => { for (let k = 0; k < 4; k++) box(0.24, 0.42, 0.42, CHEV, s * 0.98, 1.7 - k * 0.06, 0.55 - k * 0.42, 0.1, H); }); // côtés
+// visage (face avant z = 0.9)
+const F = 0.9;
+[-1, 1].forEach((s) => { box(0.5, 0.52, 0.08, BLANC, s * 0.46, 1.12, F, 0.07, H);                  // yeux carrés
+  box(0.22, 0.26, 0.06, NOIR, s * 0.46 + 0.04, 1.08, F + 0.05, 0.04, H);                           // pupilles (regard vers la droite)
+  box(0.07, 0.07, 0.04, BLANC, s * 0.46 + 0.09, 1.16, F + 0.08, 0.02, H);                           // reflet
+  const sc = box(0.58, 0.14, 0.12, CHEV, s * 0.46, 1.56, F + 0.02, 0.05, H); sc.rotation.z = s * -0.08; }); // sourcils
+box(0.24, 0.34, 0.3, PEAU2, 0, 0.78, F + 0.08, 0.08, H);
+// lunettes : monture noire épaisse, verres légèrement fumés (on voit les yeux), branches jusqu'aux oreilles
+const VERRE = new THREE.MeshPhysicalMaterial({ color: 0x2A2F3A, roughness: 0.08, metalness: 0, transparent: true, opacity: 0.28, clearcoat: 1 });
+const lun = new THREE.Group(); lun.position.set(0, 1.12, F + 0.16); H.add(lun);
+[-1, 1].forEach((s) => { const cx = s * 0.47;
+  box(0.78, 0.1, 0.1, NOIR, cx, 0.34, 0, 0.04, lun); box(0.78, 0.1, 0.1, NOIR, cx, -0.34, 0, 0.04, lun);
+  box(0.1, 0.78, 0.1, NOIR, cx - 0.34, 0, 0, 0.04, lun); box(0.1, 0.78, 0.1, NOIR, cx + 0.34, 0, 0, 0.04, lun);
+  const v = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.02), VERRE); v.position.set(cx, 0, 0); lun.add(v);
+  const reflet = new THREE.Mesh(new THREE.PlaneGeometry(0.08, 0.5), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 })); reflet.position.set(cx - 0.12, 0.02, 0.02); reflet.rotation.z = -0.5; lun.add(reflet);
+  box(0.08, 0.08, 0.95, NOIR, s * 0.88, 0.28, -0.5, 0.03, lun); });               // branches
+box(0.24, 0.08, 0.08, NOIR, 0, 0.16, 0, 0.03, lun);                              // pont                                             // nez
+box(0.66, 0.28, 0.08, BOUCHE, 0, 0.36, F + 0.01, 0.1, H);                                            // bouche ouverte
+box(0.56, 0.08, 0.06, BLANC, 0, 0.45, F + 0.05, 0.03, H);                                            // dents
+box(0.34, 0.1, 0.06, LANGUE, 0.03, 0.27, F + 0.04, 0.04, H);                                         // langue
+box(0.7, 0.12, 0.1, CHEV, 0, 0.56, F + 0.04, 0.05, H);                                               // moustache
+const barbe = M(0x3A2418, 0.9); barbe.transparent = true; barbe.opacity = 0.55;
+box(1.7, 0.36, 0.06, barbe, 0, 0.12, F - 0.01, 0.1, H);                                              // barbe courte
+box(0.3, 0.22, 0.08, CHEV, 0, 0.06, F + 0.02, 0.06, H);                                              // touffe du menton
+
+body.rotation.y = 0.12;
+renderer.render(scene, cam);
+window.__ready = true;
+</script>
+</body>
+</html>

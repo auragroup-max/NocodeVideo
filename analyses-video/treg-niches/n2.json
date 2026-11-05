@@ -1,0 +1,815 @@
+{
+  "meta": {
+    "blocked": [],
+    "elapsed_ms": 22922,
+    "from_cache": false,
+    "llm_calls": 0,
+    "pages_fetched": 26,
+    "partial": false,
+    "warnings": [
+      "module: tiktok-search: 'business avec 1 million ariary' \u00b7 19 videos from our search"
+    ]
+  },
+  "recipe": "tiktok-search",
+  "rows": [
+    {
+      "author": {
+        "followers": 3449,
+        "name": "harena_grwm",
+        "username": "harena_grwm"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oEWIBiwsEV1BqzCaIAOFvqiDuRU7rAv1wBA4ae~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=gzlBSlcDCLOVT6rOSBSUyMpiwEA%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+      "created_at": "2026-08-26T09:11:10Z",
+      "description": "\ud83d\udcb8\ud83d\udcb8",
+      "duration_s": 7.0,
+      "hashtags": [],
+      "music": {
+        "author": "Tractopelle Musik",
+        "original": true,
+        "title": "son original - Tractopelle Musik"
+      },
+      "post_id": "7678265356120493330",
+      "stats": {
+        "comments": 6,
+        "likes": 1175,
+        "plays": 20800,
+        "saves": 26,
+        "shares": 57
+      },
+      "url": "https://www.tiktok.com/@harena_grwm/video/7678265356120493330"
+    },
+    {
+      "author": {
+        "followers": 1282,
+        "name": "Claudio marcelly",
+        "username": "claudiomarcelly"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oQctCAGEVUEf1HHIYgAzvQA4IALq99DfBF4BFC~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=Y%2FzT1GQiuI08xWVcugbhoghSypQ%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+      "created_at": "2026-10-29T11:45:35Z",
+      "description": "Plus de 5 millions d'ariary dans un t\u00e9l\u00e9phone\u2026 ou dans ton premier business ? Le t\u00e9l\u00e9phone perd de la valeur chaque ann\u00e9e, un business peut en prendre. Le vrai flex, c'est le revenu sur ton compte. Tu veux savoir par o\u00f9 commencer ? \u00c9cris-moi sur WhatsApp, lien dans la bio. Question pour les commentaires : Toi, tu choisis quoi : le nouvel iPhone ou ton business ? \ud83d\udc47 #dropshipping #madagascar #businessenligne #entrepreneur #motivation #fyp #fyp\u30b7",
+      "duration_s": 78.0,
+      "hashtags": [
+        "dropshipping",
+        "madagascar",
+        "businessenligne",
+        "entrepreneur",
+        "motivation",
+        "fyp",
+        "fyp\u30b7"
+      ],
+      "music": {
+        "author": "Claudio marcelly",
+        "original": true,
+        "title": "son original - Claudio marcelly"
+      },
+      "post_id": "7702054601314274568",
+      "stats": {
+        "comments": 12,
+        "likes": 557,
+        "plays": 6926,
+        "saves": 126,
+        "shares": 39
+      },
+      "url": "https://www.tiktok.com/@claudiomarcelly/video/7702054601314274568"
+    },
+    {
+      "author": {
+        "followers": 8396,
+        "name": "P&H Business store",
+        "username": "ph.business.store"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/ocsGVsIVL7bL9ZQmRtzHfQAgGeA1LGGk9Feqfg~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=3oVqpHSGbvUx5muB%2BeMUZdHh%2BL8%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+      "created_at": "2026-09-18T09:03:41Z",
+      "description": "\ud83d\udcf1\u2728 Format Mini, grandes performances ! D\u00e9couvrez nos iPhone Mini 128 Go : \ud83c\udf4e iPhone 12 Mini \u2014 128 Go \ud83c\udf4e iPhone 13 Mini \u2014 128 Go Un format compact, \u00e9l\u00e9gant et pratique au quotidien. \ud83e\udd0d \ud83d\udce9 Pour plus d\u2019informations, contactez-nous en message priv\u00e9. #iPhone #iPhoneMini #Apple #Smartphone #PHTelephonieTech",
+      "duration_s": 12.0,
+      "hashtags": [
+        "iPhone",
+        "iPhoneMini",
+        "Apple",
+        "Smartphone",
+        "PHTelephonieTech"
+      ],
+      "music": {
+        "author": "nunu",
+        "original": false,
+        "title": "cocoa hug"
+      },
+      "post_id": "7686798370932886802",
+      "stats": {
+        "comments": 17,
+        "likes": 538,
+        "plays": 9693,
+        "saves": 82,
+        "shares": 13
+      },
+      "url": "https://www.tiktok.com/@ph.business.store/video/7686798370932886802"
+    },
+    {
+      "author": {
+        "followers": 25800,
+        "name": "Dara iPhone Online",
+        "username": "dr222233"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oUI3QCBdRmquASDqhFdFfzeEkz0EvEwgck83BV~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=D%2BE6BQMJa3j5pC%2FzpeRhja8Gu14%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+      "created_at": "2026-09-29T14:39:53Z",
+      "description": "iPhone SE2016 32G",
+      "duration_s": 30.0,
+      "hashtags": [],
+      "music": {
+        "author": "Tep Piseth",
+        "original": false,
+        "title": "One more night"
+      },
+      "post_id": "7690966945478511892",
+      "stats": {
+        "comments": 8,
+        "likes": 268,
+        "plays": 3355,
+        "saves": 21,
+        "shares": 6
+      },
+      "url": "https://www.tiktok.com/@dr222233/video/7690966945478511892"
+    },
+    {
+      "author": {
+        "followers": 8752,
+        "name": "Sagor Telicom",
+        "username": "sagor.telicom"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oEktUFDBREBQNQi1RGEQUSBARGcgNpfSxqf6WT~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=yIF0A1J1FFZAcluep3Oh%2Ft7CfK0%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+      "created_at": "2026-10-07T13:10:43Z",
+      "description": "iphone se full fresh 13500\u2764\ufe0f2020\u2764\ufe0f",
+      "duration_s": 23.0,
+      "hashtags": [],
+      "music": {
+        "author": "Sagor Telicom",
+        "original": true,
+        "title": "original sound"
+      },
+      "post_id": "7693912664363502868",
+      "stats": {
+        "comments": 8,
+        "likes": 229,
+        "plays": 4613,
+        "saves": 15,
+        "shares": 3
+      },
+      "url": "https://www.tiktok.com/@sagor.telicom/video/7693912664363502868"
+    },
+    {
+      "author": {
+        "followers": 23700,
+        "name": "nirina.music",
+        "username": "nirina.music"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-us.com/tos-useast2a-p-0037-euttp/oAjADzfDPEy3VemCwnPsChiZFCrAzE6AFAA4IQ~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=XEpCSGCK%2FfYAT7SM3WyUYLLxwKE%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+      "created_at": "2024-07-03T18:57:11Z",
+      "description": "FMG / Ariary / Euro. #malagasy\ud83c\uddf2\ud83c\uddec #malgaches #malgache\ud83c\uddf2\ud83c\uddec #malgachetiktok\ud83c\uddf2\ud83c\uddec",
+      "duration_s": 88.0,
+      "hashtags": [
+        "malagasy",
+        "malgaches",
+        "malgache",
+        "malgachetiktok"
+      ],
+      "music": {
+        "author": "nirina.music",
+        "original": true,
+        "title": "son original - nirina.music"
+      },
+      "post_id": "7387485533326413089",
+      "stats": {
+        "comments": 82,
+        "likes": 4652,
+        "plays": 75700,
+        "saves": 441,
+        "shares": 443
+      },
+      "url": "https://www.tiktok.com/@nirina.music/video/7387485533326413089"
+    },
+    {
+      "author": {
+        "followers": 23700,
+        "name": "Business..",
+        "username": "businessucess"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oY9VvAGlIDEIAGm4eIAAQmAL2tfziKwYx1ej4a~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=n%2FaZb0Jtj6WIfS7aM%2FwA%2F1Dnf38%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+      "created_at": "2026-10-26T15:01:02Z",
+      "description": "Petit rappel : Tu n'as Pas besoin de 200.000ar/ 300.000ar pour demarrer ton business en ligne \u2728\ud83d\udd25 #businessenligne #motivation #opportunity #marketingdigital",
+      "duration_s": 29.0,
+      "hashtags": [
+        "businessenligne",
+        "motivation",
+        "opportunity",
+        "marketingdigital"
+      ],
+      "music": {
+        "author": "Business..",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7700991713363365127",
+      "stats": {
+        "comments": 19,
+        "likes": 259,
+        "plays": 4239,
+        "saves": 145,
+        "shares": 7
+      },
+      "url": "https://www.tiktok.com/@businessucess/video/7700991713363365127"
+    },
+    {
+      "author": {
+        "followers": 2500000,
+        "name": "Kadri \ud83e\udd85",
+        "username": "kadri665"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-us.com/tos-useast2a-p-0037-euttp/ooUEwaiEitN2IiAaHgB0BFZX2EqLIuRViBM7v~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=K5Zb4joCaorychRZnK3vM9Ew1dY%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+      "created_at": "2026-09-10T14:46:58Z",
+      "description": "Madagascar \ud83c\uddf2\ud83c\uddec",
+      "duration_s": 181.0,
+      "hashtags": [],
+      "music": {
+        "author": "Kadri \ud83e\udd85",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7683918175129390368",
+      "stats": {
+        "comments": 449,
+        "likes": 29500,
+        "plays": 267600,
+        "saves": 1913,
+        "shares": 342
+      },
+      "url": "https://www.tiktok.com/@kadri665/video/7683918175129390368"
+    },
+    {
+      "author": {
+        "followers": 35800,
+        "name": "Smaven\ud83c\udf34",
+        "username": "smaven261"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/o4ABHQqTAlRhEuwEFpAA0IQDeggUHAqCE6fWCx~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=6vjmWs6nFZSes80oYeNKR46Nqxc%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+      "created_at": "2026-06-02T08:28:42Z",
+      "description": "250 000 Tsy nahampy Bazar mats\u00e0gna sady mbola zahay anagnanolo ZEGNY KA ZAHAY  \ud83d\ude02\ud83d\ude02 VOLA NATAONY SAKAITANY FAO EFA MAHAVITA BAZAR TSOTSOTRA N'OLO SASANY ...",
+      "duration_s": 526.0,
+      "hashtags": [],
+      "music": {
+        "author": "Smaven\ud83c\udf34",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7646712152358702356",
+      "stats": {
+        "comments": 87,
+        "likes": 2275,
+        "plays": 28100,
+        "saves": 89,
+        "shares": 48
+      },
+      "url": "https://www.tiktok.com/@smaven261/video/7646712152358702356"
+    },
+    {
+      "author": {
+        "followers": 2485,
+        "name": "Madavaovaoplus",
+        "username": "madavaovaoplus"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/o4BWGIAVESpAejJ9IKOAWkLAvOj0JGeJexAve3~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=HGi%2Fu6vSpyAKSyr0R7FsdpAWiKM%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+      "created_at": "2026-07-08T10:35:48Z",
+      "description": "\ud83c\uddf2\ud83c\uddec Comment vit-on avec 50 millions d'ariary par an \u00e0 Madagascar ? #pourtoi #madagascar\ud83c\uddf2\ud83c\uddec #madagascar #madagasikara #malgache",
+      "duration_s": 38.0,
+      "hashtags": [
+        "pourtoi",
+        "madagascar",
+        "madagasikara",
+        "malgache"
+      ],
+      "music": {
+        "author": "Madavaovaoplus",
+        "original": true,
+        "title": "son original - Madavaovaoplus"
+      },
+      "post_id": "7660103986447387925",
+      "stats": {
+        "comments": 91,
+        "likes": 3014,
+        "plays": 76400,
+        "saves": 525,
+        "shares": 337
+      },
+      "url": "https://www.tiktok.com/@madavaovaoplus/video/7660103986447387925"
+    },
+    {
+      "author": {
+        "followers": 2484,
+        "name": "Princia Mamelomana",
+        "username": "princia.mameloman"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/o0BwWgfDK5o01ikCChzAArqIiCIAgIvwIVER86~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=dx8dCG4eHbwJvvyqP%2BPkmB9aRzg%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+      "created_at": "2026-05-27T05:33:01Z",
+      "description": "#creatorsearchinsights  #agenceimmobili\u00e8re  #viralvideo",
+      "duration_s": 16.0,
+      "hashtags": [
+        "creatorsearchinsights",
+        "agenceimmobili\u00e8re",
+        "viralvideo"
+      ],
+      "music": {
+        "author": "Henika.officiel",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7644440396554095880",
+      "stats": {
+        "comments": 121,
+        "likes": 2802,
+        "plays": 121100,
+        "saves": 392,
+        "shares": 512
+      },
+      "url": "https://www.tiktok.com/@princia.mameloman/video/7644440396554095880"
+    },
+    {
+      "author": {
+        "followers": 77000,
+        "name": "Unique Mobile (Mandalay)",
+        "username": "uniquemobile.mdy"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/owDOIYihWAYO1QBAiUBockZy5BOBKILv6EEWd~tplv-tiktokx-origin.image?dr=14575&x-expires=1793894400&x-signature=G5JXCa9Ij9gFeqIUr1yQGmbNU90%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+      "created_at": "2024-07-02T05:37:34Z",
+      "description": "\ud83d\udcf1 iPhone SE 2020 (or) iPhone SE2 (128GB) \ud83d\udcf1 \ud83c\udff7\ufe0f 4\ufe0f\u20e39\ufe0f\u20e30\ufe0f\u20e3,0\ufe0f\u20e30\ufe0f\u20e30\ufe0f\u20e3 Kyats \ud83c\udff7\ufe0f \u1021\u1000\u1031\u102c\u1004\u103a\u1038\u101e\u1031\u1038\u101e\u1031\u1038 \u1021\u1006\u102d\u1015\u103a\u1015\u103c\u1004\u103a\u1038\u1015\u103c\u1004\u103a\u1038 ...  Camera \u1010\u1005\u103a\u101c\u102f\u1036\u1038\u1010\u100a\u103a\u1038\u1014\u1032\u1037 Portrait \u1015\u102f\u1036 \u1021\u1019\u102d\u102f\u1000\u103a\u1005\u102c\u1038\u1010\u103d\u1031 \u101b\u102d\u102f\u1000\u103a\u101c\u102d\u102f\u1037 \u101b\u1015\u103c\u102e\u1038 ...  iPhone 11 \u1014\u1032\u1037 Chipset \u1021\u1010\u1030\u1010\u1030 Apple A13 Bionic (7nm+) Chipset \u101e\u102f\u1036\u1038\u1015\u1031\u1038\u1011\u102c\u1038\u101c\u102d\u102f\u1037 ... \u101c\u1000\u103a\u101b\u103e\u102d iOS Version \u1014\u1031\u102c\u1000\u103a\u1006\u102f\u1036\u1038\u1011\u102d\u101c\u100a\u103a\u1038 \u101b\u1010\u1032\u1037 ...  iPhone SE2 (128GB) \u1021\u101c\u102f\u1036\u1038\u101b\u103e\u101a\u103a\u101c\u1031\u1038 \u101b\u103e\u102d\u1015\u102b\u1019\u101a\u103a ... \ud83d\udde3\ufe0f\ud83d\udce3 \ud83c\udf81 20W Charger \u1014\u1032\u1037 Cover \u101c\u1031\u1038\u101c\u100a\u103a\u1038 \u101c\u1000\u103a\u1006\u1031\u102c\u1004\u103a \u1011\u100a\u1037\u103a\u1015\u1031\u1038\u1015\u102b\u1026\u1038\u1019\u100a\u103a ... \ud83c\udf81 \ud83c\udf81 Apple ID \u1019\u101b\u103e\u102d\u101e\u1031\u1038\u101b\u1004\u103a\u101c\u100a\u103a\u1038 \u1000\u102d\u102f\u101a\u103a\u1015\u102d\u102f\u1004\u103a Apple ID \u1010\u1005\u103a\u1001\u102f \u101c\u1000\u103a\u1006\u1031\u102c\u1004\u103a \u1016\u103d\u1004\u1037\u103a\u1015\u1031\u1038\u1015\u102b\u1026\u1038\u1019\u100a\u103a ... \ud83c\udf81 \ud835\udc00\ud835\udc1c\ud835\udc1c\ud835\udc1e\ud835\udc2c\ud835\udc2c\ud835\udc28\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc2c : Phone & 20W Charger \ud83d\udd0c [\ud835\udc03\ud835\udc1e\ud835\udc2d\ud835\udc1a\ud835\udc22\ud835\udc25\ud835\udc2c] ======= \ud835\udc11\ud835\udc1e\ud835\udc20\ud835\udc22\ud835\udc28\ud835\udc27 : LL/A \ud835\udc12\ud835\udc2d\ud835\udc28\ud835\udc2b\ud835\udc1a\ud835\udc20\ud835\udc1e : 128GB \ud835\udc01\ud835\udc1a\ud835\udc2d\ud835\udc2d\ud835\udc1e\ud835\udc2b\ud835\udc32 \ud835\udc07\ud835\udc1e\ud835\udc1a\ud835\udc25\ud835\udc2d\ud835\udc21 : 90% \ud835\udc05\ud835\udc22\ud835\udc27\ud835\udc20\ud835\udc1e\ud835\udc2b\ud835\udc29\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc2d\ud835\udc2c \ud835\udc08\ud835\udc03 : Ok \u2705 \ud835\udc13\ud835\udc2b\ud835\udc2e\ud835\udc1e \ud835\udc13\ud835\udc28\ud835\udc27\ud835\udc1e : Ok \u2705 \ud835\udc15\ud835\udc22\ud835\udc1b\ud835\udc2b\ud835\udc1a\ud835\udc2d\ud835\udc22\ud835\udc28\ud835\udc27 \ud835\udc0a\ud835\udc1e\ud835\udc32 : Ok \u2705 [\ud835\udc12\ud835\udc29\ud835\udc1e\ud835\udc1c\ud835\udc22\ud835\udc1f\ud835\udc22\ud835\udc1c\ud835\udc1a\ud835\udc2d\ud835\udc22\ud835\udc28\ud835\udc27\ud835\udc2c] ============ \ud835\udc03\ud835\udc22\ud835\udc2c\ud835\udc29\ud835\udc25\ud835\udc1a\ud835\udc32 : Retina IPS LCD \ud835\udc02\ud835\udc21\ud835\udc22\ud835\udc29\ud835\udc2c\ud835\udc1e\ud835\udc2d : Apple A13 Bionic (7nm+) \ud835\udc12\ud835\udc28\ud835\udc2e\ud835\udc27\ud835\udc1d : Stereo Speakers \ud835\udc01\ud835\udc1a\ud835\udc2d\ud835\udc2d\ud835\udc1e\ud835\udc2b\ud835\udc32 : 1821 mAh, 18W charging #Unique_Mobile #iPhone_SE2 \ud83d\udcb0 490,000/- Ks \ud83d\udcb0 (\u1008\u1031\u1038\u101c\u1031\u1038\u101c\u100a\u103a\u1038 \u101c\u103b\u1031\u102c\u1037\u1015\u1031\u1038\u1015\u102b\u1026\u1038\u1019\u100a\u103a) #\u1006\u1000\u103a\u101e\u103d\u101a\u103a\u101b\u1014\u103a \ud83d\udcee \ud83c\udfe1 \u101c\u102d\u1015\u103a\u1005\u102c : \ud83d\udc47\ud83d\udc47\ud83d\udc47 Unique Second-Hand Mobile Shop  36 \u101c\u1019\u103a\u1038\u104a 73 \u101c\u1019\u103a\u1038 \u1014\u103e\u1004\u1037\u103a 74 \u101c\u1019\u103a\u1038\u1000\u103c\u102c\u1038\u104a \u1019\u101f\u102c\u1021\u1031\u102c\u1004\u103a\u1019\u103c\u1031 \u1019\u103c\u102d\u102f\u1037\u1014\u101a\u103a\u104a \u1019\u1014\u1039\u1010\u101c\u1031\u1038\u1019\u103c\u102d\u102f\u1037\u104b \u260e\ufe0f 09798634730 // 09979945066 (Mandalay) #UniqueMobile #SecondHand #Mandalay #Myanmar #foryou #fyp #Apple #iPhone #iOS #iPhoneSE2 #SmartPhone #TikTokShop",
+      "duration_s": 46.0,
+      "hashtags": [
+        "Unique_Mobile",
+        "iPhone_SE2",
+        "\u1006\u1000",
+        "UniqueMobile",
+        "SecondHand",
+        "Mandalay",
+        "Myanmar",
+        "foryou",
+        "fyp",
+        "Apple",
+        "iPhone",
+        "iOS",
+        "iPhoneSE2",
+        "SmartPhone",
+        "TikTokShop"
+      ],
+      "music": {
+        "author": "Nabih Fvnky",
+        "original": true,
+        "title": "FULL DI YT NABIH FVNKY"
+      },
+      "post_id": "7386908452200746248",
+      "stats": {
+        "comments": 10,
+        "likes": 650,
+        "plays": 23000,
+        "saves": 59,
+        "shares": 6
+      },
+      "url": "https://www.tiktok.com/@uniquemobile.mdy/video/7386908452200746248"
+    },
+    {
+      "author": {
+        "followers": 9606,
+        "name": "Midi Madagasikara",
+        "username": "midi.mg"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-us.com/tos-maliva-p-0068/oki57DeeQASWzhAEqCKEEOUAzIHrgAF2R3EZ8f~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=HLtgvwufUgCENoX4TDun3d%2BSSnQ%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+      "created_at": "2025-10-24T15:12:35Z",
+      "description": "L\u2019ariary enregistre une l\u00e9g\u00e8re d\u00e9pr\u00e9ciation face aux principales devises \u00e9trang\u00e8res, une \u00e9volution qui s\u2019inscrit dans une tendance observ\u00e9e \u00e0 chaque p\u00e9riode d\u2019incertitude ou de ralentissement \u00e9conomique. #Madagascar #Actualit\u00e9s #Informations",
+      "duration_s": 105.0,
+      "hashtags": [
+        "Madagascar",
+        "Actualit\u00e9s",
+        "Informations"
+      ],
+      "music": {
+        "author": "Midi Madagasikara",
+        "original": true,
+        "title": "son original - Midi Madagasikara"
+      },
+      "post_id": "7564806422366588216",
+      "stats": {
+        "comments": 1,
+        "likes": 45,
+        "plays": 1179,
+        "saves": 4,
+        "shares": 10
+      },
+      "url": "https://www.tiktok.com/@midi.mg/video/7564806422366588216"
+    },
+    {
+      "author": {
+        "followers": 570800,
+        "name": "CNobservation",
+        "username": "cnobservation8"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oMDCfADsiuWD0FjQNDEesDoIAIewCbMQYq1LEu~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=Y420cniwerLmKiXDNeZmJ0cLL3I%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+      "created_at": "2024-09-04T13:16:18Z",
+      "description": "Use #Currency pattern as a witness of #friendship! \ud83c\udf3e The 20,000 #Ariary note of #Madagascar carries a symbol of agricultural legacy from #China, commemorating the Father of #HybridRice, #Yuanlongping! #fyp",
+      "duration_s": 15.0,
+      "hashtags": [
+        "Currency",
+        "friendship",
+        "Ariary",
+        "Madagascar",
+        "China",
+        "HybridRice",
+        "Yuanlongping",
+        "fyp"
+      ],
+      "music": {
+        "author": "CNobservation",
+        "original": true,
+        "title": "\u539f\u58f0 - CNobservation"
+      },
+      "post_id": "7410776105323384065",
+      "stats": {
+        "comments": 8,
+        "likes": 5284,
+        "plays": 490500,
+        "saves": 189,
+        "shares": 30
+      },
+      "url": "https://www.tiktok.com/@cnobservation8/video/7410776105323384065"
+    },
+    {
+      "author": {
+        "followers": 8547,
+        "name": "P&H Business store",
+        "username": "ph.business.store"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oo14KGvQI1LoDyHeIAkafoVeiEjvGAcXIQsCC4~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=h7FOrvCIM7XhQEP9edDS2sJ10%2B4%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+      "created_at": "2026-08-25T07:36:12Z",
+      "description": "#\ud835\udc08\ud835\udc29\ud835\udc21\ud835\udc28\ud835\udc27\ud835\udc1e\ud835\udfcf\ud835\udfd0\ud835\udc0c\ud835\udc22\ud835\udc27\ud835\udc22 \ud835\udfd4\ud835\udfd2 \ud835\udc20\ud835\udc22\ud835\udc20\ud835\udc1a  - occasion Non reconditionn\u00e9  - impec \ud83d\udc4c  - avec carton \ud83d\udce6  - etat battery plus de 85% \ud83d\udd0b  \ud83d\udd25 780.000 Ariary \ud83d\udd25  Contacter P&H Shop  038 44 585 50",
+      "duration_s": 13.0,
+      "hashtags": [
+        "\ud835\udc08\ud835\udc29\ud835\udc21\ud835\udc28\ud835\udc27\ud835\udc1e\ud835\udfcf\ud835\udfd0\ud835\udc0c\ud835\udc22\ud835\udc27\ud835\udc22"
+      ],
+      "music": {
+        "author": "P&H Business store",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7677869764005481736",
+      "stats": {
+        "comments": 4,
+        "likes": 171,
+        "plays": 3796,
+        "saves": 30,
+        "shares": 8
+      },
+      "url": "https://www.tiktok.com/@ph.business.store/video/7677869764005481736"
+    },
+    {
+      "author": {
+        "followers": 6500000,
+        "name": "J e a n l u i s",
+        "username": "j.luis___"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-us.com/tos-useast8-p-0068-tx2/oIfnff5qdCIFZFAQJQpcj5ACGHvAEVdVDIj3EV~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=N02gS2UH45Lu%2Bj8g3oPzTi9YlJE%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+      "created_at": "2026-09-29T17:58:19Z",
+      "description": "\ud83d\ude80 We\u2019re on the road to 1 MILLION subscribers on YouTube! My goal is to become the first runner and aviation content creator to reach 1 MILLION subscribers. \u2708\ufe0f\ud83c\udfc3\u200d\u2642\ufe0f If you\u2019re not part of the family yet, subscribe to Jvaz.Aviation and join me on this journey. Let\u2019s get to 1 MILLION! \ud83d\ude4f\ud83d\udd25",
+      "duration_s": 44.0,
+      "hashtags": [],
+      "music": {
+        "author": "user96729900404",
+        "original": true,
+        "title": "original sound"
+      },
+      "post_id": "7691018008822582559",
+      "stats": {
+        "comments": 52,
+        "likes": 401,
+        "plays": 5960,
+        "saves": 22,
+        "shares": 21
+      },
+      "url": "https://www.tiktok.com/@j.luis___/video/7691018008822582559"
+    },
+    {
+      "author": {
+        "followers": 712900,
+        "name": "The Koerner Office",
+        "username": "the.koerner.office"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/oICIdYW1IIELIPvTp4aiB2BU5MiJgGLF9QGAa~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=zs26c18gTJLZd4q4mGQDCGRtM6M%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+      "created_at": "2025-09-01T22:17:52Z",
+      "description": "How to Cash In on Spoiled Kids #businessideas #businessideas  #entrepreneurship #sidehustleideas #business #sidehustle",
+      "duration_s": 31.0,
+      "hashtags": [
+        "businessideas",
+        "entrepreneurship",
+        "sidehustleideas",
+        "business",
+        "sidehustle"
+      ],
+      "music": {
+        "author": "The Koerner Office",
+        "original": true,
+        "title": "original sound - The Koerner Office"
+      },
+      "post_id": "7545248397591137549",
+      "stats": {
+        "comments": 7,
+        "likes": 1046,
+        "plays": 52700,
+        "saves": 421,
+        "shares": 201
+      },
+      "url": "https://www.tiktok.com/@the.koerner.office/video/7545248397591137549"
+    },
+    {
+      "author": {
+        "followers": 268600,
+        "name": "Ayanda | Marketing&strategist",
+        "username": "ayandamabasoza"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-us.com/tos-maliva-p-0068/oUeaDDyE1SFDB46fEQgktJomPZRaZA1YEIJBBc~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=mMZQd9zHdk6RxJgoPyUjWO%2F%2BMw0%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+      "created_at": "2025-07-01T20:00:39Z",
+      "description": "How insurance companies work your R500 is used to buy property. #MBSmedia #insurance #insurancecompanies #mzansitiktok",
+      "duration_s": 153.0,
+      "hashtags": [
+        "MBSmedia",
+        "insurance",
+        "insurancecompanies",
+        "mzansitiktok"
+      ],
+      "music": {
+        "author": "Malusi  \"Intelligent\" Shimora",
+        "original": true,
+        "title": "original sound"
+      },
+      "post_id": "7522205863960939832",
+      "stats": {
+        "comments": 472,
+        "likes": 17000,
+        "plays": 245400,
+        "saves": 4048,
+        "shares": 2098
+      },
+      "url": "https://www.tiktok.com/@ayandamabasoza/video/7522205863960939832"
+    },
+    {
+      "author": {
+        "followers": 55200,
+        "name": "Rato Rupaiya",
+        "username": "ratorupaiya"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/og6qPAUDoCFpV4QFEAAAfAIbEBtwfOkgbRQTBc~tplv-tiktokx-origin.image?dr=14575&x-expires=1793894400&x-signature=zOUJ546nMkbw%2Bl8y2XDnUoOOQHo%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+      "created_at": "2025-05-29T07:19:57Z",
+      "description": "3 Reasons why Yango\u2019s Marketing is great \ud83d\ude4c\ud83c\udffc\ud83e\udd0c\ud83c\udffb\ud83d\udcaf#ratorupaiya #learnontiktok #edutok #discoverwithtiktok #business #people #money",
+      "duration_s": 71.0,
+      "hashtags": [
+        "ratorupaiya",
+        "learnontiktok",
+        "edutok",
+        "discoverwithtiktok",
+        "business",
+        "people",
+        "money"
+      ],
+      "music": {
+        "author": "\u706b\u82b1\u97f3\u60a6",
+        "original": false,
+        "title": "Wave"
+      },
+      "post_id": "7509764017431383303",
+      "stats": {
+        "comments": 554,
+        "likes": 65500,
+        "plays": 940300,
+        "saves": 1577,
+        "shares": 926
+      },
+      "url": "https://www.tiktok.com/@ratorupaiya/video/7509764017431383303"
+    }
+  ],
+  "usage": {
+    "boxes": [
+      "gate",
+      "search",
+      "recipe"
+    ],
+    "cache": "miss",
+    "engine": "recipe",
+    "lines": [
+      {
+        "about": "the call",
+        "boxes": [
+          "gate"
+        ],
+        "cache": "miss",
+        "call": "recipes",
+        "engine": "gate",
+        "units": 1
+      },
+      {
+        "call": "serp",
+        "step": "site:tiktok.com business avec 1 million ariary",
+        "units": 5
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      }
+    ],
+    "remaining_before": {
+      "concurrent": 1459,
+      "requests": 1422,
+      "search": 2982
+    },
+    "units": 27
+  },
+  "version": 3
+}

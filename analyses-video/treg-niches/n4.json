@@ -1,0 +1,472 @@
+{
+  "meta": {
+    "blocked": [],
+    "elapsed_ms": 179724,
+    "from_cache": false,
+    "llm_calls": 0,
+    "pages_fetched": 10,
+    "partial": false,
+    "warnings": [
+      "module: tiktok-search: our search found 1 videos; a second source adds the rest"
+    ]
+  },
+  "recipe": "tiktok-search",
+  "rows": [
+    {
+      "author": {
+        "followers": 126200,
+        "name": "Bryne",
+        "username": "bryneupdates"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-us.com/tos-maliva-p-0068/o0PpB2fBJE2ZR9oEZ5iaBWnfbCiA1iMAiAARIQ~tplv-tiktokx-origin.image?dr=9636&x-expires=1793894400&x-signature=t33VAmIHGw3XODR8c7X%2Fc2UbZxw%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+      "created_at": "2025-06-25T12:05:58Z",
+      "description": "Know between Alibaba and Aliexpress, where to shop\u2705 #bryneupdates #ecommerce #alibaba #aliexpress",
+      "duration_s": 130.0,
+      "hashtags": [
+        "bryneupdates",
+        "ecommerce",
+        "alibaba",
+        "aliexpress"
+      ],
+      "music": {
+        "author": "Bryne",
+        "original": true,
+        "title": "original sound"
+      },
+      "post_id": "7519857034037087544",
+      "stats": {
+        "comments": 34,
+        "likes": 555,
+        "plays": 10400,
+        "saves": 58,
+        "shares": 4
+      },
+      "url": "https://www.tiktok.com/@bryneupdates/video/7519857034037087544"
+    },
+    {
+      "author": {
+        "followers": 84800,
+        "name": "Rukky |smart importer Academy",
+        "username": "rukkyprocurement"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-no1a-p-0037-no/ocrBI2pZQXAskZbAAj6MIFmJVEtemwVKeLB8Df~tplv-tiktokx-dmt-logom:tos-no1a-i-0068-no/ooijUXQAgiAskgWtLrNevl4jAfYfsUAgwAeVeK.image?dr=10393&x-expires=1793894400&x-signature=0hs632QdDMapeqbYDeWiJyMdmos%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-09-22T16:34:00Z",
+      "description": "ALIBABA \u2260 ALIEXPRESS \ud83d\udc40\ud83c\udde8\ud83c\uddf3 If you\u2019re importing from China for business, you need to understand the difference between these two platforms. Alibaba.com is primarily B2B, while AliExpress is retail-focused. And in this Alibaba series, I\u2019m breaking everything down step by step so you can stop importing blindly. Comment \u201cALIBABA\u201d if you want the next episode. \ud83d\udc47\ud83c\udffd #Alibaba #AlibabaForBeginners #AlibabaTips #AlibabaSeries #ChinaImportation",
+      "duration_s": 164.0,
+      "hashtags": [
+        "alibaba",
+        "alibabaforbeginners",
+        "alibabatips",
+        "alibabaseries",
+        "chinaimportation"
+      ],
+      "music": {
+        "author": "Rukky |smart importer Academy",
+        "original": true,
+        "title": "original sound"
+      },
+      "post_id": "7688398770077207830",
+      "stats": {
+        "comments": 8,
+        "likes": 103,
+        "plays": 2389,
+        "saves": 20,
+        "shares": 8
+      },
+      "url": "https://www.tiktok.com/@rukkyprocurement/video/7688398770077207830"
+    },
+    {
+      "author": {
+        "followers": 60700,
+        "name": "Mutual_Brasil",
+        "username": "mutual_brasil"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast5-v-85c255-tx/oEElIABAA2uUCkB1DiC2fGoy40yYUiAwJLuiBq~tplv-tiktokx-origin.image?dr=10395&x-expires=1793894400&x-signature=2EiAXLIZKzDBv29R8tjeToN2PQk%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-09-12T23:03:04Z",
+      "description": "Alibaba ou AliExpress? Nenhum dos dois. \ud83c\udde8\ud83c\uddf3 #ImportacaoDaChina #1688 #FornecedorDaChina #Atacado #AgenteDeCompras",
+      "duration_s": 48.0,
+      "hashtags": [
+        "importacaodachina",
+        "fornecedordachina",
+        "atacado",
+        "agentedecompras"
+      ],
+      "music": {
+        "author": "Mutual_Brasil",
+        "original": true,
+        "title": "som original"
+      },
+      "post_id": "7684788153147870477",
+      "stats": {
+        "comments": 889,
+        "likes": 37000,
+        "plays": 683600,
+        "saves": 11100,
+        "shares": 2927
+      },
+      "url": "https://www.tiktok.com/@mutual_brasil/video/7684788153147870477"
+    },
+    {
+      "author": {
+        "followers": 3983,
+        "name": "Jemmy_Li\ud83c\udde8\ud83c\uddf3",
+        "username": "jemmy_li"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-no1a-p-0037-no/o4ImQDLyjOU5AsGUeLj1edwQWg3IpIPAI4jeD3~tplv-tiktokx-origin.image?dr=10395&x-expires=1793894400&x-signature=FddFYdgP75B8cQlSOGXaCKw7M20%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-08-05T11:26:36Z",
+      "description": "Stop \ud83d\uded1 using Alibaba or Aliexpress for dropshipping from China \ud83c\udde8\ud83c\uddf3!! #china#dropshipping",
+      "duration_s": 23.0,
+      "hashtags": [
+        "china",
+        "dropshipping"
+      ],
+      "music": {
+        "author": "Type Beats Trap",
+        "original": false,
+        "title": "Beat Way Up"
+      },
+      "post_id": "7670507473312156950",
+      "stats": {
+        "comments": 11,
+        "likes": 268,
+        "plays": 56000,
+        "saves": 205,
+        "shares": 54
+      },
+      "url": "https://www.tiktok.com/@jemmy_li/video/7670507473312156950"
+    },
+    {
+      "author": {
+        "followers": 1174,
+        "name": "alfredoenmutual",
+        "username": "alfredoenmutual"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast5-v-85c255-tx/oE7CAAefCzlqiDE3EgD6Bu0BgiIwS1A4GpsQIA~tplv-tiktokx-origin.image?dr=10395&x-expires=1793894400&x-signature=f0AT85wx2peelIn07TbU1qi0Nmo%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-09-23T11:30:05Z",
+      "description": "\u00bfAlibaba o Aliexpress? Ninguno de los dos.#china #alibaba #aliexpress #importar #importardesdechina #negociocomercial #am\u00e9ricalatina #mutual",
+      "duration_s": 48.0,
+      "hashtags": [
+        "china",
+        "alibaba",
+        "aliexpress",
+        "importar",
+        "importardesdechina",
+        "negociocomercial",
+        "am\u00e9ricalatina",
+        "mutual"
+      ],
+      "music": {
+        "author": "alfredoenmutual",
+        "original": true,
+        "title": "\u539f\u5275\u97f3\u6a02"
+      },
+      "post_id": "7688691567585955085",
+      "stats": {
+        "comments": 5,
+        "likes": 31,
+        "plays": 733,
+        "saves": 11,
+        "shares": 1
+      },
+      "url": "https://www.tiktok.com/@alfredoenmutual/video/7688691567585955085"
+    },
+    {
+      "author": {
+        "followers": 19100,
+        "name": "SACHA | DIGISOCIAL AGENCY",
+        "username": "digisocial.agency"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast2a-p-0037-euttp/osEYGGKqvyy22toqfOCY2AARYfN4AHzAeIAfg2~tplv-tiktokx-origin.image?dr=10395&x-expires=1793894400&x-signature=XhBwc1JAccGH7Yvu%2BeG82ygJejk%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-09-23T18:00:00Z",
+      "description": "Et toi t\u2019es plus Alibaba ou Aliexpress ? \ud83d\ude9a",
+      "duration_s": 116.0,
+      "hashtags": [],
+      "music": {
+        "author": "Burning Man",
+        "original": false,
+        "title": "Drake style\u30fbLife Is Good style(1547997)"
+      },
+      "post_id": "7688448719338982688",
+      "stats": {
+        "comments": 21,
+        "likes": 373,
+        "plays": 11300,
+        "saves": 446,
+        "shares": 102
+      },
+      "url": "https://www.tiktok.com/@digisocial.agency/video/7688448719338982688"
+    },
+    {
+      "author": {
+        "followers": 126900,
+        "name": "Pic Cargo Flete Maritimo Aduan",
+        "username": "piccargo"
+      },
+      "cover": "https://p19-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/oEmZXAPoeUAmjiIpD1ifBCgpn2vAzHETRABwEM~tplv-tiktokx-origin.image?dr=10395&x-expires=1793894400&x-signature=vmd6TZHlT9IV3ix4MxitRijihgA%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-04-09T16:53:51Z",
+      "description": "\u00bfCu\u00e1l es mejor; Alibaba o Aliexpress?\ud83e\udd14 \u00a1Te explico cu\u00e1l es el mejor para tu negocio en menos de un minuto! \ud83d\ude80 #importadoresperu #importacioneschina #piccargo #alibaba #aliexpress",
+      "duration_s": 32.0,
+      "hashtags": [
+        "importadoresperu",
+        "importacioneschina",
+        "piccargo",
+        "alibaba",
+        "aliexpress"
+      ],
+      "music": {
+        "author": "Pic Cargo Flete Maritimo Aduan",
+        "original": true,
+        "title": "sonido original"
+      },
+      "post_id": "7626803749893229832",
+      "stats": {
+        "comments": 21,
+        "likes": 409,
+        "plays": 95100,
+        "saves": 108,
+        "shares": 35
+      },
+      "url": "https://www.tiktok.com/@piccargo/video/7626803749893229832"
+    },
+    {
+      "author": {
+        "followers": 68500,
+        "name": "Coachsofiankasmi",
+        "username": "ecomcoachsofian"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-useast2a-p-0037-euttp/oUjD8LGfIhbeZHYh3Ur1A4Mj0CgIgeBDGwDkIg~tplv-tiktokx-origin.image?dr=10395&x-expires=1793894400&x-signature=QtBBwk9tXbTanaLAw1qsIS1AWIQ%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-06-16T17:28:28Z",
+      "description": "R\u00e9ponse \u00e0 @Rania_  Si tu es d\u00e9butant et que tu souhaites cr\u00e9er ta 1ere marque E-commerce \u00e0 succ\u00e8s en 150 jours, tu dois regarder ma masterclass de 52 min disponible en bio \ud83d\udc46 #ecommerce #dropshipping",
+      "duration_s": 125.0,
+      "hashtags": [
+        "ecommerce",
+        "dropshipping"
+      ],
+      "music": {
+        "author": "Coachsofiankasmi",
+        "original": true,
+        "title": "son original"
+      },
+      "post_id": "7652046465023446305",
+      "stats": {
+        "comments": 29,
+        "likes": 731,
+        "plays": 27000,
+        "saves": 449,
+        "shares": 76
+      },
+      "url": "https://www.tiktok.com/@ecomcoachsofian/video/7652046465023446305"
+    },
+    {
+      "author": {
+        "followers": 63800,
+        "name": "Mahmoud Wardeh",
+        "username": "mahmoud_wardeh"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-no1a-p-0037-no/ogG9AgAhQUaeLIIfiet4SEQsuIXyeABeABAALQ~tplv-tiktokx-origin.image?dr=10395&x-expires=1793894400&x-signature=L1K%2FzKnzkcURlVrJZe8dL0H%2Fq20%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-06-02T15:05:14Z",
+      "description": "\u0634\u0648 \u0627\u0644\u0641\u0631\u0642 \u0628\u064a\u0646 ali baba \u0648 aliexpress",
+      "duration_s": 37.0,
+      "hashtags": [],
+      "music": {
+        "author": "Mahmoud Wardeh",
+        "original": true,
+        "title": "original sound - Mahmoud Wardeh"
+      },
+      "post_id": "7646814329374838038",
+      "stats": {
+        "comments": 11,
+        "likes": 48,
+        "plays": 2072,
+        "saves": 28,
+        "shares": 3
+      },
+      "url": "https://www.tiktok.com/@mahmoud_wardeh/video/7646814329374838038"
+    },
+    {
+      "author": {
+        "followers": 1636,
+        "name": "Mers_China \ud83c\udde8\ud83c\uddf3",
+        "username": "mers_china27"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/osEYicREQBAfPQNMEqlg7o7NcBFEPxpDmfmXji~tplv-tiktokx-origin.image?dr=10395&x-expires=1793894400&x-signature=OkomdyV28IxwVB54RmlGBVzfyKY%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-09-13T08:44:39Z",
+      "description": "You can order anything you want  Telegram: @M349N #habeshatiktok #alibaba #onlinestore",
+      "duration_s": 13.0,
+      "hashtags": [
+        "habeshatiktok",
+        "alibaba",
+        "onlinestore"
+      ],
+      "music": {
+        "author": "akositramm",
+        "original": true,
+        "title": "original sound - yurroooo"
+      },
+      "post_id": "7684938053080648978",
+      "stats": {
+        "comments": 1,
+        "likes": 78,
+        "plays": 2313,
+        "saves": 9,
+        "shares": 34
+      },
+      "url": "https://www.tiktok.com/@mers_china27/video/7684938053080648978"
+    },
+    {
+      "author": {
+        "followers": 5,
+        "name": "sukicaptures",
+        "username": "sukicaptures"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-no1a-p-0037-no/o496iCAiZEW5aIAwbdCWOzI17TufBPxAyoK1G2~tplv-tiktokx-origin.image?dr=10395&x-expires=1793894400&x-signature=ziXFL7A3BQSQfDBfv8g4BKv0YjY%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-09-25T18:16:39Z",
+      "description": "Alibaba wys #klaythelabel #alibaba #aliexpress #dupeofadupe #takingonefortheteamigotchu",
+      "duration_s": 32.0,
+      "hashtags": [
+        "klaythelabel",
+        "alibaba",
+        "aliexpress",
+        "dupeofadupe",
+        "takingonefortheteamigotchu"
+      ],
+      "music": {
+        "author": "sukicaptures",
+        "original": true,
+        "title": "original sound"
+      },
+      "post_id": "7689538478069107990",
+      "stats": {
+        "comments": 7,
+        "likes": 76,
+        "plays": 3280,
+        "saves": 47,
+        "shares": 16
+      },
+      "url": "https://www.tiktok.com/@sukicaptures/video/7689538478069107990"
+    },
+    {
+      "author": {
+        "followers": 19200,
+        "name": "Kimba",
+        "username": "kimba1468"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/ooCbJALgfQA4TEQrHkFfGJA9pesANkIsGAD1Re~tplv-tiktokx-origin.image?dr=10395&x-expires=1793894400&x-signature=qE%2BN22vfhcTiZwkzEWxaQWq5K0A%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-10-30T20:10:40Z",
+      "description": "Once you discover manufacturer prices, there\u2019s simply no going back \ud83e\udd1d\ud83c\udffc #alibaba #aliexpress #onlineshopping #beautyhacks #affordableskincare",
+      "duration_s": 69.0,
+      "hashtags": [
+        "alibaba",
+        "aliexpress",
+        "onlineshopping",
+        "beautyhacks",
+        "affordableskincare"
+      ],
+      "music": {
+        "author": "Kimba",
+        "original": true,
+        "title": "original sound"
+      },
+      "post_id": "7702555841760709909",
+      "stats": {
+        "comments": 147,
+        "likes": 6109,
+        "plays": 94900,
+        "saves": 3843,
+        "shares": 734
+      },
+      "url": "https://www.tiktok.com/@kimba1468/video/7702555841760709909"
+    },
+    {
+      "author": {
+        "followers": 192,
+        "name": "Tech_No_Dev",
+        "username": "tech_no_dev"
+      },
+      "cover": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/oUjAEIY0PCnAAAi6i8WEiFPXYEBaBkrb5QwRA~tplv-tiktokx-origin.image?dr=10395&x-expires=1793894400&x-signature=amUd1Q%2B9gKQVC41SWRh7Blvz%2ByE%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=no1a",
+      "created_at": "2026-02-06T13:24:54Z",
+      "description": "ALIBABA X ALIEXPRESS  #shopping #alibaba #aliexpress #b2b #b2c",
+      "duration_s": 26.0,
+      "hashtags": [
+        "shopping",
+        "alibaba",
+        "aliexpress",
+        "b2b",
+        "b2c"
+      ],
+      "music": {
+        "author": "Tech_No_Dev",
+        "original": true,
+        "title": "som original"
+      },
+      "post_id": "7603742630215748872",
+      "stats": {
+        "comments": 49,
+        "likes": 81,
+        "plays": 7212,
+        "saves": 17,
+        "shares": 7
+      },
+      "url": "https://www.tiktok.com/@tech_no_dev/video/7603742630215748872"
+    }
+  ],
+  "usage": {
+    "boxes": [
+      "gate",
+      "search",
+      "recipe"
+    ],
+    "cache": "miss",
+    "engine": "recipe",
+    "lines": [
+      {
+        "about": "the call",
+        "boxes": [
+          "gate"
+        ],
+        "cache": "miss",
+        "call": "recipes",
+        "engine": "gate",
+        "units": 1
+      },
+      {
+        "call": "serp",
+        "step": "site:tiktok.com alibaba ou aliexpress",
+        "units": 5
+      },
+      {
+        "call": "serp",
+        "step": "alibaba ou aliexpress tiktok",
+        "units": 2
+      },
+      {
+        "call": "serp",
+        "step": "alibaba ou aliexpress tiktok video",
+        "units": 2
+      },
+      {
+        "attempts": 1,
+        "cache": "api",
+        "call": "scrape",
+        "engine": "api",
+        "proxy": "isp",
+        "units": 1,
+        "url": "https://www.tiktok.com/\u2026"
+      },
+      {
+        "cache": "miss",
+        "call": "records",
+        "records": 12,
+        "units": 0
+      }
+    ],
+    "records": 12,
+    "remaining_before": {
+      "concurrent": 1459,
+      "requests": 1427,
+      "search": 2985
+    },
+    "units": 11
+  },
+  "version": 3
+}

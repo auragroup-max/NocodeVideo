@@ -1,0 +1,5 @@
+**[00:00]** Uh, Claude, my last video got 6 views.  Six? This one got 2.6 million!  Wait, you made that? That one and 55 more. Almost 35 million views. Okay, nobody ever shows how! Show me! Step 1. Give me one line. Um, what if all rubber disappeared for 5 seconds?  Nobody's posted that yet. I checked. Step 2. I find a source for every fact. And then you generate the video?
+
+**[00:29]** Nope, not AI video. I write code that builds the whole world. Times square,  352 cars. But I can't code!  You never touch it. Step four, I check my own frames and fix what's weak. Step five, your laptop renders it. 3000 frames, 18 minutes.  Okay, how much does that cost? No extra cost. It runs on your Claude plan. That's it? That's it. Seven prompts.
+
+**[00:59]** tutorials in my bio!

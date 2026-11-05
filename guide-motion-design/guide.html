@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Le motion design avec Claude Opus 5.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141726; --muted:#5b6178; --line:#e3e5ee; --soft:#f5f6fa;
+    --navy:#0b0d17; --accent:#ff6b4a; --accent2:#7c6cff; --mint:#22c39a;
+    --code-bg:#11141f; --code-ink:#e6e9f5;
+  }
+  @page{ size:A4; margin:18mm 17mm 20mm 17mm;
+    @bottom-left{ content:"Le motion design avec Claude Opus 5.5"; font-family:Inter,"Segoe UI",sans-serif; font-size:7.5pt; color:#8a90a8; }
+    @bottom-right{ content:counter(page) " / " counter(pages); font-family:Inter,"Segoe UI",sans-serif; font-size:7.5pt; color:#8a90a8; }
+  }
+  @page :first{ @bottom-left{ content:none; } @bottom-right{ content:none; } }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ font-family:Inter,"Segoe UI",Arial,sans-serif; color:var(--ink); font-size:10pt; line-height:1.55;
+        -webkit-print-color-adjust:exact; print-color-adjust:exact; background:#fff; }
+
+  /* ---------- couverture ---------- */
+  .cover{ height:259mm; margin:0; position:relative; background:var(--navy); color:#fff; border-radius:6mm;
+          overflow:hidden; padding:22mm 18mm; display:flex; flex-direction:column; break-after:page; }
+  .cover .kicker{ font-size:9pt; letter-spacing:3px; text-transform:uppercase; color:#9aa3c7; font-weight:600; }
+  .cover h1{ font-size:44pt; line-height:1.02; margin:12mm 0 6mm; font-weight:800; letter-spacing:-1.5px; }
+  .cover h1 em{ font-style:normal; color:var(--accent); }
+  .cover .sub{ font-size:13pt; color:#c8cde3; max-width:140mm; line-height:1.45; }
+  .cover .badges{ margin-top:auto; display:flex; gap:3mm; flex-wrap:wrap; }
+  .cover .badge{ border:1px solid #2c3150; border-radius:20px; padding:2mm 4mm; font-size:8.5pt; color:#c8cde3; }
+  .cover .art{ position:absolute; right:-8mm; top:104mm; width:100mm; opacity:.95; }
+  .cover .foot{ margin-top:8mm; font-size:8.5pt; color:#7a82a6; }
+
+  /* ---------- structure ---------- */
+  section{ margin-top:10mm; padding-top:7mm; border-top:1px solid var(--line); }
+  section.nobreak{ margin-top:0; padding-top:0; border-top:0; break-after:page; }
+  section.nobreak + section{ margin-top:0; padding-top:0; border-top:0; }
+  .chap,h2,.lead{ break-after:avoid; }
+  .chap{ font-size:9pt; font-weight:700; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:1mm; }
+  h2{ font-size:22pt; line-height:1.15; margin:0 0 5mm; letter-spacing:-.5px; font-weight:800; }
+  h3{ font-size:12.5pt; margin:6mm 0 2mm; font-weight:700; break-after:avoid; }
+  h4{ font-size:10.5pt; margin:4mm 0 1.5mm; font-weight:700; break-after:avoid; }
+  p{ margin:0 0 3mm; }
+  .lead{ font-size:11.5pt; color:#2e3247; line-height:1.55; }
+  ul,ol{ margin:0 0 3mm; padding-left:5.5mm; }
+  li{ margin-bottom:1.2mm; }
+  strong{ font-weight:700; }
+  code{ font-family:"JetBrains Mono",Consolas,monospace; font-size:8.6pt; background:var(--soft);
+        border:1px solid var(--line); border-radius:3px; padding:0 1.2mm; }
+  pre{ font-family:"JetBrains Mono",Consolas,monospace; font-size:7.9pt; line-height:1.5; background:var(--code-bg);
+       color:var(--code-ink); border-radius:3mm; padding:4mm 4.5mm; margin:2mm 0 4mm; white-space:pre-wrap;
+       word-break:break-word; break-inside:avoid; }
+  pre .c{ color:#7d86a8; } pre .k{ color:#ff8f73; } pre .s{ color:#8be3c4; } pre .n{ color:#b9adff; }
+  pre.split{ break-inside:auto; }
+  .file{ font-family:"JetBrains Mono",Consolas,monospace; font-size:7.8pt; color:var(--muted); margin:3mm 0 -1mm; }
+
+  table{ width:100%; border-collapse:collapse; margin:2mm 0 4mm; font-size:8.8pt; }
+  tr{ break-inside:avoid; }
+  .lead{ break-inside:avoid; }
+  th{ text-align:left; background:var(--soft); font-weight:700; padding:2mm 2.5mm; border-bottom:2px solid var(--line); }
+  td{ padding:2mm 2.5mm; border-bottom:1px solid var(--line); vertical-align:top; }
+  td:first-child{ font-weight:600; white-space:nowrap; }
+
+  .box{ border-radius:3mm; padding:4mm 5mm; margin:3mm 0 4mm; break-inside:avoid; }
+  .box.tip{ background:#fff3ef; border-left:4px solid var(--accent); }
+  .box.info{ background:#f1efff; border-left:4px solid var(--accent2); }
+  .box.ok{ background:#eafaf4; border-left:4px solid var(--mint); }
+  .box .t{ font-weight:800; font-size:9pt; text-transform:uppercase; letter-spacing:1px; margin-bottom:1.5mm; display:block; }
+  .box p:last-child,.box ul:last-child{ margin-bottom:0; }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:4mm; }
+  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:3.5mm; }
+  .card{ border:1px solid var(--line); border-radius:3mm; padding:3.5mm 4mm; break-inside:avoid; }
+  .card h4{ margin-top:0; }
+  .card p{ font-size:9pt; color:#383d55; margin:0; }
+  .num{ display:inline-grid; place-items:center; width:6mm; height:6mm; border-radius:50%; background:var(--accent);
+        color:#fff; font-size:8pt; font-weight:800; margin-right:2mm; vertical-align:middle; }
+
+  .toc{ list-style:none; padding:0; margin:4mm 0; counter-reset:t; }
+  .toc li{ display:flex; gap:4mm; align-items:baseline; padding:3mm 0; border-bottom:1px solid var(--line); font-size:11pt; }
+  .toc li b{ color:var(--accent); font-size:10pt; width:9mm; }
+  .toc li span{ color:var(--muted); font-size:9pt; margin-left:auto; }
+
+  .curves{ display:grid; grid-template-columns:repeat(6,1fr); gap:2.5mm; margin:3mm 0 4mm; }
+  .curve{ border:1px solid var(--line); border-radius:2.5mm; padding:2mm; text-align:center; font-size:7.6pt; }
+  .curve svg{ width:100%; height:auto; display:block; }
+  .curve b{ display:block; font-size:8pt; margin-top:1mm; }
+  .curve small{ color:var(--muted); }
+  figure{ margin:3mm 0 4mm; break-inside:avoid; }
+  figcaption{ font-size:8pt; color:var(--muted); margin-top:1.5mm; text-align:center; }
+  .small{ font-size:8.6pt; color:var(--muted); }
+  .check li{ list-style:none; margin-left:-5.5mm; padding-left:6.5mm; position:relative; }
+  .check li::before{ content:""; position:absolute; left:0; top:1.3mm; width:3mm; height:3mm; border:1.5px solid var(--ink); border-radius:1mm; }
+</style>
+</head>
+<body>
+
+<!-- =================== COUVERTURE =================== -->
+<div class="cover">
+  <div class="kicker">Guide pratique · Édition 2026</div>
+  <h1>Le motion design<br>avec <em>Claude<br>Opus 5.5</em></h1>
+  <div class="sub">Créer des animations et des vidéos de qualité professionnelle en écrivant du code, sans Remotion ni HyperFrames&nbsp;: HTML, CSS, GSAP, SVG, Canvas, Playwright et FFmpeg.</div>
+
+  <svg class="art" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6b4a"/><stop offset="1" stop-color="#7c6cff"/></linearGradient>
+    </defs>
+    <g fill="none" stroke="#2a2f4d" stroke-width="1">
+      <circle cx="200" cy="200" r="190"/><circle cx="200" cy="200" r="140"/><circle cx="200" cy="200" r="90"/>
+    </g>
+    <path d="M30 330 C 140 330, 170 70, 370 70" fill="none" stroke="url(#g1)" stroke-width="6" stroke-linecap="round"/>
+    <g fill="#ff6b4a">
+      <circle cx="30" cy="330" r="7" opacity=".25"/><circle cx="92" cy="318" r="8" opacity=".4"/>
+      <circle cx="150" cy="262" r="9" opacity=".55"/><circle cx="202" cy="180" r="10" opacity=".7"/>
+      <circle cx="262" cy="112" r="11" opacity=".85"/><circle cx="370" cy="70" r="13"/>
+    </g>
+    <rect x="300" y="250" width="60" height="60" rx="12" fill="#7c6cff" opacity=".9" transform="rotate(18 330 280)"/>
+    <rect x="285" y="262" width="60" height="60" rx="12" fill="none" stroke="#7c6cff" stroke-width="2" opacity=".4" transform="rotate(4 315 292)"/>
+  </svg>
+
+  <div class="badges">
+    <span class="badge">Principes d'animation</span><span class="badge">Workflow avec Claude</span>
+    <span class="badge">Rendu image par image</span><span class="badge">FFmpeg</span><span class="badge">Prompts prêts à l'emploi</span>
+  </div>
+  <div class="foot">Aucun framework vidéo requis — un navigateur, un peu de code, et Claude.</div>
+</div>
+
+<!-- =================== SOMMAIRE =================== -->
+<section class="nobreak">
+  <div class="chap">Sommaire</div>
+  <h2>Ce que vous allez apprendre</h2>
+  <p class="lead">Ce guide montre comment faire du motion design avec Claude Opus 5.5 comme directeur artistique <em>et</em> développeur&nbsp;: vous décrivez l'intention, Claude écrit l'animation en code web standard, un navigateur la joue, et FFmpeg la transforme en vidéo.</p>
+  <ol class="toc">
+    <li><b>01</b> Pourquoi faire du motion design avec Claude <span>l'approche</span></li>
+    <li><b>02</b> Les principes qui font une bonne animation <span>timing, easing, rythme</span></li>
+    <li><b>03</b> La boîte à outils sans framework <span>CSS, GSAP, SVG, Canvas…</span></li>
+    <li><b>04</b> Le workflow en 7 étapes <span>du brief à la vidéo</span></li>
+    <li><b>05</b> Bien briefer Claude <span>gabarit de prompt</span></li>
+    <li><b>06</b> Exemple complet&nbsp;: une révélation de logo <span>code commenté</span></li>
+    <li><b>07</b> Transformer l'animation en vidéo <span>Playwright + FFmpeg</span></li>
+    <li><b>08</b> Son, rythme et synchronisation <span>caler sur le tempo</span></li>
+    <li><b>09</b> Finitions de niveau pro <span>flou de mouvement, couleurs, formats</span></li>
+    <li><b>10</b> Faire critiquer son travail par Claude <span>planches contact</span></li>
+    <li><b>11</b> Erreurs fréquentes et check-list <span>avant de livrer</span></li>
+    <li><b>12</b> Bibliothèque de prompts et glossaire <span>à copier-coller</span></li>
+  </ol>
+
+  <div class="box info">
+    <span class="t">Pour qui&nbsp;?</span>
+    <p>Pour les créateurs, marketeurs, fondateurs et designers qui veulent produire des vidéos animées (lancement de produit, logo animé, posts réseaux sociaux, démo d'interface, titres animés) sans maîtriser After Effects ni un framework vidéo. Aucune connaissance avancée en programmation n'est nécessaire&nbsp;: Claude écrit le code, vous jugez le résultat.</p>
+  </div>
+</section>
+
+<!-- =================== 01 =================== -->
+<section>
+  <div class="chap">Chapitre 01</div>
+  <h2>Pourquoi faire du motion design avec Claude</h2>
+  <p class="lead">Le motion design, c'est l'art de mettre en mouvement du texte, des formes, des logos et des interfaces pour transmettre un message. Une animation réussie guide le regard, crée une émotion et rend une idée claire en quelques secondes.</p>
+
+  <h3>Le principe&nbsp;: l'animation est du code</h3>
+  <p>Un navigateur web est un moteur d'animation extrêmement puissant. Une page HTML peut afficher de la typographie parfaite, des formes vectorielles nettes, de la 3D et des effets de lumière, le tout animé à 60 images par seconde. Comme tout cela s'écrit en code, <strong>Claude peut le créer pour vous</strong>&nbsp;: il connaît HTML, CSS, JavaScript, GSAP, SVG, Canvas, Three.js, ainsi que les règles du métier de motion designer.</p>
+
+  <figure>
+    <svg viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg" font-family="Inter, Segoe UI, sans-serif">
+      <g font-size="13" font-weight="700" text-anchor="middle">
+        <rect x="5" y="25" width="120" height="60" rx="10" fill="#fff3ef" stroke="#ff6b4a"/>
+        <text x="65" y="52" fill="#141726">Votre idée</text><text x="65" y="70" font-size="10" font-weight="400" fill="#5b6178">brief, marque</text>
+        <rect x="150" y="25" width="120" height="60" rx="10" fill="#f1efff" stroke="#7c6cff"/>
+        <text x="210" y="52" fill="#141726">Claude</text><text x="210" y="70" font-size="10" font-weight="400" fill="#5b6178">storyboard + code</text>
+        <rect x="295" y="25" width="120" height="60" rx="10" fill="#f5f6fa" stroke="#9aa0b8"/>
+        <text x="355" y="52" fill="#141726">Navigateur</text><text x="355" y="70" font-size="10" font-weight="400" fill="#5b6178">aperçu en direct</text>
+        <rect x="440" y="25" width="120" height="60" rx="10" fill="#f5f6fa" stroke="#9aa0b8"/>
+        <text x="500" y="52" fill="#141726">Capture</text><text x="500" y="70" font-size="10" font-weight="400" fill="#5b6178">image par image</text>
+        <rect x="585" y="25" width="110" height="60" rx="10" fill="#eafaf4" stroke="#22c39a"/>
+        <text x="640" y="52" fill="#141726">FFmpeg</text><text x="640" y="70" font-size="10" font-weight="400" fill="#5b6178">vidéo MP4</text>
+      </g>
+      <g stroke="#141726" stroke-width="1.6" fill="none" marker-end="url(#ar)">
+        <path d="M127 55 H146"/><path d="M272 55 H291"/><path d="M417 55 H436"/><path d="M562 55 H581"/>
+      </g>
+      <path d="M355 88 C 355 112, 210 112, 210 90" stroke="#ff6b4a" stroke-width="1.6" fill="none" stroke-dasharray="4 3" marker-end="url(#ar2)"/>
+      <text x="283" y="117" font-size="10" fill="#ff6b4a" text-anchor="middle">retours et itérations</text>
+      <defs>
+        <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#141726"/></marker>
+        <marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#ff6b4a"/></marker>
+      </defs>
+    </svg>
+    <figcaption>La chaîne complète : aucune étape ne nécessite Remotion, HyperFrames ou After Effects.</figcaption>
+  </figure>
+
+  <h3>Pourquoi Opus 5.5</h3>
+  <p>Opus 5.5 est le modèle le plus capable de la famille Claude 5. Pour le motion design, cela se traduit par trois atouts concrets&nbsp;:</p>
+  <div class="grid3">
+    <div class="card"><h4>Le goût</h4><p>Il raisonne en directeur artistique : hiérarchie, rythme, choix des courbes d'accélération, cohérence avec une charte graphique.</p></div>
+    <div class="card"><h4>La précision</h4><p>Il écrit des timelines exactes à la milliseconde, longues et complexes, qui fonctionnent du premier coup ou presque.</p></div>
+    <div class="card"><h4>L'œil</h4><p>Il peut regarder des captures de votre animation et la critiquer : il repère ce qui est trop rapide, mal aligné ou confus.</p></div>
+  </div>
+
+  <h3>Deux façons de travailler</h3>
+  <table>
+    <thead><tr><th>Mode</th><th>Comment</th><th>Idéal pour</th></tr></thead>
+    <tr><td>Claude.ai (artefacts)</td><td>Demandez une animation en HTML&nbsp;: elle s'affiche et se joue directement dans la conversation. Vous itérez en discutant.</td><td>Explorer des idées, prototyper, valider un style en quelques minutes.</td></tr>
+    <tr><td>Claude Code</td><td>Claude écrit les fichiers sur votre ordinateur, lance le rendu, génère la vidéo, l'inspecte et corrige.</td><td>Produire la vidéo finale, automatiser, gérer plusieurs formats.</td></tr>
+  </table>
+
+  <div class="box tip">
+    <span class="t">À retenir</span>
+    <p>Pas besoin de framework vidéo&nbsp;: une simple page web dont on contrôle le temps suffit. Le secret, c'est d'écrire l'animation pour qu'on puisse la «&nbsp;mettre sur pause&nbsp;» à n'importe quel instant précis. Tout le reste du guide en découle.</p>
+  </div>
+</section>
+
+<!-- =================== 02 =================== -->
+<section>
+  <div class="chap">Chapitre 02</div>
+  <h2>Les principes qui font une bonne animation</h2>
+  <p class="lead">Claude connaît ces principes, mais les connaître vous-même vous permet de formuler des retours précis («&nbsp;l'entrée du titre est trop molle&nbsp;») plutôt que vagues («&nbsp;ça ne me plaît pas&nbsp;»).</p>
+
+  <h3>1. L'easing (la courbe d'accélération)</h3>
+  <p>Rien ne bouge à vitesse constante dans la vraie vie. L'easing décrit comment un mouvement accélère et ralentit. C'est le réglage qui change le plus la sensation d'une animation.</p>
+  <div class="curves">
+    <div class="curve"><svg viewBox="-8 -8 116 116"><rect x="0" y="0" width="100" height="100" fill="none" stroke="#e3e5ee"/><path d="M0,100 L100,0" stroke="#9aa0b8" stroke-width="3" fill="none"/></svg><b>linear</b><small>mécanique</small></div>
+    <div class="curve"><svg viewBox="-8 -8 116 116"><rect x="0" y="0" width="100" height="100" fill="none" stroke="#e3e5ee"/><path d="M0,100 C42,100 100,0 100,0" stroke="#7c6cff" stroke-width="3" fill="none"/></svg><b>ease-in</b><small>sorties</small></div>
+    <div class="curve"><svg viewBox="-8 -8 116 116"><rect x="0" y="0" width="100" height="100" fill="none" stroke="#e3e5ee"/><path d="M0,100 C0,100 58,0 100,0" stroke="#ff6b4a" stroke-width="3" fill="none"/></svg><b>ease-out</b><small>entrées</small></div>
+    <div class="curve"><svg viewBox="-8 -8 116 116"><rect x="0" y="0" width="100" height="100" fill="none" stroke="#e3e5ee"/><path d="M0,100 C42,100 58,0 100,0" stroke="#22c39a" stroke-width="3" fill="none"/></svg><b>ease-in-out</b><small>déplacements</small></div>
+    <div class="curve"><svg viewBox="-8 -24 116 132"><rect x="0" y="0" width="100" height="100" fill="none" stroke="#e3e5ee"/><path d="M0,100 C16,0 30,0 100,0" stroke="#ff6b4a" stroke-width="3" fill="none"/></svg><b>expo.out</b><small>premium, nerveux</small></div>
+    <div class="curve"><svg viewBox="-8 -24 116 132"><rect x="0" y="0" width="100" height="100" fill="none" stroke="#e3e5ee"/><path d="M0,100 C34,-56 64,0 100,0" stroke="#7c6cff" stroke-width="3" fill="none"/></svg><b>back.out</b><small>ludique, rebond</small></div>
+  </div>
+  <p class="small">Axe horizontal&nbsp;: le temps. Axe vertical&nbsp;: la progression. Règle simple&nbsp;: ce qui <strong>entre</strong> à l'écran décélère (ease-out), ce qui <strong>sort</strong> accélère (ease-in), ce qui <strong>se déplace</strong> d'un point à un autre fait les deux (ease-in-out). Le «&nbsp;linear&nbsp;» est réservé aux mouvements continus (défilement, rotation infinie, lent zoom de fond).</p>
+
+  <h3>2. Le timing</h3>
+  <table>
+    <thead><tr><th>Type de mouvement</th><th>Durée conseillée</th><th>Remarque</th></tr></thead>
+    <tr><td>Micro-interaction (bouton, icône)</td><td>150 – 300 ms</td><td>Au-delà, l'interface paraît lente.</td></tr>
+    <tr><td>Entrée d'un mot ou d'un titre</td><td>400 – 900 ms</td><td>Plus c'est gros, plus c'est lent.</td></tr>
+    <tr><td>Transition entre deux plans</td><td>500 – 900 ms</td><td>Une transition se remarque si elle dure trop.</td></tr>
+    <tr><td>Texte lisible à l'écran</td><td>≈ 1 s + 0,3 s par mot</td><td>Une phrase de 8 mots&nbsp;: environ 3,5 s.</td></tr>
+    <tr><td>Logo final</td><td>1,5 – 3 s</td><td>Laissez-le respirer avant de couper.</td></tr>
+  </table>
+
+  <h3>3. Le décalage (stagger) et le chevauchement</h3>
+  <p>Faire apparaître 5 éléments exactement en même temps paraît mécanique. Les décaler de 40 à 120 ms crée une vague naturelle. De même, l'animation suivante doit commencer <em>avant</em> que la précédente soit terminée&nbsp;: c'est le chevauchement (overlap) qui donne de la fluidité.</p>
+
+  <h3>4. La hiérarchie et le point focal</h3>
+  <p>À chaque instant, le spectateur ne doit savoir regarder qu'une seule chose. Un plan = une idée. Ce qui est important bouge en premier, plus grand ou plus contrasté&nbsp;; les détails arrivent ensuite, plus discrètement.</p>
+
+  <h3>5. L'anticipation et le rebond</h3>
+  <p>Un léger recul avant un mouvement (anticipation) ou un léger dépassement à l'arrivée (overshoot, la courbe <code>back.out</code>) donne vie aux objets. À doser&nbsp;: subtil pour une marque premium, plus marqué pour un ton ludique.</p>
+
+  <h3>6. Le rythme et la respiration</h3>
+  <p>Alternez moments intenses et pauses. Une vidéo où tout bouge en permanence fatigue. Laissez des «&nbsp;temps morts&nbsp;» de 0,3 à 0,8 s où l'image tient, pour que le message s'imprime.</p>
+
+  <h3>7. La continuité</h3>
+  <p>Les meilleures transitions transforment un élément du plan A en élément du plan B (un cercle devient un bouton, une ligne devient un graphique). Elles racontent une histoire au lieu de simplement «&nbsp;changer de diapo&nbsp;».</p>
+</section>
+
+<!-- =================== 03 =================== -->
+<section>
+  <div class="chap">Chapitre 03</div>
+  <h2>La boîte à outils sans framework</h2>
+  <p class="lead">Toutes ces technologies sont gratuites, standards, et parfaitement maîtrisées par Claude. Vous n'avez pas à les apprendre&nbsp;: il suffit de savoir laquelle demander.</p>
+
+  <table>
+    <thead><tr><th>Outil</th><th>Idéal pour</th><th>Points forts</th><th>Limites</th></tr></thead>
+    <tr><td>CSS (keyframes, transitions)</td><td>Animations simples, boucles, interfaces</td><td>Aucune librairie, très léger</td><td>Difficile d'orchestrer une longue séquence</td></tr>
+    <tr><td>Web Animations API</td><td>Contrôle précis en JavaScript natif</td><td>Natif, pilotable au milliseconde</td><td>Moins d'easings prêts à l'emploi</td></tr>
+    <tr><td>GSAP</td><td>Séquences complexes, texte animé, vidéos</td><td>Timelines, stagger, easings riches, gratuit (plugins compris)</td><td>Une librairie à charger</td></tr>
+    <tr><td>SVG</td><td>Logos, icônes, tracés qui se dessinent, morphing</td><td>Vectoriel, net à toute taille</td><td>Lourd avec des milliers d'objets</td></tr>
+    <tr><td>Canvas 2D</td><td>Particules, effets génératifs, data-viz animée</td><td>Des milliers d'objets fluides</td><td>Tout se dessine à la main</td></tr>
+    <tr><td>Three.js (WebGL)</td><td>3D, produits en rotation, lumières, shaders</td><td>Rendu 3D temps réel</td><td>Plus complexe à régler</td></tr>
+    <tr><td>Lottie (lottie-web)</td><td>Jouer des animations exportées d'After Effects</td><td>Format standard, léger</td><td>Mieux pour lire que pour créer</td></tr>
+    <tr><td>p5.js</td><td>Art génératif, motifs, expérimentations</td><td>Très simple à écrire</td><td>Moins adapté à la typographie fine</td></tr>
+    <tr><td>Python (Pillow, Manim)</td><td>Explications mathématiques, rendus hors navigateur</td><td>Script autonome, reproductible</td><td>Typographie et effets plus limités</td></tr>
+  </table>
+
+  <div class="box ok">
+    <span class="t">La recommandation par défaut</span>
+    <p><strong>HTML + CSS + GSAP</strong>, dans un seul fichier. Ajoutez du SVG pour les logos et les tracés, du Canvas pour les particules, Three.js seulement si vous avez besoin de vraie 3D. Cette combinaison couvre 90&nbsp;% des besoins d'un motion designer.</p>
+  </div>
+
+  <h3>Les outils pour fabriquer la vidéo</h3>
+  <div class="grid2">
+    <div class="card"><h4>Playwright</h4><p>Pilote un navigateur Chrome sans fenêtre. Il ouvre votre animation, avance le temps image par image et prend une capture à chaque fois. Gratuit, installé avec <code>pip install playwright</code> puis <code>playwright install chromium</code>.</p></div>
+    <div class="card"><h4>FFmpeg</h4><p>Le couteau suisse de la vidéo. Il assemble les images en MP4, ajoute la musique, crée des GIF, applique du flou de mouvement et règle les couleurs. Gratuit, disponible sur ffmpeg.org.</p></div>
+  </div>
+
+  <h3>Pourquoi ne pas simplement filmer l'écran&nbsp;?</h3>
+  <p>Un enregistrement d'écran capture les ralentissements de votre ordinateur&nbsp;: images sautées, saccades, qualité variable. Le rendu <strong>image par image</strong> est déterministe&nbsp;: chaque image est calculée au temps exact où elle doit apparaître, quelle que soit la puissance de la machine. Le résultat est parfaitement fluide, même pour une animation très lourde.</p>
+</section>
+
+<!-- =================== 04 =================== -->
+<section>
+  <div class="chap">Chapitre 04</div>
+  <h2>Le workflow en 7 étapes</h2>
+  <p class="lead">C'est la méthode d'un studio de motion design, adaptée au travail avec Claude. Ne sautez pas les premières étapes&nbsp;: c'est là que se joue la qualité.</p>
+
+  <h4><span class="num">1</span>Le brief</h4>
+  <p>Objectif, public, plateforme, durée, format, identité visuelle, ton. Voir le chapitre&nbsp;05 pour le gabarit complet.</p>
+
+  <h4><span class="num">2</span>Le concept et le texte</h4>
+  <p>Demandez d'abord à Claude <strong>trois concepts différents</strong> en quelques lignes chacun, sans code. Choisissez-en un. Faites ensuite réduire le texte au strict minimum&nbsp;: en vidéo, chaque mot coûte du temps d'écran.</p>
+
+  <h4><span class="num">3</span>Le storyboard minuté</h4>
+  <p>Un tableau plan par plan, avec les temps de début et de fin. C'est le plan de construction&nbsp;: vous le validez avant qu'une seule ligne de code soit écrite.</p>
+  <table>
+    <thead><tr><th>Temps</th><th>Plan</th><th>Mouvement</th></tr></thead>
+    <tr><td>0,0 – 1,2 s</td><td>Fond sombre, une ligne orange se trace</td><td>Tracé SVG, ease power3.inOut</td></tr>
+    <tr><td>1,0 – 2,4 s</td><td>Le titre monte lettre par lettre</td><td>y + opacité, expo.out, stagger 0,06 s</td></tr>
+    <tr><td>2,4 – 4,5 s</td><td>Trois atouts apparaissent en cascade</td><td>Fondu + glissement, stagger 0,15 s</td></tr>
+    <tr><td>4,5 – 6,0 s</td><td>Tout converge vers le logo</td><td>Morphing / échelle, ease-in-out</td></tr>
+    <tr><td>6,0 – 8,0 s</td><td>Logo + slogan, tenue</td><td>Très léger zoom continu (linear)</td></tr>
+  </table>
+
+  <h4><span class="num">4</span>Le code</h4>
+  <p>Claude écrit l'animation dans un fichier HTML unique, avec une timeline maîtrisable (chapitre&nbsp;06). Demandez-lui de mettre toutes les durées et couleurs en variables au début du fichier pour pouvoir les retoucher facilement.</p>
+
+  <h4><span class="num">5</span>L'aperçu et les retours</h4>
+  <p>Ouvrez le fichier dans votre navigateur (ou regardez l'artefact dans Claude.ai). Donnez des retours précis et minutés&nbsp;: «&nbsp;à 2,4&nbsp;s, les atouts arrivent trop vite&nbsp;; ralentis le stagger et retarde-les de 0,3&nbsp;s&nbsp;».</p>
+
+  <h4><span class="num">6</span>Le rendu</h4>
+  <p>Le script Playwright capture chaque image, FFmpeg assemble la vidéo (chapitre&nbsp;07). Avec Claude Code, Claude lance lui-même ces commandes.</p>
+
+  <h4><span class="num">7</span>La critique et les finitions</h4>
+  <p>Claude regarde une planche contact de la vidéo, identifie les défauts, corrige, relance le rendu. Puis musique, flou de mouvement, export dans les formats voulus (chapitres&nbsp;08 à 10).</p>
+
+  <div class="box tip">
+    <span class="t">Conseil de pro</span>
+    <p>Itérez sur une version <strong>basse définition et courte</strong> (720p, 30 i/s) tant que le mouvement n'est pas validé. Ne lancez le rendu final 1080p ou 4K en 60 i/s qu'à la fin&nbsp;: il prend plus de temps.</p>
+  </div>
+</section>
+
+<!-- =================== 05 =================== -->
+<section>
+  <div class="chap">Chapitre 05</div>
+  <h2>Bien briefer Claude</h2>
+  <p class="lead">La qualité du résultat dépend directement de la qualité du brief. Un bon brief donne à Claude l'intention, les contraintes de marque et les contraintes techniques.</p>
+
+  <h3>Le gabarit de brief</h3>
+<pre class="split"><span class="c"># BRIEF MOTION DESIGN</span>
+<span class="k">Objectif :</span>     annoncer le lancement de l'appli « Nova » sur LinkedIn
+<span class="k">Public :</span>       dirigeants de PME, pressés, regardent souvent sans le son
+<span class="k">Durée :</span>        12 secondes
+<span class="k">Format :</span>       1080 x 1350 (4:5), 30 images/seconde
+<span class="k">Message clé :</span>  « Vos factures, envoyées en 10 secondes. »
+<span class="k">Identité :</span>     fond #0B0D17, accent #FF6B4A, texte #FFFFFF
+              police Inter (800 pour les titres, 500 pour le texte)
+              logo : fichier logo.svg fourni
+<span class="k">Ton :</span>          premium, calme, sûr de lui. Pas de rebonds. Mouvements nets.
+<span class="k">Références :</span>   l'élégance des vidéos de lancement d'Apple, sobriété de Linear
+<span class="k">À éviter :</span>     effets « PowerPoint », textes longs, plus de 2 couleurs vives
+
+<span class="c"># CONTRAINTES TECHNIQUES</span>
+- Un seul fichier HTML, sans Remotion ni HyperFrames.
+- GSAP 3.12.5 chargé depuis cdn.jsdelivr.net.
+- Une timeline GSAP unique, créée en pause (paused: true).
+- Exposer window.DURATION (en secondes) et window.seek(t) qui place
+  l'animation exactement au temps t.
+- Aucune dépendance à l'horloge : pas de setTimeout, setInterval,
+  Date.now() ni Math.random() sans graine fixe.
+- Toutes les durées, couleurs et textes en constantes en haut du fichier.
+
+<span class="c"># ÉTAPES</span>
+1. Propose-moi 3 concepts (5 lignes chacun), sans code.
+2. Après mon choix : storyboard minuté plan par plan.
+3. Après validation : le code complet.</pre>
+
+  <h3>Pourquoi ces contraintes techniques&nbsp;?</h3>
+  <ul>
+    <li><strong>Timeline en pause + <code>seek(t)</code></strong>&nbsp;: c'est ce qui permet au script de rendu de figer l'animation à n'importe quelle image exacte.</li>
+    <li><strong>Pas d'horloge</strong>&nbsp;: un <code>setTimeout</code> ou un <code>Math.random()</code> produiraient une animation différente à chaque rendu, ou des images incohérentes entre elles.</li>
+    <li><strong>Constantes en haut du fichier</strong>&nbsp;: vous pouvez ajuster un timing ou une couleur sans relire tout le code.</li>
+    <li><strong>Concepts avant le code</strong>&nbsp;: changer d'idée coûte 10 secondes au stade du concept, 10 minutes au stade du code.</li>
+  </ul>
+
+  <div class="box info">
+    <span class="t">Donner des retours efficaces</span>
+    <p>Soyez précis sur <strong>le moment</strong> (à quelle seconde), <strong>l'élément</strong> (quel texte, quelle forme) et <strong>la sensation</strong> (trop lent, trop mou, trop chargé, pas assez contrasté). Exemple&nbsp;: «&nbsp;Entre 3&nbsp;s et 4&nbsp;s, il y a trop de choses qui bougent en même temps. Garde seulement le titre en mouvement, fais apparaître les icônes 0,5&nbsp;s plus tard.&nbsp;»</p>
+  </div>
+</section>
+
+<!-- =================== 06 =================== -->
+<section>
+  <div class="chap">Chapitre 06</div>
+  <h2>Exemple complet&nbsp;: une révélation de logo</h2>
+  <p class="lead">Voici le type de fichier que Claude produit à partir d'un brief. Cinq secondes&nbsp;: le nom de la marque monte lettre par lettre, une barre se trace, le slogan apparaît, puis tout s'éteint en fondu.</p>
+
+  <div class="file">scene.html</div>
+<pre class="split">&lt;!doctype html&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;
+&lt;style&gt;
+  html, body { margin:0; width:1920px; height:1080px; overflow:hidden;
+               background:#0b0d17; font-family:Inter, sans-serif; }
+  .stage { width:100%; height:100%; display:flex; flex-direction:column;
+           align-items:center; justify-content:center; gap:40px; }
+  .title { font-size:180px; font-weight:800; color:#fff; letter-spacing:-4px; }
+  .title span { display:inline-block; }
+  .bar   { height:8px; width:0; background:#ff6b4a; border-radius:4px; }
+  .tag   { font-size:44px; color:#9aa3c7; opacity:0; }
+&lt;/style&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="stage"&gt;
+    &lt;div class="title" id="title"&gt;NOVA&lt;/div&gt;
+    &lt;div class="bar" id="bar"&gt;&lt;/div&gt;
+    &lt;div class="tag" id="tag"&gt;Le futur, en mouvement.&lt;/div&gt;
+  &lt;/div&gt;
+
+&lt;script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  <span class="c">// Réglages : tout ce qu'on peut vouloir retoucher est ici</span>
+  <span class="k">const</span> DURATION = <span class="n">5</span>;          <span class="c">// secondes</span>
+  <span class="k">const</span> STAGGER  = <span class="n">0.08</span>;       <span class="c">// décalage entre les lettres</span>
+
+  <span class="c">// Découpe le titre en lettres pour les animer une par une</span>
+  <span class="k">const</span> title = document.getElementById(<span class="s">'title'</span>);
+  title.innerHTML = [...title.textContent].map(c =&gt; `&lt;span&gt;${c}&lt;/span&gt;`).join(<span class="s">''</span>);
+
+  <span class="c">// Une seule timeline, créée en pause : c'est elle qui « possède » le temps</span>
+  <span class="k">const</span> tl = gsap.timeline({ paused: <span class="n">true</span> });
+
+  tl.from(<span class="s">'#title span'</span>, { y: <span class="n">140</span>, opacity: <span class="n">0</span>, duration: <span class="n">0.9</span>,
+                          ease: <span class="s">'expo.out'</span>, stagger: STAGGER }, <span class="n">0.3</span>)
+    .to(<span class="s">'#bar'</span>,  { width: <span class="n">520</span>, duration: <span class="n">0.8</span>, ease: <span class="s">'power3.inOut'</span> }, <span class="n">0.9</span>)
+    .to(<span class="s">'#tag'</span>,  { opacity: <span class="n">1</span>, y: <span class="n">-10</span>, duration: <span class="n">0.6</span>, ease: <span class="s">'power2.out'</span> }, <span class="n">1.4</span>)
+    .to(<span class="s">'.stage'</span>, { scale: <span class="n">1.04</span>, duration: DURATION, ease: <span class="s">'none'</span> }, <span class="n">0</span>)  <span class="c">// lent zoom de fond</span>
+    .to(<span class="s">'.stage'</span>, { opacity: <span class="n">0</span>, duration: <span class="n">0.5</span>, ease: <span class="s">'power2.in'</span> }, DURATION - <span class="n">0.5</span>);
+
+  <span class="c">// L'interface de rendu : le script de capture pilote le temps</span>
+  window.DURATION = DURATION;
+  window.seek = (t) =&gt; tl.seek(t, <span class="n">false</span>);
+
+  <span class="c">// Ouvert normalement dans un navigateur : lecture en boucle pour l'aperçu</span>
+  <span class="k">if</span> (!navigator.webdriver) tl.repeat(<span class="n">-1</span>).play();
+&lt;/script&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+
+  <h3>Ce qu'il faut remarquer</h3>
+  <ul>
+    <li><strong>Les positions dans la timeline</strong> (le dernier nombre de chaque ligne, par exemple <code>0.9</code>) indiquent à quelle seconde chaque mouvement démarre. La barre démarre à 0,9&nbsp;s alors que les lettres ne sont pas finies&nbsp;: c'est le chevauchement.</li>
+    <li><strong>Le zoom lent en <code>ease: 'none'</code></strong> donne de la vie à l'image même quand rien d'autre ne bouge.</li>
+    <li><strong><code>navigator.webdriver</code></strong> vaut <code>true</code> quand Playwright pilote la page&nbsp;: l'animation reste alors figée et attend les ordres <code>seek</code>. Dans votre navigateur, elle joue normalement.</li>
+  </ul>
+
+  <div class="box tip">
+    <span class="t">Animations CSS&nbsp;: le même principe</span>
+    <p>Si l'animation utilise des <code>@keyframes</code> CSS au lieu de GSAP, on peut aussi la figer à un instant précis grâce à l'API Web Animations&nbsp;: <code>document.getAnimations().forEach(a =&gt; { a.pause(); a.currentTime = t * 1000; })</code>. Demandez à Claude d'exposer cette fonction comme <code>window.seek</code>.</p>
+  </div>
+</section>
+
+<!-- =================== 07 =================== -->
+<section>
+  <div class="chap">Chapitre 07</div>
+  <h2>Transformer l'animation en vidéo</h2>
+  <p class="lead">Le script ci-dessous ouvre <code>scene.html</code> dans un Chrome invisible, avance le temps image par image, capture chaque image en PNG, puis demande à FFmpeg d'assembler un MP4 compatible avec tous les appareils.</p>
+
+  <h3>Installation (une seule fois)</h3>
+<pre>pip install playwright
+playwright install chromium
+<span class="c"># FFmpeg : télécharger sur ffmpeg.org, ou sous Windows :</span>
+winget install Gyan.FFmpeg</pre>
+
+  <div class="file">render.py</div>
+<pre class="split"><span class="c"># Capture image par image, puis encodage avec FFmpeg</span>
+<span class="k">import</span> subprocess, pathlib
+<span class="k">from</span> playwright.sync_api <span class="k">import</span> sync_playwright
+
+FPS = <span class="n">60</span>
+SRC = pathlib.Path(<span class="s">"scene.html"</span>).resolve().as_uri()
+OUT = pathlib.Path(<span class="s">"frames"</span>); OUT.mkdir(exist_ok=<span class="n">True</span>)
+
+<span class="k">with</span> sync_playwright() <span class="k">as</span> p:
+    browser = p.chromium.launch()
+    page = browser.new_page(viewport={<span class="s">"width"</span>: <span class="n">1920</span>, <span class="s">"height"</span>: <span class="n">1080</span>})
+    page.goto(SRC)
+    page.wait_for_function(<span class="s">"window.seek !== undefined"</span>)
+    page.evaluate(<span class="s">"document.fonts.ready.then(() =&gt; true)"</span>)   <span class="c"># attendre les polices</span>
+    total = round(page.evaluate(<span class="s">"window.DURATION"</span>) * FPS)
+    <span class="k">for</span> i <span class="k">in</span> range(total):
+        page.evaluate(f<span class="s">"window.seek({i / FPS})"</span>)
+        page.screenshot(path=OUT / f<span class="s">"{i:05d}.png"</span>)
+    browser.close()
+
+subprocess.run([
+    <span class="s">"ffmpeg"</span>, <span class="s">"-y"</span>, <span class="s">"-framerate"</span>, str(FPS), <span class="s">"-i"</span>, <span class="s">"frames/%05d.png"</span>,
+    <span class="s">"-c:v"</span>, <span class="s">"libx264"</span>, <span class="s">"-preset"</span>, <span class="s">"slow"</span>, <span class="s">"-crf"</span>, <span class="s">"16"</span>,
+    <span class="s">"-vf"</span>, <span class="s">"scale=out_color_matrix=bt709"</span>, <span class="s">"-pix_fmt"</span>, <span class="s">"yuv420p"</span>,
+    <span class="s">"-colorspace"</span>, <span class="s">"bt709"</span>, <span class="s">"-color_primaries"</span>, <span class="s">"bt709"</span>, <span class="s">"-color_trc"</span>, <span class="s">"bt709"</span>,
+    <span class="s">"-movflags"</span>, <span class="s">"+faststart"</span>, <span class="s">"video.mp4"</span>,
+], check=<span class="n">True</span>)
+print(<span class="s">"OK : video.mp4"</span>)</pre>
+
+  <h3>Comprendre les réglages FFmpeg</h3>
+  <table>
+    <thead><tr><th>Option</th><th>Rôle</th></tr></thead>
+    <tr><td><code>-c:v libx264</code></td><td>Codec H.264&nbsp;: lu partout (téléphones, réseaux sociaux, navigateurs).</td></tr>
+    <tr><td><code>-crf 16</code></td><td>Qualité (0 = parfait, 23 = défaut). Entre 14 et 18 pour du motion design net.</td></tr>
+    <tr><td><code>-preset slow</code></td><td>Compression plus efficace&nbsp;: fichier plus petit à qualité égale.</td></tr>
+    <tr><td><code>-pix_fmt yuv420p</code></td><td>Indispensable pour que la vidéo se lise sur iPhone, QuickTime et la plupart des plateformes.</td></tr>
+    <tr><td><code>bt709</code></td><td>Espace colorimétrique standard de la vidéo HD&nbsp;: évite les couleurs ternes ou décalées.</td></tr>
+    <tr><td><code>+faststart</code></td><td>La vidéo commence à jouer avant d'être entièrement téléchargée.</td></tr>
+  </table>
+
+  <div class="box info">
+    <span class="t">Autres formats d'écran</span>
+    <p>Pour une vidéo verticale (Reels, TikTok, Shorts), changez simplement la taille de la page et du viewport en <code>1080 × 1920</code>. Pour un carré, <code>1080 × 1080</code>. Gardez toujours des dimensions <strong>paires</strong>&nbsp;: H.264 refuse les tailles impaires.</p>
+  </div>
+</section>
+
+<!-- =================== 08 =================== -->
+<section>
+  <div class="chap">Chapitre 08</div>
+  <h2>Son, rythme et synchronisation</h2>
+  <p class="lead">Une animation calée sur la musique paraît instantanément plus professionnelle. La méthode&nbsp;: connaître le tempo du morceau et placer les moments forts sur les temps.</p>
+
+  <h3>Calculer les temps</h3>
+  <p>Le tempo est donné en BPM (battements par minute). La durée d'un temps vaut <strong>60 ÷ BPM</strong>.</p>
+  <table>
+    <thead><tr><th>Tempo</th><th>1 temps</th><th>1 mesure (4 temps)</th><th>Usage typique</th></tr></thead>
+    <tr><td>90 BPM</td><td>0,667 s</td><td>2,667 s</td><td>Calme, corporate</td></tr>
+    <tr><td>120 BPM</td><td>0,500 s</td><td>2,000 s</td><td>Énergique, polyvalent</td></tr>
+    <tr><td>128 BPM</td><td>0,469 s</td><td>1,875 s</td><td>Tech, dynamique</td></tr>
+  </table>
+  <p>Demandez à Claude de définir dans le code <code>const BEAT = 60 / 120;</code> puis de positionner chaque mouvement en multiples de <code>BEAT</code>&nbsp;: <code>tl.from('#titre', {...}, 4 * BEAT)</code>. Les changements de plan tombent sur le premier temps d'une mesure, les petits éléments sur les temps intermédiaires.</p>
+
+  <h3>Ajouter la musique à la vidéo</h3>
+<pre>ffmpeg -i video.mp4 -i musique.mp3 -c:v copy -c:a aac -b:a 192k \
+       -af "afade=t=out:st=4.2:d=0.8" -shortest final.mp4</pre>
+  <p class="small"><code>-c:v copy</code> réutilise l'image sans la ré-encoder&nbsp;; <code>afade</code> fait un fondu de sortie de 0,8&nbsp;s à partir de 4,2&nbsp;s&nbsp;; <code>-shortest</code> coupe à la fin de la vidéo.</p>
+
+  <h3>Trouver ou créer le son</h3>
+  <ul>
+    <li><strong>Bibliothèques libres de droits</strong>&nbsp;: choisissez un morceau dont la licence autorise l'usage commercial et notez son BPM (souvent indiqué).</li>
+    <li><strong>Effets sonores générés en code</strong>&nbsp;: Claude peut écrire un script (Web Audio ou Python) qui génère des «&nbsp;whoosh&nbsp;», clics et impacts synchronisés exactement avec les mouvements, puis les exporter en WAV.</li>
+    <li><strong>Pensez au visionnage sans le son</strong>&nbsp;: sur les réseaux sociaux, la majorité des vidéos sont vues en silence. Le message doit se comprendre par l'image et le texte seuls.</li>
+  </ul>
+
+  <div class="box tip">
+    <span class="t">Le détail qui change tout</span>
+    <p>Faites arriver le pic visuel d'un mouvement <strong>sur</strong> le temps, pas son départ. Avec un ease-out, l'essentiel du mouvement se produit au début&nbsp;: démarrer 1 à 2 images avant le temps donne une impression de synchronisation parfaite.</p>
+  </div>
+</section>
+
+<!-- =================== 09 =================== -->
+<section>
+  <div class="chap">Chapitre 09</div>
+  <h2>Finitions de niveau pro</h2>
+  <p class="lead">Ce qui sépare une animation correcte d'une animation qui semble sortir d'un studio, ce sont souvent quelques réglages de fin de chaîne.</p>
+
+  <h3>Le flou de mouvement (motion blur)</h3>
+  <p>Au cinéma, les objets rapides sont légèrement flous. Sans ce flou, une animation rapide paraît saccadée. La technique&nbsp;: rendre à une cadence élevée (par exemple 120 i/s), puis mélanger chaque groupe de 4 images en une seule pour obtenir du 30 i/s.</p>
+<pre><span class="c"># render.py avec FPS = 120, puis :</span>
+ffmpeg -framerate 120 -i frames/%05d.png \
+       -vf "tmix=frames=4,framestep=4,scale=out_color_matrix=bt709" \
+       -c:v libx264 -crf 16 -pix_fmt yuv420p video_flou.mp4</pre>
+
+  <h3>Les dégradés sans bandes (banding)</h3>
+  <p>Les dégradés sombres se transforment souvent en «&nbsp;escaliers&nbsp;» visibles après compression. La solution est d'ajouter un grain très léger, invisible à l'œil mais qui casse les bandes&nbsp;:</p>
+<pre>ffmpeg -i video.mp4 -vf "noise=alls=3:allf=t" -c:v libx264 -crf 16 -pix_fmt yuv420p video_grain.mp4</pre>
+
+  <h3>Les formats d'export</h3>
+  <table>
+    <thead><tr><th>Besoin</th><th>Format</th><th>Commande clé</th></tr></thead>
+    <tr><td>Réseaux sociaux, site</td><td>MP4 H.264</td><td>voir chapitre 07</td></tr>
+    <tr><td>Fond transparent (incrustation)</td><td>WebM VP9 avec alpha</td><td><code>page.screenshot(omit_background=True)</code> puis <code>-c:v libvpx-vp9 -pix_fmt yuva420p</code></td></tr>
+    <tr><td>Montage pro (Premiere, DaVinci)</td><td>ProRes 4444</td><td><code>-c:v prores_ks -profile:v 4444</code></td></tr>
+    <tr><td>Aperçu léger, e-mail</td><td>GIF</td><td>voir ci-dessous</td></tr>
+  </table>
+
+  <p>Pour un GIF de bonne qualité, FFmpeg calcule d'abord une palette de couleurs optimisée&nbsp;:</p>
+<pre>ffmpeg -i video.mp4 -vf "fps=24,scale=800:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse" anim.gif</pre>
+
+  <h3>Les zones de sécurité</h3>
+  <p>Sur les formats verticaux, l'interface des applications (boutons, légende, nom du compte) recouvre le haut et le bas de l'image. Gardez texte et logo dans la zone centrale, avec une marge d'environ 15&nbsp;% en haut et 20&nbsp;% en bas. Demandez à Claude d'afficher un repère de zones de sécurité pendant l'aperçu.</p>
+
+  <h3>La typographie</h3>
+  <ul>
+    <li>Deux familles de polices maximum, idéalement une seule avec plusieurs graisses.</li>
+    <li>Des titres grands et serrés (approche négative légère), du texte courant plus aéré.</li>
+    <li>Un contraste suffisant&nbsp;: un texte qui bouge est plus dur à lire qu'un texte fixe.</li>
+  </ul>
+</section>
+
+<!-- =================== 10 =================== -->
+<section>
+  <div class="chap">Chapitre 10</div>
+  <h2>Faire critiquer son travail par Claude</h2>
+  <p class="lead">Claude sait lire les images. Dans Claude Code, il peut donc regarder sa propre vidéo, repérer les défauts et les corriger, comme un motion designer qui relit son montage.</p>
+
+  <h3>La planche contact</h3>
+  <p>Une planche contact rassemble plusieurs images de la vidéo sur une seule grille. Elle permet de voir d'un coup d'œil la composition de chaque moment.</p>
+<pre><span class="c"># 2 images par seconde, en grille de 5 x 4</span>
+ffmpeg -i video.mp4 -vf "fps=2,scale=480:-1,tile=5x4" -frames:v 1 planche.png</pre>
+  <p>Pour examiner un instant précis (par exemple une transition)&nbsp;:</p>
+<pre>ffmpeg -ss 2.4 -i video.mp4 -frames:v 1 instant_2s4.png</pre>
+
+  <h3>Le prompt d'auto-critique</h3>
+<pre>Regarde planche.png (2 images par seconde, de gauche à droite puis de haut
+en bas). Critique-la comme un directeur artistique exigeant :
+- Hiérarchie : à chaque instant, l'œil sait-il où regarder ?
+- Lisibilité : chaque texte reste-t-il assez longtemps ? Assez contrasté ?
+- Composition : alignements, marges, équilibre, zones de sécurité.
+- Rythme : y a-t-il des moments vides ou au contraire surchargés ?
+- Cohérence : couleurs et polices conformes au brief ?
+Classe les problèmes du plus grave au moins grave, propose une correction
+précise pour chacun, applique les 3 plus importantes et relance le rendu.</pre>
+
+  <h3>Ce qu'une planche ne montre pas</h3>
+  <p>Une image fixe ne révèle ni la fluidité, ni la vitesse ressentie, ni la synchronisation avec le son. Ces points-là, c'est à vous de les juger en regardant la vidéo. Le bon partage des rôles&nbsp;: <strong>Claude vérifie la composition et la cohérence, vous jugez la sensation.</strong></p>
+
+  <div class="box ok">
+    <span class="t">La boucle vertueuse</span>
+    <p>Rendu rapide en basse définition → planche contact → critique → corrections → nouveau rendu. Deux ou trois boucles suffisent généralement à passer d'un premier jet correct à un résultat soigné.</p>
+  </div>
+</section>
+
+<!-- =================== 11 =================== -->
+<section>
+  <div class="chap">Chapitre 11</div>
+  <h2>Erreurs fréquentes et check-list</h2>
+
+  <h3>Les erreurs techniques</h3>
+  <table>
+    <thead><tr><th>Symptôme</th><th>Cause probable</th><th>Solution</th></tr></thead>
+    <tr><td>Images qui sautent, vidéo saccadée</td><td>L'animation dépend de l'horloge (setTimeout, rendu en temps réel)</td><td>Timeline en pause pilotée par <code>seek(t)</code></td></tr>
+    <tr><td>Mauvaise police sur les premières images</td><td>Capture avant le chargement des polices</td><td>Attendre <code>document.fonts.ready</code></td></tr>
+    <tr><td>Résultat différent à chaque rendu</td><td><code>Math.random()</code> non contrôlé</td><td>Générateur aléatoire avec graine fixe</td></tr>
+    <tr><td>La vidéo ne se lit pas sur iPhone</td><td>Mauvais format de pixels</td><td><code>-pix_fmt yuv420p</code></td></tr>
+    <tr><td>Erreur «&nbsp;width not divisible by 2&nbsp;»</td><td>Dimensions impaires</td><td>Largeur et hauteur paires</td></tr>
+    <tr><td>Couleurs ternes ou décalées</td><td>Espace colorimétrique non précisé</td><td>Options <code>bt709</code></td></tr>
+    <tr><td>Bandes dans les dégradés</td><td>Compression des aplats sombres</td><td>Grain léger, CRF plus bas</td></tr>
+  </table>
+
+  <h3>Les erreurs de design</h3>
+  <ul>
+    <li><strong>Tout bouge en même temps</strong>&nbsp;: aucune hiérarchie, le regard se perd.</li>
+    <li><strong>De l'easing linéaire partout</strong>&nbsp;: effet robotique.</li>
+    <li><strong>Trop de texte</strong>&nbsp;: personne ne lit un paragraphe dans une vidéo.</li>
+    <li><strong>Des transitions gadgets</strong>&nbsp;: rotations 3D, rideaux, explosions qui n'ont pas de sens.</li>
+    <li><strong>Pas de respiration</strong>&nbsp;: l'image finale disparaît avant d'avoir été vue.</li>
+    <li><strong>Trop d'effets différents</strong>&nbsp;: choisissez un vocabulaire de mouvement et tenez-le.</li>
+  </ul>
+
+  <h3>La check-list avant de livrer</h3>
+  <ul class="check">
+    <li>Le message principal se comprend sans le son.</li>
+    <li>Chaque texte reste à l'écran au moins 1&nbsp;s + 0,3&nbsp;s par mot.</li>
+    <li>À chaque instant, il n'y a qu'un seul point focal.</li>
+    <li>Couleurs, polices et logo respectent la charte.</li>
+    <li>Le texte et le logo sont dans les zones de sécurité du format.</li>
+    <li>Les mouvements forts tombent sur les temps de la musique.</li>
+    <li>Le logo final tient au moins 1,5&nbsp;s.</li>
+    <li>La vidéo se lit sur téléphone (H.264, yuv420p) et pèse un poids raisonnable.</li>
+    <li>Le rendu a été vérifié en entier, pas seulement sur la planche contact.</li>
+    <li>La musique et les visuels utilisés sont libres de droits pour cet usage.</li>
+  </ul>
+</section>
+
+<!-- =================== 12 =================== -->
+<section>
+  <div class="chap">Chapitre 12</div>
+  <h2>Bibliothèque de prompts</h2>
+  <p class="lead">À copier, compléter et envoyer à Claude. Ajoutez toujours le bloc «&nbsp;contraintes techniques&nbsp;» du chapitre&nbsp;05 pour obtenir un fichier prêt à rendre.</p>
+
+  <h4>Titre animé (kinetic typography)</h4>
+<pre>Crée une animation de typographie cinétique de 8 s en 1080x1920 sur la phrase
+« [VOTRE PHRASE] ». Un mot ou un groupe de mots par plan, calé sur 120 BPM.
+Police [POLICE], fond [COULEUR], accent [COULEUR]. Ton : [énergique / premium].
+Varie les entrées (masque, échelle, glissement) mais garde un vocabulaire cohérent.</pre>
+
+  <h4>Révélation de logo</h4>
+<pre>Voici mon logo en SVG : [COLLER LE SVG]. Crée une révélation de 4 s : le tracé
+se dessine, puis le remplissage apparaît, puis le nom de la marque en dessous.
+Easing expo.out, aucun rebond. Termine par 1,5 s de tenue sur le logo complet.</pre>
+
+  <h4>Démo d'interface (UI)</h4>
+<pre>Reproduis en HTML/CSS cet écran de mon application : [CAPTURE OU DESCRIPTION].
+Anime un parcours de 15 s : le curseur clique sur [BOUTON], le panneau s'ouvre,
+les données se remplissent, un graphique se dessine. Ajoute un léger zoom caméra
+qui suit l'action. Le curseur doit se déplacer en courbes, jamais en ligne droite.</pre>
+
+  <h4>Chiffres clés animés</h4>
+<pre>Anime ces 3 statistiques : [CHIFFRE 1], [CHIFFRE 2], [CHIFFRE 3]. Chaque chiffre
+compte depuis 0 jusqu'à sa valeur en 1,2 s (ease power2.out), avec un libellé
+court en dessous. Une statistique par plan, transitions par continuité de forme.</pre>
+
+  <h4>Boucle pour site web</h4>
+<pre>Crée une animation en boucle parfaite de 6 s illustrant [FONCTIONNALITÉ], pour
+la page d'accueil de mon site. La dernière image doit être identique à la première.
+Style épuré, formes géométriques, couleurs [PALETTE]. Format 1600x1000.</pre>
+
+  <h4>Particules et fond génératif</h4>
+<pre>Crée en Canvas 2D un fond animé de 10 s : environ 2 000 particules qui forment
+lentement le mot « [MOT] » puis se dispersent. Utilise un générateur aléatoire à
+graine fixe pour que chaque rendu soit identique, et un temps piloté par seek(t).</pre>
+
+  <h3>Glossaire</h3>
+  <table>
+    <thead><tr><th>Terme</th><th>Définition</th></tr></thead>
+    <tr><td>Keyframe (image clé)</td><td>Un état défini à un instant donné&nbsp;; l'animation calcule les états intermédiaires.</td></tr>
+    <tr><td>Easing</td><td>La courbe qui décrit l'accélération et la décélération d'un mouvement.</td></tr>
+    <tr><td>Timeline</td><td>La ligne de temps qui orchestre tous les mouvements les uns par rapport aux autres.</td></tr>
+    <tr><td>Stagger</td><td>Un décalage régulier entre des éléments qui font le même mouvement.</td></tr>
+    <tr><td>FPS (i/s)</td><td>Images par seconde. 30 pour le web et les réseaux, 60 pour plus de fluidité, 24 pour un rendu «&nbsp;cinéma&nbsp;».</td></tr>
+    <tr><td>Motion blur</td><td>Le flou de mouvement qui rend les déplacements rapides naturels.</td></tr>
+    <tr><td>Rendu déterministe</td><td>Un rendu où chaque image est calculée au temps exact, toujours identique d'un rendu à l'autre.</td></tr>
+    <tr><td>Planche contact</td><td>Une grille d'images extraites de la vidéo pour la juger d'un coup d'œil.</td></tr>
+    <tr><td>Alpha</td><td>La transparence. Une vidéo avec alpha peut être superposée à une autre.</td></tr>
+    <tr><td>BPM</td><td>Battements par minute&nbsp;: le tempo d'une musique.</td></tr>
+    <tr><td>Zone de sécurité</td><td>La partie de l'image qui ne sera pas masquée par l'interface des plateformes.</td></tr>
+  </table>
+
+  <div class="box tip">
+    <span class="t">Le mot de la fin</span>
+    <p>Claude est un excellent exécutant et un bon directeur artistique, mais c'est votre œil qui fait la différence. Regardez beaucoup de motion design, notez ce qui vous plaît, et décrivez-le à Claude avec précision&nbsp;: vous obtiendrez des animations qui vous ressemblent.</p>
+  </div>
+</section>
+
+</body>
+</html>

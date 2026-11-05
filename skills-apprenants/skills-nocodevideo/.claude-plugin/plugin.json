@@ -1,0 +1,8 @@
+{
+  "name": "nocodevideo",
+  "description": "Skills vidéo de NocodeVideo : vidéo explicative style papier avec présentateur, vidéo explicative Nuit bleue, showreel en code, analyse de vidéo virale, conseils UI/UX.",
+  "version": "1.2.0",
+  "author": {
+    "name": "NocodeVideo"
+  }
+}
