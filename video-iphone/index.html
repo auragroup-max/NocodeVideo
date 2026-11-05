@@ -1,0 +1,1022 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>L'iPhone ou ton business ?</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/audio/words-final.js"></script>
+<style>
+
+  /* DA « papier » : fond crème à points, encre noire, accent rouge, ombres en trame décalée */
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --carte:#FFFFFF; --jaune:#F6C21C; --bleu:#7CC8F2;
+    --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  #stage { position:relative; width:1080px; height:1920px; overflow:hidden; background:var(--papier); color:var(--encre); font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; }
+  .dots { background-color:var(--papier); background-image:radial-gradient(#CFC9BE 3px, transparent 3.6px); background-size:36px 36px; }
+  #cam { position:absolute; inset:0; transform-origin:50% 45%; }
+  #paper { position:absolute; left:-80px; top:-80px; right:-80px; bottom:-80px; }
+  #persoW { position:absolute; left:67px; top:802px; width:860px; height:1118px; transform-origin:50% 40%; z-index:4; }
+  #persoPop { position:absolute; inset:0; transform-origin:50% 100%; }
+  #perso { position:absolute; left:0; top:0; width:860px; height:1118px; overflow:visible; }
+  /* le personnage est piloté image par image : aucune animation CSS en temps réel */
+  #perso, #perso * { animation:none !important; transition:none !important; }
+  #perso#perso[data-talk="1"] .bouche { display:none; }
+  #perso#perso[data-talk="1"] .b-parle { display:inline; }
+  #perso#perso[data-talk="1"][data-expr="insiste"] .b-parle, #perso#perso[data-talk="1"][data-expr="panique"] .b-parle { display:none; }
+  #perso#perso[data-talk="1"][data-expr="insiste"] .b-grande, #perso#perso[data-talk="1"][data-expr="panique"] .b-grande { display:inline; }
+  #ui { position:absolute; inset:0; z-index:10; pointer-events:none; }
+  .u { position:absolute; visibility:hidden; }
+  /* carte « encre » : fond blanc, contour noir, ombre en trame de points décalée */
+  .ink { isolation:isolate; }
+  .ink::before { content:""; position:absolute; inset:0; border-radius:inherit; transform:translate(14px, 10px); z-index:-1;
+    background:radial-gradient(circle, #161616 2.2px, transparent 2.8px) 0 0 / 8px 8px; }
+  .ink::after { content:""; position:absolute; inset:0; border-radius:inherit; background:var(--carte); border:5px solid var(--encre); z-index:-1; }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; letter-spacing:-0.01em; color:var(--rouge); }
+  .k { position:relative; display:inline-block; color:var(--encre); isolation:isolate; padding:0 .08em; }
+  .k i { position:absolute; left:-.04em; right:-.04em; top:.1em; bottom:.04em; z-index:-1; border-radius:.08em; background:var(--rouge); transform:scaleX(0); transform-origin:left center; }
+  .ico { fill:none; stroke:currentColor; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
+  .pill { display:flex; align-items:center; gap:18px; padding:16px 30px 16px 18px; border-radius:999px; white-space:nowrap; font-weight:800; font-size:38px; letter-spacing:-0.02em; }
+  .pill .pi { width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--papier); border:4px solid var(--encre); color:var(--encre); flex:none; box-sizing:border-box; font:800 38px/1 "Inter", sans-serif; }
+  .pill .pi svg { width:38px; height:38px; }
+  .pill .ck { width:50px; height:50px; flex:none; margin-left:4px; }
+  .pill small { display:block; font:600 22px/1.2 var(--mono); color:var(--gris); letter-spacing:.02em; }
+  .tag { font:600 26px/1 var(--mono); letter-spacing:.06em; color:var(--gris); white-space:nowrap; }
+  .coin2 { position:absolute; left:50%; top:-58px; width:42px; height:42px; margin-left:-21px; border-radius:50%; border:4px solid var(--encre); box-sizing:border-box;
+    background:radial-gradient(circle at 35% 30%, #fff3c4 0 16%, var(--jaune) 17% 100%); }
+  .badge { position:absolute; width:66px; height:66px; right:-20px; top:-20px; }
+  .stamp { padding:10px 20px; border:6px solid var(--rouge); border-radius:12px; color:var(--rouge); background:var(--carte); font-weight:800; font-size:34px; letter-spacing:.04em; white-space:nowrap; }
+</style>
+<style>
+  /* éléments propres à cette vidéo (DA papier, même présentateur) */
+  #hud .htag { position:absolute; font:600 24px/1 var(--mono); letter-spacing:.06em; color:var(--gris); white-space:nowrap; }
+  #hud .line { position:absolute; height:4px; background:var(--rouge); }
+  #chap { color:var(--rouge) !important; }
+  /* le téléphone de l'accroche */
+  #bigPhone { left:110px; top:400px; width:330px; height:680px; border-radius:56px; background:var(--encre); box-sizing:border-box; padding:13px; isolation:isolate; }
+  #bigPhone::before { content:""; position:absolute; inset:0; border-radius:inherit; transform:translate(18px, 12px); z-index:-1; background:radial-gradient(circle, #161616 2.2px, transparent 2.8px) 0 0 / 8px 8px; }
+  .scrn { position:relative; width:100%; height:100%; border-radius:44px; overflow:hidden; }
+  #lock { background:#FFFDF8; }
+  #lock .isl { position:absolute; left:50%; top:16px; width:104px; height:32px; margin-left:-52px; border-radius:16px; background:var(--encre); }
+  #lock .hr { position:absolute; left:0; right:0; top:80px; text-align:center; font-weight:800; font-size:92px; letter-spacing:-0.04em; }
+  #lock .dt { position:absolute; left:0; right:0; top:192px; text-align:center; font:600 21px/1 var(--mono); color:var(--gris); }
+  #lock .nf { position:absolute; left:16px; right:16px; top:270px; padding:16px; border-radius:22px; border:4px solid var(--encre); background:var(--carte); display:flex; gap:12px; align-items:center; box-shadow:6px 6px 0 var(--encre); }
+  #lock .nf i { width:54px; height:54px; flex:none; border-radius:14px; background:var(--rouge); border:4px solid var(--encre); box-sizing:border-box; }
+  #lock .nf b { display:block; font-weight:800; font-size:23px; }
+  #lock .nf span { font:600 17px/1.2 var(--mono); color:var(--gris); }
+  #lock .bar { position:absolute; left:50%; bottom:18px; width:120px; height:8px; margin-left:-60px; border-radius:4px; background:var(--encre); }
+  #heart { position:absolute; left:50%; top:430px; width:150px; height:150px; margin-left:-75px; }
+  #tagNew { left:400px; top:985px; width:170px; height:230px; transform-origin:30px 10px; overflow:visible; }
+  #hook { left:500px; top:390px; width:560px; }
+  .hk { font-weight:800; font-size:60px; line-height:1.08; letter-spacing:-0.04em; white-space:nowrap; }
+  .hk.big { font-size:96px; margin:10px 0 2px; }
+  .hk.ser { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; font-size:96px; line-height:.95; color:var(--rouge); letter-spacing:-0.01em; }
+  .hk.end { font-size:84px; }
+  #stopStamp { left:760px; top:640px; font-size:64px; }
+  #noJudge { left:770px; top:560px; }
+  #calc { left:540px; top:500px; width:420px; height:520px; border-radius:36px; padding:30px; box-sizing:border-box; }
+  #calc .disp { height:110px; border-radius:18px; background:#2A2A2E; border:4px solid var(--encre); color:var(--jaune); display:flex; align-items:center; justify-content:flex-end; padding:0 22px; font:800 52px/1 var(--mono); }
+  #calc .keys { display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-top:22px; }
+  #calc .keys i { height:64px; border-radius:16px; border:4px solid var(--encre); background:var(--papier); display:flex; align-items:center; justify-content:center; font:800 28px/1 var(--mono); font-style:normal; }
+  #calc .keys i.r { background:var(--rouge); color:#fff; }
+  /* la valeur dans le temps */
+  #chart { left:60px; top:340px; width:960px; height:660px; border-radius:36px; }
+  #chart svg { position:absolute; left:40px; top:70px; width:880px; height:540px; overflow:visible; }
+  #chart .tag { position:absolute; left:40px; top:30px; }
+  .head { width:116px; height:116px; border-radius:50%; background:var(--carte); border:5px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; color:var(--encre); }
+  .head svg { width:70px; height:70px; }
+  .head .nw { position:absolute; left:50%; top:-26px; transform:translateX(-50%); padding:5px 12px; border-radius:999px; background:var(--rouge); color:#fff; border:3px solid var(--encre); font:800 18px/1 var(--mono); letter-spacing:.06em; white-space:nowrap; }
+  #lblDown { left:470px; top:780px; color:var(--rouge); font-weight:700; }
+  #lblUp { left:640px; top:440px; color:var(--rouge); font:800 34px/1 "Inter", sans-serif; letter-spacing:-0.02em; }
+  #reset { left:330px; top:1080px; }
+  /* le prix d'un iPhone contre une boutique */
+  #bars { left:60px; top:380px; width:960px; height:560px; }
+  #bars .lb { position:absolute; left:0; font:700 30px/1 var(--mono); letter-spacing:.04em; }
+  .bar { position:absolute; left:0; height:100px; border-radius:20px; border:5px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; padding:0 24px; font-weight:800; font-size:34px; white-space:nowrap; overflow:hidden; transform-origin:left center; }
+  #barI { top:52px; width:940px; background:var(--encre); color:#fff; }
+  #track { position:absolute; left:0; top:262px; width:940px; height:100px; border-radius:20px; border:4px dashed #B8B2A6; box-sizing:border-box; }
+  .seg { top:262px; justify-content:center; padding:0; font-size:30px; border-radius:0; }
+  #sg1 { left:0; width:260px; background:var(--rouge); color:#fff; border-radius:20px 0 0 20px; }
+  #sg2 { left:255px; width:170px; background:var(--jaune); }
+  #sg3 { left:420px; width:190px; background:var(--bleu); }
+  #marge { position:absolute; left:618px; top:262px; width:322px; height:100px; border-radius:0 20px 20px 0; border:6px solid var(--rouge); box-sizing:border-box;
+    background:repeating-linear-gradient(45deg, #E0402A22 0 14px, transparent 14px 28px); display:flex; align-items:center; justify-content:center; color:var(--rouge); font-weight:800; font-size:44px; }
+  #margeTag { position:absolute; left:618px; top:400px; color:var(--rouge); font-size:28px; }
+  /* plaisir contre revenu */
+  .duo { top:390px; width:450px; height:540px; border-radius:36px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; }
+  .duo > svg { width:150px; height:150px; color:var(--encre); }
+  .duo b { font-weight:800; font-size:62px; letter-spacing:-0.03em; line-height:1; }
+  .duo .tag { font-size:24px; }
+  #dW { left:60px; } #dY { left:570px; }
+  #yr { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400 !important; color:var(--rouge); font-size:96px !important; }
+  /* objections */
+  .bubble { left:60px; top:360px; width:620px; min-height:150px; border-radius:40px; padding:30px 34px; box-sizing:border-box; font-weight:800; font-size:46px; line-height:1.1; letter-spacing:-0.02em; }
+  .bubble .tail { position:absolute; left:70px; bottom:-46px; width:70px; height:52px; overflow:visible; }
+  .bubble .tag { display:block; margin-bottom:12px; color:var(--rouge); font-size:22px; }
+  #feed { left:690px; top:340px; width:300px; height:600px; border-radius:50px; background:var(--encre); box-sizing:border-box; padding:12px; isolation:isolate; }
+  #feed::before { content:""; position:absolute; inset:0; border-radius:inherit; transform:translate(16px, 11px); z-index:-1; background:radial-gradient(circle, #161616 2.2px, transparent 2.8px) 0 0 / 8px 8px; }
+  #feed .scrn { background:var(--carte); }
+  #reel { position:absolute; left:14px; right:14px; top:0; }
+  #reel i { display:block; height:250px; margin-top:14px; border-radius:22px; border:4px solid var(--encre); box-sizing:border-box; position:relative; }
+  #reel i::after { content:""; position:absolute; right:16px; top:16px; width:0; height:0; border-left:22px solid var(--encre); border-top:14px solid transparent; border-bottom:14px solid transparent; }
+  #timer { left:330px; top:720px; }
+  #clock { left:110px; top:580px; width:380px; height:380px; overflow:visible; }
+  #moon { left:440px; top:560px; width:120px; height:120px; color:var(--encre); }
+  #hourTag { left:110px; top:990px; }
+  .skill { left:780px; }
+  #lockBig { left:120px; top:560px; width:230px; height:230px; color:var(--encre); }
+  #lockTag { left:90px; top:810px; color:var(--rouge); }
+  #phoneS { left:150px; top:880px; width:170px; height:170px; color:var(--encre); }
+  #volStamp { left:330px; top:960px; font-size:46px; }
+  /* autour de toi */
+  #crowd { left:80px; top:380px; width:920px; display:grid; grid-template-columns:repeat(4, 1fr); row-gap:70px; justify-items:center; }
+  .pp { position:relative; width:170px; height:170px; border-radius:50%; background:var(--carte); border:5px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; color:var(--encre); }
+  .pp > svg { width:110px; height:110px; }
+  .pp .ph { position:absolute; right:-14px; top:-14px; width:66px; height:66px; border-radius:50%; background:var(--encre); color:#fff; display:flex; align-items:center; justify-content:center; border:4px solid var(--encre); box-sizing:border-box; }
+  .pp .ph svg { width:42px; height:42px; }
+  .pp .mo { position:absolute; left:50%; bottom:-34px; transform:translateX(-50%); display:flex; gap:4px; }
+  .pp .mo i { position:relative; width:34px; height:34px; border-radius:50%; border:4px solid var(--encre); box-sizing:border-box; background:radial-gradient(circle at 35% 30%, #fff3c4 0 16%, var(--jaune) 17% 100%); }
+  #neq { left:80px; top:960px; color:var(--rouge); font-size:26px; }
+  /* riches ou l'air riche */
+  .col { top:380px; width:450px; height:600px; border-radius:36px; padding:34px; box-sizing:border-box; }
+  .col h3 { margin:0 0 20px; font-weight:800; font-size:52px; letter-spacing:-0.03em; }
+  .col .it2 { display:flex; align-items:center; gap:18px; height:96px; font-weight:800; font-size:34px; }
+  .col .it2 svg { width:72px; height:72px; color:var(--encre); flex:none; }
+  .col .it2 em { font-style:normal; margin-left:auto; font-size:40px; }
+  .col .ft { position:absolute; left:34px; bottom:34px; font:800 30px/1 var(--mono); color:var(--rouge); }
+  #rich { left:60px; } #poor { left:570px; }
+  /* le vrai flex */
+  #backPhone { left:110px; top:400px; width:330px; height:680px; border-radius:56px; background:var(--encre); box-sizing:border-box; padding:13px; isolation:isolate; }
+  #backPhone::before { content:""; position:absolute; inset:0; border-radius:inherit; transform:translate(18px, 12px); z-index:-1; background:radial-gradient(circle, #161616 2.2px, transparent 2.8px) 0 0 / 8px 8px; }
+  #backPhone .scrn { background:#C9CED8; }
+  #backPhone .cam { position:absolute; left:22px; top:22px; width:150px; height:150px; border-radius:36px; background:#A9AFBB; border:4px solid var(--encre); box-sizing:border-box; }
+  #backPhone .cam i { position:absolute; width:52px; height:52px; border-radius:50%; background:#2A2A2E; border:5px solid var(--encre); box-sizing:border-box; }
+  #logo { position:absolute; left:50%; top:310px; width:90px; height:90px; margin-left:-45px; border-radius:50%; background:#EDEFF3; border:5px solid var(--encre); box-sizing:border-box; }
+  #logoRing { position:absolute; left:50%; top:270px; width:200px; height:170px; margin-left:-100px; overflow:visible; }
+  #flexT { left:500px; top:410px; width:560px; }
+  #flexT .hk { font-size:64px; }
+  #strikeL { position:absolute; left:-6px; right:-6px; top:54%; height:10px; border-radius:5px; background:var(--rouge); transform:scaleX(0); transform-origin:left center; }
+  #bank { left:520px; top:700px; width:460px; height:340px; border-radius:32px; padding:28px; box-sizing:border-box; }
+  #bank .tag { font-size:22px; }
+  #bank b { display:block; margin-top:14px; font-weight:800; font-size:58px; letter-spacing:-0.03em; color:var(--rouge); }
+  #bank .bars { position:absolute; left:28px; right:28px; bottom:28px; height:120px; display:flex; align-items:flex-end; gap:16px; }
+  #bank .bars i { flex:1; border-radius:10px 10px 0 0; background:var(--encre); transform-origin:bottom; }
+  #bank .bars i:last-child { background:var(--rouge); }
+  /* plus tard */
+  .tile2 { top:470px; width:300px; height:320px; border-radius:36px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; }
+  .tile2 svg { width:150px; height:150px; color:var(--encre); }
+  .tile2 b { font-weight:800; font-size:38px; }
+  #tShop { left:80px; } #tPhone { left:700px; }
+  #lArrow { left:400px; top:580px; width:280px; height:100px; overflow:visible; }
+  #laterStamp { left:850px; top:470px; font-size:40px; }
+  #laterTag { left:80px; top:850px; }
+  .fly { position:absolute; left:0; top:0; width:46px; height:46px; margin:-23px 0 0 -23px; border-radius:50%; border:4px solid var(--encre); box-sizing:border-box; visibility:hidden;
+    background:radial-gradient(circle at 35% 30%, #fff3c4 0 16%, var(--jaune) 17% 100%); }
+  /* contact */
+  #ctaT { left:0; right:0; top:340px; text-align:center; font-size:84px; }
+  #upArrow { left:495px; top:470px; width:90px; height:90px; color:var(--encre); }
+  #wa .pi { background:#25d366; color:#fff; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-check" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#141414"/><path d="M19 33l9 9 17-19" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#E0402A" stroke="#141414" stroke-width="4"/><path d="M22 22 L42 42 M42 22 L22 42" stroke="#fff" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 120 120"><g class="ico"><rect x="34" y="10" width="52" height="100" rx="12"/><path d="M52 94 L68 94"/></g></symbol>
+  <symbol id="i-shop" viewBox="0 0 120 120"><g class="ico"><path d="M16 46 L26 18 L94 18 L104 46 Z"/><path d="M16 46 Q27 60 38 46 Q49 60 60 46 Q71 60 82 46 Q93 60 104 46"/><path d="M24 56 L24 102 L96 102 L96 56 M50 102 L50 74 L70 74 L70 102"/></g></symbol>
+  <symbol id="i-person" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="40" r="18"/><path d="M24 104 Q24 68 60 68 Q96 68 96 104"/></g></symbol>
+  <symbol id="i-lock" viewBox="0 0 120 120"><g class="ico" style="stroke-width:9"><rect x="24" y="52" width="72" height="56" rx="12"/><path d="M38 52 L38 38 Q38 16 60 16 Q82 16 82 38 L82 52"/></g><circle cx="60" cy="78" r="7" fill="currentColor"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 120 120"><path d="M78 14 A46 46 0 1 0 106 78 A36 36 0 1 1 78 14 Z" fill="#F6C21C" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-book" viewBox="0 0 120 120"><g class="ico"><path d="M60 30 Q40 18 14 22 L14 96 Q40 92 60 104 Q80 92 106 96 L106 22 Q80 18 60 30 Z"/><path d="M60 30 L60 104"/></g></symbol>
+  <symbol id="i-chart" viewBox="0 0 120 120"><g class="ico"><path d="M14 18 L14 104 L108 104"/><path d="M28 86 L52 62 L68 74 L100 36"/><path d="M80 34 L100 34 L100 54"/></g></symbol>
+  <symbol id="i-watch" viewBox="0 0 120 120"><g class="ico"><path d="M44 30 L48 8 L72 8 L76 30 M44 90 L48 112 L72 112 L76 90"/><circle cx="60" cy="60" r="32"/><path d="M60 42 L60 60 L72 68"/></g></symbol>
+  <symbol id="i-bag" viewBox="0 0 120 120"><g class="ico"><path d="M22 40 L98 40 L92 106 L28 106 Z"/><path d="M42 50 L42 34 Q42 16 60 16 Q78 16 78 34 L78 50"/></g></symbol>
+  <symbol id="i-cart" viewBox="0 0 120 120"><g class="ico"><path d="M12 24 L30 24 L42 78 L94 78 L106 40 L34 40"/><circle cx="48" cy="96" r="8"/><circle cx="88" cy="96" r="8"/></g></symbol>
+  <symbol id="i-chat" viewBox="0 0 120 120"><path d="M60 12 A48 48 0 1 1 30 97 L12 108 L20 86 A48 48 0 0 1 60 12 Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M44 38 Q38 52 50 68 Q64 84 80 82 L86 72 L74 64 L67 70 Q57 64 52 54 L58 47 L50 36 Z" fill="currentColor"/></symbol>
+  <symbol id="i-up" viewBox="0 0 120 120"><g class="ico" style="stroke-width:10"><path d="M60 104 L60 18 M26 50 L60 16 L94 50"/></g></symbol>
+  <symbol id="i-clock" viewBox="0 0 120 120"><g class="ico" style="stroke-width:9"><circle cx="60" cy="64" r="42"/><path d="M60 40 L60 64 L76 74 M48 12 L72 12"/></g></symbol>
+  <symbol id="i-heart" viewBox="0 0 120 120"><path d="M60 104 C 20 76 8 52 18 34 C 28 16 52 16 60 36 C 68 16 92 16 102 34 C 112 52 100 76 60 104 Z" fill="#E0402A" stroke="#141414" stroke-width="6" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div id="stage">
+  <div id="cam">
+    <div id="paper" class="dots"></div>
+    <div id="persoW"><div id="persoPop">
+<svg id="perso" class="perso" style="--sweat:#2F5FC4" viewBox="0 0 600 780" xmlns="http://www.w3.org/2000/svg"
+     data-expr="question" data-pose="croise" data-parle="non" data-lunettes="oui" data-tenue="polo" data-casque="non" data-pin="oui" data-barbe="oui" data-moustache="oui" data-trame="oui"
+     role="img" aria-label="Personnage présentateur">
+<style>
+  #perso {
+    --peau: #B9805A;
+    --cheveux: #17110E;
+    --sweat: #2A2A2E;
+    --trait: #151515;
+    --rouge: #E0402A;
+    --jaune: #F6C21C;
+    --orange: #F7931E;
+    --bleu: #7CC8F2;
+    --joue: #D0665A;
+    --bouche: #6B1414;
+    --langue: #E5484D;
+    --casque: #9097A1;
+    --peau2: color-mix(in srgb, var(--peau) 75%, #5A2C14);
+    --sweat2: color-mix(in srgb, var(--sweat) 70%, #000);
+    --cheveux2: color-mix(in srgb, var(--cheveux) 65%, #fff);
+    overflow: visible;
+  }
+  #perso .f-peau { fill: var(--peau); }
+  #perso .f-peau2 { fill: var(--peau2); }
+  #perso .f-cheveux { fill: var(--cheveux); }
+  #perso .f-sweat { fill: var(--sweat); }
+  #perso .f-sweat2 { fill: var(--sweat2); }
+  #perso .f-blanc { fill: #fff; }
+  #perso .f-trait { fill: var(--trait); }
+  #perso .f-rouge { fill: var(--rouge); }
+  #perso .f-bouche { fill: var(--bouche); }
+  #perso .f-langue { fill: var(--langue); }
+  #perso .f-casque { fill: var(--casque); }
+  #perso .f-casque2 { fill: color-mix(in srgb, var(--casque) 55%, #000); }
+  #perso .o { stroke: var(--trait); stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+  #perso .o-seul { fill: none; }
+  #perso .o-fin { fill: none; stroke: var(--trait); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+  #perso .meche { fill: none; stroke: var(--cheveux2); stroke-width: 6; stroke-linecap: round; opacity: .55; }
+  #perso .joues ellipse { fill: var(--joue); opacity: .55; }
+  #perso .f-col { fill: color-mix(in srgb, var(--sweat) 82%, #fff); }
+  #perso .bouton { fill: color-mix(in srgb, var(--sweat) 60%, #fff); }
+  #perso .boucle { fill: none; stroke: var(--cheveux2); stroke-width: 4; stroke-linecap: round; opacity: .5; }
+  #perso .barbe { fill: var(--cheveux); opacity: .3; }
+  #perso .barbe-fonce { fill: var(--cheveux); opacity: .6; }
+  #perso .moustache { fill: var(--cheveux); opacity: .85; }
+  #perso .monture { fill: url(#perso-verre); stroke: var(--trait); stroke-width: 9; stroke-linejoin: round; }
+  #perso .branche { fill: none; stroke: var(--trait); stroke-width: 9; stroke-linecap: round; }
+  #perso .reflet { fill: #fff; opacity: .16; }
+  #perso .sc-c { fill: none; stroke: var(--trait); stroke-width: 25; stroke-linecap: round; }
+  #perso .sc-f { fill: none; stroke: var(--cheveux); stroke-width: 13; stroke-linecap: round; }
+  #perso .cordon-c { fill: none; stroke: var(--trait); stroke-width: 14; stroke-linecap: round; }
+  #perso .cordon-b { fill: none; stroke: #fff; stroke-width: 6; stroke-linecap: round; }
+  #perso .bras-contour { fill: none; stroke: var(--trait); stroke-width: 84; stroke-linecap: round; stroke-linejoin: round; }
+  #perso .bras-tissu { fill: none; stroke: var(--sweat); stroke-width: 70; stroke-linecap: round; stroke-linejoin: round; }
+  #perso .rayon-c { stroke: var(--trait); stroke-width: 21; stroke-linecap: round; }
+  #perso .rayon { stroke: var(--jaune); stroke-width: 12; stroke-linecap: round; }
+  #perso .goutte { fill: #fff; stroke: var(--trait); stroke-width: 4.5; stroke-linejoin: round; }
+  #perso .goutte.bleue { fill: var(--bleu); }
+  #perso .point-q { font: 900 120px/1 "Inter", "Arial Black", sans-serif; fill: var(--orange); stroke: var(--trait); stroke-width: 9; paint-order: stroke; stroke-linejoin: round; }
+
+  /* Pivots des pièces mobiles */
+  #perso .tete { transform-box: view-box; transform-origin: 330px 470px; animation: hoche 3.6s ease-in-out infinite; }
+  #perso .pup, #perso .ph, #perso .pb, #perso .sc { transform-box: view-box; transition: transform .16s ease-out; }
+  #perso .pup-g, #perso .ph-g, #perso .pb-g { transform-origin: 276px 312px; }
+  #perso .pup-d, #perso .ph-d, #perso .pb-d { transform-origin: 384px 312px; }
+  #perso .sc-g { transform-origin: 275px 260px; }
+  #perso .sc-d { transform-origin: 385px 260px; }
+  #perso .ph { transform: translateY(8px); animation: cligne 4.2s infinite; }
+  #perso .bouche { transform-box: view-box; transform-origin: 330px 396px; }
+  #perso .main-ouverte { transform-box: view-box; transform-origin: 100px 470px; }
+  #perso .main-pointe { transform-box: view-box; transform-origin: 100px 470px; }
+  #perso .extra { transform-box: fill-box; transform-origin: center; animation: pop .38s cubic-bezier(.3, 1.6, .5, 1) both; }
+
+  /* Tout est caché par défaut, chaque état allume ses pièces */
+  #perso .bouche, #perso .bras, #perso .main-pointe, #perso .main-ouverte, #perso .extra, #perso .joues { display: none; }
+  #perso[data-casque="non"] .casque, #perso[data-pin="non"] .pin, #perso[data-lunettes="non"] .lunettes,
+  #perso[data-tenue="polo"] .tenue-sweat, #perso[data-tenue="sweat"] .tenue-polo,
+  #perso[data-barbe="non"] .barbe, #perso[data-barbe="non"] .barbe-fonce, #perso[data-moustache="non"] .moustache { display: none; }
+  #perso[data-trame="non"] > g { filter: none; }
+
+  /* Lunettes de soleil : elles glissent sur le nez pour laisser voir les yeux quand l'émotion monte */
+  #perso .lunettes { transform-box: view-box; transform-origin: 330px 310px; transition: transform .2s ease-out; }
+  #perso[data-expr="sceptique"] .lunettes { transform: translateY(3px) rotate(-3deg); }
+  #perso[data-expr="insiste"] .lunettes { transform: translateY(-3px); }
+  #perso[data-expr="inquiet"] .lunettes { transform: translateY(5px) rotate(-2deg); }
+  #perso[data-expr="question"] .lunettes { transform: rotate(3deg); }
+  #perso[data-expr="surpris"] .lunettes, #perso[data-expr="panique"] .lunettes { transform: translateY(46px); }
+  #perso[data-expr="malin"] .lunettes { transform: translateY(40px); }
+  #perso[data-lunettes="oui"][data-expr="malin"] .ph { transform: translateY(16px); }
+  #perso[data-lunettes="oui"][data-expr="malin"] .pup { transform: translate(2px, -4px); }
+  #perso[data-parle="oui"] .anim { animation: parle .5s ease-in-out infinite alternate; }
+
+  /* Poses */
+  #perso[data-pose="croise"] .bras-croise,
+  #perso[data-pose="pointe"] .bras-leve, #perso[data-pose="pointe"] .main-pointe,
+  #perso[data-pose="salue"] .bras-leve, #perso[data-pose="salue"] .main-ouverte { display: inline; }
+  #perso[data-pose="pointe"] .main-pointe { animation: insiste .9s ease-in-out infinite; }
+  #perso[data-pose="salue"] .main-ouverte { animation: coucou 1.3s ease-in-out infinite; }
+
+  /* neutre */
+  #perso[data-expr="neutre"] .b-sourire { display: inline; }
+
+  /* sceptique : regard en coin, sourire en coin */
+  #perso[data-expr="sceptique"] .b-coin { display: inline; }
+  #perso[data-expr="sceptique"] .pup { transform: translate(12px, 3px); }
+  #perso[data-expr="sceptique"] .ph-g { transform: translateY(30px) rotate(-4deg); }
+  #perso[data-expr="sceptique"] .ph-d { transform: translateY(27px) rotate(5deg); }
+  #perso[data-expr="sceptique"] .sc-g { transform: translateY(-10px) rotate(-4deg); }
+  #perso[data-expr="sceptique"] .sc-d { transform: translateY(7px) rotate(-12deg); }
+
+  /* parle : explication neutre */
+  #perso[data-expr="parle"] .b-parle { display: inline; }
+  #perso[data-expr="parle"] .pup { transform: translate(0, 2px); }
+  #perso[data-expr="parle"] .ph { transform: translateY(10px); }
+  #perso[data-expr="parle"] .sc { transform: translateY(-4px); }
+
+  /* insiste : il crie un peu, sourcil froncé */
+  #perso[data-expr="insiste"] .b-grande { display: inline; }
+  #perso[data-expr="insiste"] .pup { transform: translate(10px, 2px); }
+  #perso[data-expr="insiste"] .ph-g { transform: translateY(24px) rotate(8deg); }
+  #perso[data-expr="insiste"] .ph-d { transform: translateY(20px) rotate(-6deg); }
+  #perso[data-expr="insiste"] .sc-g { transform: translateY(4px) rotate(10deg); }
+  #perso[data-expr="insiste"] .sc-d { transform: translateY(2px) rotate(-14deg); }
+
+  /* surpris : yeux ronds, traits jaunes, sueur */
+  #perso[data-expr="surpris"] .b-plate,
+  #perso[data-expr="surpris"] .x-rayons,
+  #perso[data-expr="surpris"] .x-gouttes { display: inline; }
+  #perso[data-expr="surpris"] .pup { transform: scale(.7); }
+  #perso[data-expr="surpris"] .ph { transform: translateY(0); }
+  #perso[data-expr="surpris"] .sc { transform: translateY(-16px); }
+
+  /* content : yeux mi-clos, joues roses, étincelle */
+  #perso[data-expr="content"] .b-sourire,
+  #perso[data-expr="content"] .joues,
+  #perso[data-expr="content"] .x-etincelle { display: inline; }
+  #perso[data-expr="content"] .pup { transform: translate(0, 4px); }
+  #perso[data-expr="content"] .ph { transform: translateY(20px); }
+  #perso[data-expr="content"] .pb { transform: translateY(-16px); }
+  #perso[data-expr="content"] .sc { transform: translateY(-6px); }
+
+  /* inquiet : larmes, sourcils tristes */
+  #perso[data-expr="inquiet"] .b-froncee,
+  #perso[data-expr="inquiet"] .x-larmes,
+  #perso[data-expr="inquiet"] .x-sueur { display: inline; }
+  #perso[data-expr="inquiet"] .pup { transform: translate(0, 5px) scale(1.1); }
+  #perso[data-expr="inquiet"] .ph-g { transform: translateY(14px) rotate(-12deg); }
+  #perso[data-expr="inquiet"] .ph-d { transform: translateY(14px) rotate(12deg); }
+  #perso[data-expr="inquiet"] .sc-g { transform: translateY(-6px) rotate(-16deg); }
+  #perso[data-expr="inquiet"] .sc-d { transform: translateY(-6px) rotate(16deg); }
+
+  /* panique : bouche grande ouverte, sueur partout */
+  #perso[data-expr="panique"] .b-grande,
+  #perso[data-expr="panique"] .x-gouttes,
+  #perso[data-expr="panique"] .x-sueur { display: inline; }
+  #perso[data-expr="panique"] .pup { transform: scale(.6); }
+  #perso[data-expr="panique"] .ph { transform: translateY(0); }
+  #perso[data-expr="panique"] .sc-g { transform: translateY(-18px) rotate(-8deg); }
+  #perso[data-expr="panique"] .sc-d { transform: translateY(-18px) rotate(8deg); }
+
+  /* malin : paupières lourdes, sourire en coin */
+  #perso[data-expr="malin"] .b-coin { display: inline; }
+  #perso[data-expr="malin"] .pup { transform: translate(2px, 8px); }
+  #perso[data-expr="malin"] .ph { transform: translateY(34px); }
+  #perso[data-expr="malin"] .pb { transform: translateY(-8px); }
+  #perso[data-expr="malin"] .sc { transform: translateY(4px); }
+
+  /* question : point d'interrogation, invite à commenter */
+  #perso[data-expr="question"] .b-parle,
+  #perso[data-expr="question"] .joues,
+  #perso[data-expr="question"] .x-question { display: inline; }
+  #perso[data-expr="question"] .pup { transform: translate(-4px, 0); }
+  #perso[data-expr="question"] .ph { transform: translateY(16px); }
+  #perso[data-expr="question"] .sc-g { transform: translateY(-12px); }
+  #perso[data-expr="question"] .sc-d { transform: rotate(-6deg); }
+
+  @keyframes cligne { 0%, 93%, 100% { translate: 0 0; } 96% { translate: 0 72px; } }
+  @keyframes parle { 0% { scale: 1 .35; } 30% { scale: 1 1; } 55% { scale: 1 .6; } 80% { scale: 1 .95; } 100% { scale: 1 .45; } }
+  @keyframes hoche { 0%, 100% { rotate: 0deg; translate: 0 0; } 50% { rotate: .8deg; translate: 0 2px; } }
+  @keyframes pop { from { scale: .3; opacity: 0; } to { scale: 1; opacity: 1; } }
+  @keyframes coucou { 0%, 100% { rotate: -7deg; } 50% { rotate: 7deg; } }
+  @keyframes insiste { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+  @media (prefers-reduced-motion: reduce) {
+    #perso * { animation: none !important; transition: none !important; }
+  }
+</style>
+<defs>
+  <!-- Ombre en trame de points décalée (effet Ben-Day), calculée entièrement dans le filtre :
+       une tuile 10×10 avec un carré, répétée, arrondie (flou + seuil), découpée par la silhouette décalée -->
+  <filter id="perso-trame" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1000" height="1200" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+    <feFlood flood-opacity="0" x="0" y="0" width="10" height="10" result="fond"/>
+    <feFlood flood-color="#161616" x="2.5" y="2.5" width="5" height="5" result="carre"/>
+    <feMerge x="0" y="0" width="10" height="10" result="tuile"><feMergeNode in="fond"/><feMergeNode in="carre"/></feMerge>
+    <feTile in="tuile" result="grille"/>
+    <feGaussianBlur in="grille" stdDeviation="1.1" result="flou"/>
+    <feComponentTransfer in="flou" result="points"><feFuncA type="discrete" tableValues="0 0 1 1"/></feComponentTransfer>
+    <feOffset in="SourceAlpha" dx="18" dy="10" result="decale"/>
+    <feComposite in="points" in2="decale" operator="in" result="ombre"/>
+    <feMerge><feMergeNode in="ombre"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <clipPath id="perso-clip-tete">
+    <path d="M 210 270 C 208 200 260 165 330 165 C 400 165 452 200 450 270 L 451 336 C 452 420 404 464 330 466 C 256 464 208 420 209 336 Z"/>
+  </clipPath>
+  <clipPath id="perso-clip-oeil-g"><circle cx="276" cy="312" r="33"/></clipPath>
+  <clipPath id="perso-clip-oeil-d"><circle cx="384" cy="312" r="33"/></clipPath>
+  <clipPath id="perso-clip-bouche"><path d="M 300 398 Q 330 392 362 396 Q 360 434 330 438 Q 302 434 300 398 Z"/></clipPath>
+  <clipPath id="perso-clip-cri"><path d="M 296 394 Q 330 386 366 394 Q 366 452 330 456 Q 296 452 296 394 Z"/></clipPath>
+  <linearGradient id="perso-verre" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#34343A"/>
+    <stop offset="1" stop-color="#0B0B0D"/>
+  </linearGradient>
+  <path id="perso-goutte" d="M 0 0 C 10 14 14 22 14 30 C 14 40 7 46 0 46 C -7 46 -14 40 -14 30 C -14 22 -10 14 0 0 Z"/>
+</defs>
+
+<g filter="url(#perso-trame)">
+
+  <!-- Buste -->
+  <path class="f-sweat o" d="M 112 792 C 118 670 150 598 236 566 L 296 548 L 364 548 L 424 566 C 510 598 542 670 548 792 Z"/>
+  <path class="o-fin" d="M 180 664 C 192 712 190 752 184 792"/>
+  <path class="o-fin" d="M 480 664 C 468 712 470 752 476 792"/>
+
+  <!-- Cou -->
+  <path class="f-peau o" d="M 298 420 L 298 562 L 362 562 L 362 420 Z"/>
+  <path class="f-peau2" d="M 302 480 L 358 480 L 358 520 C 340 532 320 532 302 520 Z"/>
+
+  <!-- Tenue sweat : t-shirt, col de capuche, cordons -->
+  <g class="tenue-sweat">
+    <path class="f-blanc o" d="M 262 546 L 398 546 L 330 612 Z"/>
+    <path class="f-sweat2 o" d="M 226 546 C 244 612 292 642 330 644 C 368 642 416 612 434 546 L 402 542 C 392 586 360 612 330 614 C 300 612 268 586 258 542 Z"/>
+    <path class="cordon-c" d="M 306 634 C 304 672 300 702 300 730"/>
+    <path class="cordon-b" d="M 306 634 C 304 672 300 702 300 730"/>
+    <path class="cordon-c" d="M 354 634 C 356 672 360 702 360 730"/>
+    <path class="cordon-b" d="M 354 634 C 356 672 360 702 360 730"/>
+  </g>
+
+  <!-- Tenue polo : col ouvert, patte boutonnée -->
+  <g class="tenue-polo">
+    <path class="f-peau o" d="M 284 546 L 376 546 L 330 616 Z"/>
+    <rect class="f-sweat o" style="stroke-width: 4" x="318" y="604" width="24" height="92" rx="3"/>
+    <circle class="bouton" cx="330" cy="630" r="4.5"/>
+    <circle class="bouton" cx="330" cy="666" r="4.5"/>
+    <path class="f-col o" d="M 292 538 L 240 552 C 244 580 256 602 268 622 L 326 606 Z"/>
+    <path class="f-col o" d="M 368 538 L 420 552 C 416 580 404 602 392 622 L 334 606 Z"/>
+  </g>
+
+  <!-- Casque autour du cou (option) -->
+  <g class="casque">
+    <path d="M 252 548 C 270 606 390 606 408 548" fill="none" stroke="var(--trait)" stroke-width="22" stroke-linecap="round"/>
+    <path d="M 252 548 C 270 606 390 606 408 548" fill="none" stroke="color-mix(in srgb, var(--casque) 55%, #000)" stroke-width="11" stroke-linecap="round"/>
+    <ellipse class="f-casque o" cx="248" cy="566" rx="30" ry="38" transform="rotate(-18 248 566)"/>
+    <ellipse class="f-casque2" cx="248" cy="566" rx="15" ry="22" transform="rotate(-18 248 566)"/>
+    <ellipse class="f-casque o" cx="412" cy="566" rx="30" ry="38" transform="rotate(18 412 566)"/>
+    <ellipse class="f-casque2" cx="412" cy="566" rx="15" ry="22" transform="rotate(18 412 566)"/>
+  </g>
+
+  <!-- Pin (option) -->
+  <g class="pin">
+    <circle class="f-rouge o" cx="424" cy="664" r="16" style="stroke-width: 5"/>
+    <path class="f-blanc" d="M 419 655 L 432 664 L 419 673 Z"/>
+  </g>
+
+  <!-- Tête (agrandie et descendue vers le col) -->
+  <g transform="translate(330 498) scale(1.07) translate(-330 -460)">
+  <g class="tete">
+    <ellipse class="f-peau o" cx="208" cy="332" rx="22" ry="30"/>
+    <path class="o-fin" d="M 214 318 C 202 326 204 342 214 346"/>
+    <ellipse class="f-peau o" cx="452" cy="332" rx="22" ry="30"/>
+    <path class="o-fin" d="M 446 318 C 458 326 456 342 446 346"/>
+
+    <path class="f-peau" d="M 210 270 C 208 200 260 165 330 165 C 400 165 452 200 450 270 L 451 336 C 452 420 404 464 330 466 C 256 464 208 420 209 336 Z"/>
+    <path class="f-peau2" clip-path="url(#perso-clip-tete)" d="M 420 170 C 472 250 468 400 352 470 L 480 480 L 480 160 Z"/>
+    <path class="o o-seul" d="M 210 270 C 208 200 260 165 330 165 C 400 165 452 200 450 270 L 451 336 C 452 420 404 464 330 466 C 256 464 208 420 209 336 Z"/>
+
+    <g class="joues"><ellipse cx="246" cy="380" rx="22" ry="11"/><ellipse cx="414" cy="380" rx="22" ry="11"/></g>
+    <path class="o-fin" d="M 334 322 C 322 346 316 362 332 372 C 338 375 346 372 348 365"/>
+
+    <!-- Œil gauche -->
+    <circle class="f-blanc" cx="276" cy="312" r="33"/>
+    <g clip-path="url(#perso-clip-oeil-g)">
+      <g class="pup pup-g"><circle class="f-trait" cx="276" cy="314" r="10.5"/><circle class="f-blanc" cx="279.5" cy="310" r="3"/></g>
+      <g class="ph ph-g"><rect class="f-peau" x="236" y="139" width="80" height="140"/><path class="o" d="M 236 279 L 316 279"/></g>
+      <g class="pb pb-g"><rect class="f-peau" x="236" y="345" width="80" height="140"/><path class="o" d="M 236 345 L 316 345"/></g>
+    </g>
+    <circle class="o o-seul" cx="276" cy="312" r="33"/>
+
+    <!-- Œil droit -->
+    <circle class="f-blanc" cx="384" cy="312" r="33"/>
+    <g clip-path="url(#perso-clip-oeil-d)">
+      <g class="pup pup-d"><circle class="f-trait" cx="384" cy="314" r="10.5"/><circle class="f-blanc" cx="387.5" cy="310" r="3"/></g>
+      <g class="ph ph-d"><rect class="f-peau" x="344" y="139" width="80" height="140"/><path class="o" d="M 344 279 L 424 279"/></g>
+      <g class="pb pb-d"><rect class="f-peau" x="344" y="345" width="80" height="140"/><path class="o" d="M 344 345 L 424 345"/></g>
+    </g>
+    <circle class="o o-seul" cx="384" cy="312" r="33"/>
+
+    <!-- Cheveux : courts et bouclés, contour en boucles serrées -->
+    <path class="f-cheveux o" d="M 206 300 C 200 250 204 200 232 172 C 262 144 300 136 334 136 C 372 136 414 146 438 174 C 462 202 460 252 454 300 L 444 300 C 440 270 432 252 420 242 C 400 232 380 226 364 226 C 352 220 340 218 330 220 C 318 218 300 222 290 228 C 270 228 250 236 240 248 C 228 262 222 280 220 300 Z"/>
+    <g class="f-cheveux o" style="stroke-width: 5">
+      <circle cx="210" cy="219" r="12"/><circle cx="216" cy="200" r="12"/><circle cx="227" cy="183" r="12"/>
+      <circle cx="241" cy="168" r="12"/><circle cx="258" cy="155" r="12"/><circle cx="278" cy="145" r="12"/>
+      <circle cx="300" cy="139" r="12"/><circle cx="324" cy="136" r="12"/><circle cx="347" cy="137" r="12"/>
+      <circle cx="370" cy="141" r="12"/><circle cx="391" cy="149" r="12"/><circle cx="410" cy="160" r="12"/>
+      <circle cx="426" cy="174" r="12"/><circle cx="439" cy="191" r="12"/><circle cx="447" cy="208" r="12"/>
+      <circle cx="452" cy="227" r="12"/>
+    </g>
+    <g class="boucle">
+      <path d="M 252 196 a 7 7 0 1 1 10 6"/><path d="M 290 176 a 7 7 0 1 1 10 6"/><path d="M 332 168 a 7 7 0 1 1 10 6"/>
+      <path d="M 374 176 a 7 7 0 1 1 10 6"/><path d="M 408 198 a 7 7 0 1 1 10 6"/><path d="M 270 212 a 6 6 0 1 1 9 5"/>
+      <path d="M 312 198 a 6 6 0 1 1 9 5"/><path d="M 354 200 a 6 6 0 1 1 9 5"/><path d="M 236 228 a 6 6 0 1 1 9 5"/>
+      <path d="M 424 228 a 6 6 0 1 1 9 5"/>
+    </g>
+
+    <!-- Lunettes de soleil rectangulaires -->
+    <g class="lunettes">
+      <path class="branche" d="M 232 292 L 212 300"/>
+      <path class="branche" d="M 428 292 L 448 300"/>
+      <path class="branche" d="M 318 298 Q 330 289 342 298" style="stroke-width: 10"/>
+      <rect class="monture" x="230" y="276" width="90" height="68" rx="14"/>
+      <rect class="monture" x="340" y="276" width="90" height="68" rx="14"/>
+      <path class="reflet" d="M 248 336 L 272 284 L 288 284 L 264 336 Z"/>
+      <path class="reflet" d="M 358 336 L 382 284 L 390 284 L 366 336 Z"/>
+    </g>
+
+    <!-- Sourcils -->
+    <g class="sc sc-g"><path class="sc-c" d="M 248 268 Q 272 250 302 260"/><path class="sc-f" d="M 248 268 Q 272 250 302 260"/></g>
+    <g class="sc sc-d"><path class="sc-c" d="M 358 260 Q 388 250 412 268"/><path class="sc-f" d="M 358 260 Q 388 250 412 268"/></g>
+
+    <!-- Barbe de quelques jours -->
+    <path class="barbe" d="M 226 392 C 236 440 280 466 330 466 C 380 466 424 440 434 392 C 420 424 384 444 352 446 C 344 440 316 440 308 446 C 276 444 240 424 226 392 Z"/>
+    <path class="barbe-fonce" d="M 316 448 Q 330 455 344 448 L 340 462 Q 330 466 320 462 Z"/>
+
+    <!-- Bouches -->
+    <g class="bouche b-coin"><path class="o o-seul" d="M 302 404 Q 332 416 362 398"/><path class="o-fin" d="M 358 392 Q 367 398 363 407"/></g>
+    <g class="bouche b-plate"><path class="o o-seul" d="M 310 408 L 352 408"/></g>
+    <g class="bouche b-sourire"><path class="o o-seul" d="M 302 398 Q 330 426 360 398"/></g>
+    <g class="bouche b-froncee"><path class="o o-seul" d="M 308 416 Q 330 400 354 416"/></g>
+    <g class="bouche b-parle anim">
+      <path class="f-bouche" d="M 300 398 Q 330 392 362 396 Q 360 434 330 438 Q 302 434 300 398 Z"/>
+      <g clip-path="url(#perso-clip-bouche)">
+        <path class="f-blanc" d="M 296 396 L 366 396 L 366 405 Q 330 402 296 407 Z"/>
+        <ellipse class="f-langue" cx="333" cy="434" rx="20" ry="10"/>
+      </g>
+      <path class="o o-seul" d="M 300 398 Q 330 392 362 396 Q 360 434 330 438 Q 302 434 300 398 Z"/>
+    </g>
+    <g class="bouche b-grande anim">
+      <path class="f-bouche" d="M 296 394 Q 330 386 366 394 Q 366 452 330 456 Q 296 452 296 394 Z"/>
+      <g clip-path="url(#perso-clip-cri)">
+        <path class="f-blanc" d="M 292 392 L 370 392 L 370 402 Q 330 398 292 404 Z"/>
+        <ellipse class="f-langue" cx="333" cy="450" rx="24" ry="13"/>
+      </g>
+      <path class="o o-seul" d="M 296 394 Q 330 386 366 394 Q 366 452 330 456 Q 296 452 296 394 Z"/>
+    </g>
+
+    <!-- Moustache légère, par-dessus la bouche -->
+    <path class="moustache" d="M 300 391 C 312 378 324 380 330 385 C 336 380 348 378 360 391 C 348 388 340 389 330 392 C 320 389 312 388 300 391 Z"/>
+  </g>
+  </g>
+
+  <!-- Bras croisés -->
+  <g class="bras bras-croise">
+    <path class="bras-contour" d="M 488 744 C 420 706 330 676 244 678"/>
+    <path class="bras-tissu" d="M 488 744 C 420 706 330 676 244 678"/>
+    <path class="f-peau o" d="M 196 672 C 194 652 210 640 230 642 L 252 646 L 256 696 L 230 700 C 210 702 198 690 196 672 Z"/>
+    <path class="o-fin" d="M 204 662 L 224 664 M 202 678 L 224 680"/>
+    <path class="bras-contour" d="M 166 762 C 240 730 340 726 456 738"/>
+    <path class="bras-tissu" d="M 166 762 C 240 730 340 726 456 738"/>
+    <path class="o-fin" d="M 236 704 C 246 724 246 748 238 768"/>
+  </g>
+
+  <!-- Bras levé (pointe ou salue) -->
+  <g class="bras bras-leve">
+    <path class="bras-contour" d="M 238 656 C 166 690 110 670 104 590 L 100 490"/>
+    <path class="bras-tissu" d="M 238 656 C 166 690 110 670 104 590 L 100 490"/>
+    <path class="o-fin" d="M 66 510 L 136 504"/>
+    <g class="main-pointe">
+      <g transform="translate(0 -40) translate(100 470) scale(1.15) rotate(-14) translate(-100 -470)">
+        <rect class="f-peau o" x="88" y="390" width="23" height="74" rx="11.5"/>
+        <path class="f-peau o" d="M 72 458 C 70 436 84 428 104 430 C 126 432 134 446 132 464 C 130 486 116 498 100 498 C 82 498 74 482 72 458 Z"/>
+        <path class="o-fin" d="M 80 458 L 100 456 M 82 475 L 104 473"/>
+        <path class="f-peau o" d="M 118 450 C 132 446 141 456 135 466 C 129 473 118 471 114 464 Z"/>
+      </g>
+    </g>
+    <g class="main-ouverte"><g transform="translate(0 -40) translate(100 470) scale(1.15) translate(-100 -470)">
+      <rect class="f-peau o" x="90" y="388" width="20" height="68" rx="10" transform="rotate(-34 100 470)"/>
+      <rect class="f-peau o" x="90" y="382" width="20" height="74" rx="10" transform="rotate(-12 100 470)"/>
+      <rect class="f-peau o" x="90" y="384" width="20" height="72" rx="10" transform="rotate(10 100 470)"/>
+      <rect class="f-peau o" x="90" y="394" width="20" height="62" rx="10" transform="rotate(32 100 470)"/>
+      <rect class="f-peau o" x="90" y="414" width="21" height="50" rx="10.5" transform="rotate(80 100 470)"/>
+      <ellipse class="f-peau o" cx="100" cy="474" rx="33" ry="36"/>
+      <path class="o-fin" d="M 86 484 Q 100 492 114 482"/>
+    </g></g>
+  </g>
+
+  <!-- Accessoires d'expression (même repère que la tête) -->
+  <g transform="translate(330 498) scale(1.07) translate(-330 -460)">
+  <g class="extra x-rayons">
+    <path class="rayon-c" d="M 232 150 L 200 110"/><path class="rayon" d="M 232 150 L 200 110"/>
+    <path class="rayon-c" d="M 330 64 L 330 22"/><path class="rayon" d="M 330 64 L 330 22"/>
+    <path class="rayon-c" d="M 430 140 L 462 100"/><path class="rayon" d="M 430 140 L 462 100"/>
+  </g>
+  <g class="extra x-gouttes">
+    <use href="#perso-goutte" class="goutte" transform="translate(176 236) rotate(-25)"/>
+    <use href="#perso-goutte" class="goutte" transform="translate(186 300) rotate(-10) scale(.7)"/>
+    <use href="#perso-goutte" class="goutte" transform="translate(486 212) rotate(25)"/>
+    <path class="o-fin" d="M 492 280 L 522 262 M 496 304 L 530 302"/>
+  </g>
+  <g class="extra x-sueur">
+    <use href="#perso-goutte" class="goutte bleue" transform="translate(470 252) rotate(12) scale(.8)"/>
+  </g>
+  <g class="extra x-larmes">
+    <use href="#perso-goutte" class="goutte" transform="translate(252 348) scale(.62)"/>
+    <use href="#perso-goutte" class="goutte" transform="translate(408 348) scale(.62)"/>
+  </g>
+  <g class="extra x-etincelle">
+    <path class="f-rouge o" style="stroke-width: 5" transform="translate(160 292)"
+          d="M 0 -30 C 5 -7 7 -5 30 0 C 7 5 5 7 0 30 C -5 7 -7 5 -30 0 C -7 -5 -5 -7 0 -30 Z"/>
+  </g>
+  <g class="extra x-question">
+    <text class="point-q" x="138" y="262" transform="rotate(-12 170 220)">?</text>
+  </g>
+  </g>
+
+</g>
+</svg>
+    </div></div>
+  </div>
+
+  <div id="ui">
+    <!-- l'accroche : le nouveau téléphone et son prix -->
+    <div class="u" id="bigPhone"><div class="scrn" id="lock"><i class="isl"></i><div class="hr">9:41</div><div class="dt">jeudi 29 octobre</div>
+      <div class="nf"><i></i><div><b>Nouveau modèle ✨</b><span>disponible maintenant</span></div></div><i class="bar"></i>
+      <svg class="u" id="heart" viewBox="0 0 120 120"><use href="#i-heart"/></svg></div></div>
+    <svg class="u" id="tagNew" viewBox="0 0 170 230"><path d="M30 10 C 40 40, 60 50, 84 62" fill="none" stroke="#141414" stroke-width="5" stroke-linecap="round"/>
+      <g transform="translate(70 56) rotate(14)"><path d="M0 18 L18 0 L96 0 L96 140 L0 140 Z" fill="#F6C21C" stroke="#141414" stroke-width="6" stroke-linejoin="round"/><circle cx="20" cy="22" r="7" fill="#141414"/>
+      <text x="50" y="80" text-anchor="middle" font-family="Inter" font-weight="800" font-size="24" fill="#141414">NEUF</text><text x="50" y="112" text-anchor="middle" font-family="Instrument Serif" font-style="italic" font-size="30" fill="#E0402A">+++</text></g></svg>
+    <div class="u" id="hook">
+      <div class="hk" id="h1">Tu vas vraiment</div>
+      <div class="hk" id="h2">mettre plus de</div>
+      <div class="hk big" id="h3"><span class="k" id="hK"><i></i><span id="hNum">0</span></span></div>
+      <div class="hk ser" id="h4">d'ariary</div>
+      <div class="hk" id="h5">dans un</div>
+      <div class="hk end" id="h6">téléphone ?</div>
+    </div>
+    <div class="u stamp" id="stopStamp">ATTENDS.</div>
+    <div class="u pill ink" id="noJudge" style="left:770px;top:560px"><div class="pi"><svg><use href="#i-heart"/></svg></div>Je ne te juge pas</div>
+    <div class="u ink" id="calc"><div class="disp" id="calcD">5 000 000</div>
+      <div class="keys"><i>7</i><i>8</i><i>9</i><i>÷</i><i>4</i><i>5</i><i>6</i><i>×</i><i>1</i><i>2</i><i>3</i><i>−</i><i>0</i><i>,</i><i>%</i><i class="r">=</i></div></div>
+
+    <!-- la valeur dans le temps -->
+    <div class="u ink" id="chart"><span class="tag">// la valeur dans le temps</span>
+      <svg viewBox="0 0 880 540">
+        <path d="M60 40 L60 470 L860 470" fill="none" stroke="#141414" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M460 470 L460 480 M860 470 L860 480" stroke="#141414" stroke-width="6"/>
+        <text x="60" y="518" font-family="ui-monospace, Consolas, monospace" font-weight="700" font-size="26" fill="#6B675F">aujourd'hui</text>
+        <text x="460" y="518" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-weight="700" font-size="26" fill="#6B675F">1 an</text>
+        <text x="860" y="518" text-anchor="end" font-family="ui-monospace, Consolas, monospace" font-weight="700" font-size="26" fill="#6B675F">2 ans</text>
+        <path id="lnA" d="M60 120 C 200 140, 330 230, 460 300" fill="none" stroke="#8F887C" stroke-width="12" stroke-linecap="round"/>
+        <path id="lnB" d="M460 300 C 600 360, 720 420, 860 440" fill="none" stroke="#8F887C" stroke-width="12" stroke-linecap="round"/>
+        <path id="lnC" d="M60 450 C 260 430, 520 300, 860 90" fill="none" stroke="#E0402A" stroke-width="14" stroke-linecap="round"/>
+      </svg></div>
+    <div class="u head" id="hdA"><svg><use href="#i-phone"/></svg></div>
+    <div class="u head" id="hdB"><svg><use href="#i-phone"/></svg></div>
+    <div class="u head" id="hdN"><svg><use href="#i-phone"/></svg><span class="nw">NOUVEAU</span></div>
+    <div class="u head" id="hdS" style="border-color:#E0402A"><svg><use href="#i-shop"/></svg></div>
+    <div class="u tag" id="lblDown">↓ moins cher</div>
+    <div class="u" id="lblUp">la valeur monte ↑</div>
+    <div class="u pill ink" id="reset" style="left:330px;top:1080px"><div class="pi">↻</div>retour à zéro</div>
+
+    <!-- le prix d'un iPhone contre une boutique -->
+    <div class="u" id="bars">
+      <span class="lb" style="top:0">// 1 iPhone</span>
+      <div class="bar" id="barI">+ de 5 000 000 Ar</div>
+      <span class="lb" style="top:210px">// ta boutique en ligne</span>
+      <div id="track"></div>
+      <div class="bar seg" id="sg1">LLC</div><div class="bar seg" id="sg2">Shopify</div><div class="bar seg" id="sg3">Pub test</div>
+      <div id="marge">marge</div>
+      <span class="tag" id="margeTag">// il en reste encore</span>
+    </div>
+
+    <!-- plaisir contre revenu -->
+    <div class="u ink duo" id="dW"><svg><use href="#i-phone"/></svg><b>1 semaine</b><span class="tag">// de plaisir</span></div>
+    <div class="u ink duo" id="dY"><svg><use href="#i-shop"/></svg><b id="yr">2027</b><span class="tag">// des années de revenus</span></div>
+
+    <!-- objection 1 : le temps -->
+    <div class="u ink bubble" id="q1"><span class="tag">// objection n°1</span>« Je n'ai pas le temps. »<svg class="tail" viewBox="0 0 70 52"><path d="M4 0 L16 48 L58 0 Z" fill="#fff"/><path d="M4 2 L16 48 L58 2" fill="none" stroke="#141414" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+    <div class="u" id="feed"><div class="scrn"><div id="reel"><i style="background:#7CC8F2"></i><i style="background:#F6C21C"></i><i style="background:#E0402A"></i><i style="background:#7CC8F2"></i><i style="background:#F6C21C"></i><i style="background:#E0402A"></i><i style="background:#7CC8F2"></i><i style="background:#F6C21C"></i><i style="background:#E0402A"></i><i style="background:#7CC8F2"></i></div></div></div>
+    <div class="u pill ink" id="timer" style="left:330px;top:760px"><div class="pi"><svg><use href="#i-clock"/></svg></div><span id="timerTx">0 min</span>&nbsp;de scroll</div>
+    <svg class="u" id="clock" viewBox="0 0 380 380">
+      <circle cx="190" cy="190" r="170" fill="#fff" stroke="#141414" stroke-width="10"/>
+      <path id="wedge" d="M190 190 L190 20 A170 170 0 0 1 275 42.8 Z" fill="#E0402A" stroke="#141414" stroke-width="6" stroke-linejoin="round"/>
+      <g stroke="#141414" stroke-width="8" stroke-linecap="round"><path d="M190 36 L190 56 M344 190 L324 190 M190 344 L190 324 M36 190 L56 190"/></g>
+      <path id="hand" d="M190 190 L190 70" stroke="#141414" stroke-width="12" stroke-linecap="round"/><circle cx="190" cy="190" r="16" fill="#141414"/>
+    </svg>
+    <svg class="u" id="moon" viewBox="0 0 120 120"><use href="#i-moon"/></svg>
+    <div class="u pill ink" id="hourTag" style="left:300px;top:1030px"><div class="pi">1h</div>par soir, ça suffit<svg class="ck"><use href="#i-check"/></svg></div>
+
+    <!-- objection 2 : et si ça ne marche pas -->
+    <div class="u ink bubble" id="q2"><span class="tag">// objection n°2</span>« Et si ça ne marche&nbsp;pas&nbsp;?&nbsp;»<svg class="tail" viewBox="0 0 70 52"><path d="M4 0 L16 48 L58 0 Z" fill="#fff"/><path d="M4 2 L16 48 L58 2" fill="none" stroke="#141414" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+    <div class="u pill ink skill" id="sk1" style="top:640px"><div class="pi"><svg><use href="#i-chart"/></svg></div>Marketing</div>
+    <div class="u pill ink skill" id="sk2" style="top:770px"><div class="pi"><svg><use href="#i-cart"/></svg></div>Vente</div>
+    <div class="u pill ink skill" id="sk3" style="top:900px"><div class="pi"><svg><use href="#i-chat"/></svg></div>Pub</div>
+    <svg class="u" id="lockBig" viewBox="0 0 120 120"><use href="#i-lock"/></svg>
+    <div class="u tag" id="lockTag">// à toi pour toujours</div>
+    <svg class="u" id="phoneS" viewBox="0 0 120 120"><use href="#i-phone"/></svg>
+    <div class="u stamp" id="volStamp">VOLÉ !</div>
+
+    <!-- autour de toi -->
+    <div class="u" id="crowd">
+      <div class="pp" id="p1"><svg><use href="#i-person"/></svg><span class="ph"><svg><use href="#i-phone"/></svg></span></div>
+      <div class="pp" id="p2"><svg><use href="#i-person"/></svg><span class="mo"><i></i><i></i><i></i></span></div>
+      <div class="pp" id="p3"><svg><use href="#i-person"/></svg><span class="ph"><svg><use href="#i-phone"/></svg></span></div>
+      <div class="pp" id="p4"><svg><use href="#i-person"/></svg></div>
+      <div class="pp" id="p5"><svg><use href="#i-person"/></svg></div>
+      <div class="pp" id="p6"><svg><use href="#i-person"/></svg><span class="ph"><svg><use href="#i-phone"/></svg></span></div>
+      <div class="pp" id="p7"><svg><use href="#i-person"/></svg><span class="mo"><i></i><i></i><i></i></span></div>
+      <div class="pp" id="p8"><svg><use href="#i-person"/></svg><span class="ph"><svg><use href="#i-phone"/></svg></span></div>
+    </div>
+    <div class="u tag" id="neq">// le dernier iPhone ≠ le plus gros revenu</div>
+
+    <!-- riches ou l'air riche -->
+    <div class="u ink col" id="rich"><h3>Les riches</h3>
+      <div class="it2"><svg><use href="#i-shop"/></svg>un business<em style="color:#E0402A">↑</em></div>
+      <div class="it2"><svg><use href="#i-book"/></svg>des compétences<em style="color:#E0402A">↑</em></div>
+      <div class="it2"><svg><use href="#i-chart"/></svg>des placements<em style="color:#E0402A">↑</em></div>
+      <div class="ft" id="richFt">→ ça rapporte</div></div>
+    <div class="u ink col" id="poor"><h3>Les autres</h3>
+      <div class="it2"><svg><use href="#i-phone"/></svg>le dernier tél<em>✨</em></div>
+      <div class="it2"><svg><use href="#i-watch"/></svg>la montre<em>✨</em></div>
+      <div class="it2"><svg><use href="#i-bag"/></svg>le sac<em>✨</em></div>
+      <div class="ft" id="poorFt" style="color:#6B675F">→ ça a l'air riche</div></div>
+
+    <!-- le vrai flex -->
+    <div class="u" id="backPhone"><div class="scrn"><div class="cam"><i style="left:14px;top:14px"></i><i style="left:76px;top:14px"></i><i style="left:14px;top:76px"></i></div>
+      <i id="logo"></i><svg class="u" id="logoRing" viewBox="0 0 200 170"><path d="M30 90 C 20 30, 170 10, 182 70 C 192 130, 60 160, 26 110 C 14 90, 30 60, 70 40" fill="none" stroke="#E0402A" stroke-width="9" stroke-linecap="round"/></svg></div></div>
+    <div class="u" id="flexT">
+      <div class="hk" id="f1"><span class="k" id="fK"><i></i>Le vrai flex,</span></div>
+      <div class="hk" id="f2" style="position:relative;display:inline-block">ce n'est pas le logo.<i id="strikeL"></i></div>
+    </div>
+    <div class="u ink" id="bank"><span class="tag">// ton compte</span><b>+ revenu</b>
+      <div class="bars"><i style="height:30%"></i><i style="height:45%"></i><i style="height:60%"></i><i style="height:78%"></i><i style="height:100%"></i></div></div>
+
+    <!-- plus tard -->
+    <div class="u ink tile2" id="tShop"><svg><use href="#i-shop"/></svg><b>ton business</b></div>
+    <svg class="u" id="lArrow" viewBox="0 0 280 100"><path d="M10 50 L250 50 M220 22 L254 50 L220 78" fill="none" stroke="#141414" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="u ink tile2" id="tPhone"><svg><use href="#i-phone"/></svg><b>le téléphone</b></div>
+    <div class="u stamp" id="laterStamp">PLUS TARD</div>
+    <div class="u tag" id="laterTag">// payé avec l'argent de ton business</div>
+    <i class="fly" id="fy1"></i><i class="fly" id="fy2"></i><i class="fly" id="fy3"></i>
+
+    <!-- contact -->
+    <div class="u hk" id="ctaT">Par où <span class="it" style="font-size:1.3em">commencer ?</span></div>
+    <svg class="u" id="upArrow" viewBox="0 0 120 120"><use href="#i-up"/></svg>
+    <div class="u pill ink" id="wa" style="left:540px;top:660px"><div class="pi"><svg><use href="#i-chat"/></svg></div><span>WhatsApp<small id="bio">// le lien est dans la bio</small></span></div>
+  </div>
+
+  <div id="hud">
+    <div class="htag" style="left:60px;top:200px">// l'iPhone ou ton business ?</div>
+    <div class="line" style="left:60px;top:240px;width:220px"></div>
+    <div class="htag" id="chap" style="right:60px;top:200px">// la question</div>
+  </div>
+</div>
+<script>
+(function () {
+  const WORDS = window.WORDS, DURATION = 78.1, $ = (id) => document.getElementById(id);
+  const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+  const NW = WORDS.map((w) => norm(w.text));
+  const find = (phrase, from = 0) => { const p = phrase.split(/\s+/).map(norm).filter(Boolean);
+    for (let i = from; i <= NW.length - p.length; i++) if (p.every((x, k) => NW[i + k] === x)) return i; throw new Error("expression absente : " + phrase); };
+  const S = (phrase, k = 0, from = 0) => WORDS[find(phrase, from) + k].start;
+  const tl = gsap.timeline({ paused: true }), CUES = [], B = (px) => `blur(${px}px)`, SIN = "sine.inOut";
+  const SFX = (file, t, g = -20) => CUES.push({ n: "sfx", file: "syn-" + file, t: +Math.max(0, t).toFixed(3), g });
+  const hide = (sel) => tl.set(sel, { autoAlpha: 0 }, 0);
+  const show = (sel, a, b) => { hide(sel); tl.set(sel, { autoAlpha: 1 }, a); if (b != null) tl.set(sel, { autoAlpha: 0 }, b); };
+  const IN = (sel, t, o = {}) => { hide(sel); tl.fromTo(sel, { autoAlpha: 0, x: o.x ?? 0, y: o.y ?? 40, scale: o.s ?? 0.94, filter: B(o.b ?? 14) }, { autoAlpha: 1, x: 0, y: 0, scale: 1, filter: B(0), duration: o.d ?? 0.5, ease: o.e ?? "power3.out", immediateRender: false }, t); };
+  const OUT = (sel, t, d = 0.35) => tl.to(sel, { autoAlpha: 0, y: "-=40", filter: B(12), duration: d, ease: "power2.in" }, t);
+  const POP = (sel, t, d = 0.45) => { hide(sel); tl.fromTo(sel, { autoAlpha: 0, scale: 0.5, filter: B(8) }, { autoAlpha: 1, scale: 1, filter: B(0), duration: d, ease: "back.out(1.8)", immediateRender: false }, t); };
+  const CHECK = (sel, t, k = 1) => { hide(sel); tl.fromTo(sel, { scale: 0, rotation: -40, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.4, ease: "back.out(2.4)", immediateRender: false }, t); SFX("ding" + k, t, -20); };
+  const STAMP = (sel, t, rot = -8) => { hide(sel); tl.fromTo(sel, { autoAlpha: 0, scale: 2.2, rotation: rot - 14 }, { autoAlpha: 1, scale: 1, rotation: rot, duration: 0.28, ease: "power4.in", immediateRender: false }, t); SFX("stamp", t + 0.24, -14); };
+  const HL = (k, t) => { tl.fromTo(`#${k} i`, { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, t);
+    tl.fromTo("#" + k, { color: "#141414" }, { color: "#ffffff", duration: 0.15, immediateRender: false }, t + 0.1); };
+  const fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  const ROLL = (id, from, to, t, d, f = fmt) => { const o = { n: from };
+    tl.fromTo(o, { n: from }, { n: to, duration: d, ease: "power2.out", immediateRender: false, onUpdate: () => ($(id).textContent = f(o.n)) }, t); };
+  const CHAP = (t, txt) => { tl.set("#chap", { textContent: txt }, t); tl.fromTo("#chap", { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.3, immediateRender: false }, t); };
+
+  // ---------- repères de la voix ----------
+  const tVraiment = S("vraiment"), tMettre = S("mettre"), tCinq = S("cinq millions"), tAriary = S("dariary"), tDans = S("dans un telephone"), tTel = S("dans un telephone", 2);
+  const tAttends = S("attends"), tJuge = S("je ne te juge"), tJaime = S("jaime"), tBeaux = S("beaux telephones", 1), tMais = S("mais fais"), tCalcul = S("calcul");
+  const tUnIph = S("un iphone dans"), tUnAn = S("dans un an", 2), tMoins = S("moins cher"), tDeux = S("dans deux ans"), tNouv = S("nouveau modele"), tToi = S("et toi tu"), tRecom = S("recommences");
+  const tBiz = S("un business cest"), tInverse = S("linverse"), tTrav = S("travailles"), tPrend = S("prend de la valeur"), tValeur = S("prend de la valeur", 3);
+  const tAvec = S("avec le prix"), tSeul = S("seul iphone"), tLancer = S("lancer ta boutique"), tLLC = S("la llc", 1), tShopi = S("shopify"), tPub = S("la pub de test", 1), tReste = S("reste encore"), tMarge = S("la marge", 1);
+  const tTel1 = S("le telephone te fait"), tSemaine = S("une semaine", 1), tBiz2 = S("le business lui"), tNourrir = S("nourrir"), tAnnees = S("des annees", 1);
+  const tSais = S("je sais ce que"), tPasTemps = S("je nai pas le temps"), tScroll = S("tu as le temps de scroller"), tTikTok = S("sur tiktok", 1), tMaint = S("maintenant"), tHeure = S("une heure par soir"), tCommencer = S("pour commencer", 1);
+  const tEtSiCa = S("et si ca ne marche pas"), tAlorsTu = S("alors tu auras"), tMkt = S("le marketing", 1), tVente = S("la vente", 1), tPubS = S("la pub des", 1), tComp = S("des competences"), tPers = S("personne ne peut"), tUnIph2 = S("un iphone lui"), tVoler = S("voler");
+  const tRegarde = S("regarde autour"), tCeux = S("ceux qui ont"), tDernier = S("dernier iphone"), tForc = S("forcement"), tGagnent = S("gagnent le plus");
+  const tRiches = S("les riches achetent"), tRapport = S("rapportent"), tAutres = S("les autres achetent"), tAirRiche = S("lair riches");
+  const tFlex = S("le vrai flex"), tLogo = S("logo"), tDerriere = S("derriere ton telephone"), tRevenu = S("le revenu sur"), tCompte = S("sur ton compte", 2);
+  const tTel3 = S("le telephone tu"), tPlusTard = S("plus tard"), tArgent = S("avec largent"), tBizEnd = S("de ton business", 2);
+  const tTuVeux = S("tu veux savoir"), tCommencer2 = S("par ou commencer", 2), tEcris = S("ecrismoi"), tWa = S("sur whatsapp", 1), tLien = S("le lien est");
+  const tEtLa = S("et la prochaine"), tRegardes = S("tu regardes", 1), tModele2 = S("nouveau modele", 1, find("prochaine")), tPose = S("posetoi"), tQuestion = S("une question", 1);
+
+  // ---------- le personnage : vie calculée à chaque image ----------
+  const P = $("perso"), TETE = P.querySelector(".tete"), PHS = [...P.querySelectorAll(".ph")], MP = P.querySelector(".main-pointe"), MO = P.querySelector(".main-ouverte"), MOUTHS = [...P.querySelectorAll(".b-parle, .b-grande")];
+  const SYL = WORDS.map((w) => Math.max(1, Math.round(norm(w.text).length / 2.8)));
+  const mouthAt = (t) => { for (let i = 0; i < WORDS.length; i++) { const w = WORDS[i]; if (t < w.start) break; if (t <= w.end) {
+      const d = Math.max(0.08, w.end - w.start), u = (t - w.start) / d, env = Math.max(0, Math.min(1, u / 0.14, (1 - u) / 0.14));
+      return env * (0.35 + 0.65 * Math.abs(Math.sin(Math.PI * SYL[i] * u))); } } return 0; };
+  const SEGS = []; WORDS.forEach((w) => { const s = SEGS[SEGS.length - 1]; if (s && w.start - s[1] < 0.3) s[1] = w.end; else SEGS.push([w.start, w.end]); });
+  let sd = 7; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+  const BLINK = []; for (let t = 1.6; t < DURATION - 1; t += 2.9 + rnd() * 1.6) BLINK.push(t);
+  // respiration, hochement et étiquette qui se balance sur des périodes qui tombent juste à la fin : la boucle ne saute pas
+  const PER = (p) => DURATION / Math.round(DURATION / p);
+  const life = (t) => {
+    const br = 0.5 + 0.5 * Math.sin((2 * Math.PI * t) / PER(3.2));
+    P.style.translate = `0 ${(-5 * br).toFixed(2)}px`;
+    TETE.style.rotate = `${(1.2 * Math.sin((2 * Math.PI * t) / PER(3.6))).toFixed(2)}deg`; TETE.style.translate = `0 ${(2 * br).toFixed(2)}px`;
+    let bl = 0; for (const b of BLINK) if (t >= b && t < b + 0.16) bl = Math.sin((Math.PI * (t - b)) / 0.16);
+    PHS.forEach((e) => (e.style.translate = `0 ${(72 * bl).toFixed(1)}px`));
+    const talk = SEGS.some(([a, b]) => t >= a - 0.03 && t <= b + 0.05); P.setAttribute("data-talk", talk ? "1" : "0");
+    const s = (0.3 + 0.7 * mouthAt(t)).toFixed(3); MOUTHS.forEach((m) => (m.style.scale = `1 ${s}`));
+    MP.style.translate = `0 ${(-6 * (0.5 + 0.5 * Math.sin((2 * Math.PI * t) / 1.1))).toFixed(1)}px`;
+    MO.style.rotate = `${(5 * Math.sin((2 * Math.PI * t) / 1.7)).toFixed(2)}deg`;
+    $("tagNew").style.rotate = `${(5 * Math.sin((2 * Math.PI * t) / PER(2.4))).toFixed(2)}deg`;
+    $("reel").style.translate = `0 ${-((t * 260) % 792).toFixed(1)}px`;
+  };
+  const LIFE = { t: 0 }; tl.fromTo(LIFE, { t: 0 }, { t: DURATION, duration: DURATION, ease: "none", immediateRender: false, onUpdate: () => life(LIFE.t) }, 0);
+  const EXTRAS = { surpris: ".x-rayons, .x-gouttes", content: ".x-etincelle", inquiet: ".x-larmes, .x-sueur", panique: ".x-gouttes, .x-sueur", question: ".x-question" };
+  let lastPose = "croise";
+  const ACT = (t, expr, pose) => { t = Math.max(0.02, t);
+    tl.set(P, { attr: { "data-expr": expr } }, t);
+    if (EXTRAS[expr]) tl.fromTo(P.querySelectorAll(EXTRAS[expr]), { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: false }, t);
+    if (pose && pose !== lastPose) { tl.set(P, { attr: { "data-pose": pose } }, t);
+      if (pose === "pointe" || pose === "salue") tl.fromTo(P.querySelector(".bras-leve"), { y: 110 }, { y: 0, duration: 0.35, ease: "back.out(1.7)", immediateRender: false }, t);
+      if (pose === "croise") tl.fromTo(P.querySelector(".bras-croise"), { y: 60 }, { y: 0, duration: 0.3, ease: "back.out(1.7)", immediateRender: false }, t);
+      tl.fromTo("#persoPop", { scaleY: 0.97, scaleX: 1.02 }, { scaleY: 1, scaleX: 1, duration: 0.35, ease: "back.out(3)", immediateRender: false }, t);
+      lastPose = pose; } };
+  tl.set(P, { attr: { "data-expr": "question", "data-pose": "croise" } }, 0);
+  tl.set(P.querySelectorAll(".x-question"), { opacity: 1 }, 0);
+  // en bas à droite, sans miroir : il montre ce qui se passe à gauche
+  gsap.set("#persoW", { x: 236, y: 236, scaleX: 0.78, scaleY: 0.78 });
+  // le papier glisse d'exactement une maille de points : la première et la dernière image sont identiques
+  tl.fromTo("#paper", { x: 0, y: 0 }, { x: -36, y: -36, duration: DURATION, ease: "none", immediateRender: false }, 0);
+
+  // ========== ACCROCHE : le nouveau téléphone, déjà là à la première image ==========
+  tl.set("#bigPhone, #tagNew", { autoAlpha: 1, x: 0, y: 0, rotation: 0, scale: 1, filter: B(0) }, 0);
+  show("#hook", 0.01);
+  [["#h1", 0.02], ["#h2", tMettre - 0.05], ["#h3", tCinq - 0.1], ["#h4", tAriary - 0.05], ["#h5", tDans - 0.05], ["#h6", tTel - 0.05]].forEach(([el, t]) => {
+    tl.fromTo(el, { autoAlpha: 0, x: 40, filter: B(12) }, { autoAlpha: 1, x: 0, filter: B(0), duration: 0.3, ease: "power3.out", immediateRender: false }, t); hide(el); SFX("tick", t, -24); });
+  tl.set("#hNum", { textContent: "0" }, 0); ROLL("hNum", 0, 5000000, tCinq - 0.05, 0.7); SFX("reveal", tCinq - 0.05, -20);
+  HL("hK", tCinq + 0.6); SFX("bloom", tCinq + 0.6, -18);
+  tl.fromTo("#bigPhone", { rotation: 0 }, { rotation: -3, duration: 0.1, yoyo: true, repeat: 3, ease: SIN, immediateRender: false }, tTel);
+  STAMP("#stopStamp", tAttends - 0.15, -8);
+  tl.to("#hook", { autoAlpha: 0, filter: B(14), x: 40, duration: 0.3, ease: "power2.in" }, tAttends - 0.2);
+  OUT("#stopStamp", tJuge - 0.25);
+  IN("#noJudge", tJuge - 0.05, { y: 30, s: 0.85 }); SFX("pop", tJuge, -22);
+  POP("#heart", tJaime - 0.05); SFX("shimmer", tJaime, -20);
+  tl.to("#heart", { scale: 1.15, duration: 0.25, yoyo: true, repeat: 3, ease: SIN }, tJaime + 0.4);
+  OUT("#noJudge", tMais - 0.3); tl.to("#heart", { autoAlpha: 0, duration: 0.3 }, tMais - 0.2);
+  CHAP(tMais - 0.1, "// le calcul");
+  IN("#calc", tMais, { x: 60, y: 0, s: 0.9 }); SFX("card", tMais, -22);
+  tl.fromTo("#calc .keys i.r", { scale: 1 }, { scale: 0.85, duration: 0.1, yoyo: true, repeat: 1, immediateRender: false }, tCalcul + 0.1); SFX("tick", tCalcul + 0.1, -18);
+  tl.set("#calcD", { textContent: "5 000 000" }, 0); tl.set("#calcD", { textContent: "= ?" }, tCalcul + 0.2);
+  tl.to("#bigPhone, #tagNew", { autoAlpha: 0, x: -200, rotation: -10, filter: B(10), duration: 0.45, ease: "power2.in" }, tUnIph - 0.6);
+  OUT("#calc", tUnIph - 0.5);
+
+  // ========== LA VALEUR : le téléphone baisse, le business monte ==========
+  CHAP(tUnIph - 0.1, "// la valeur");
+  IN("#chart", tUnIph - 0.15, { y: 50, s: 0.92 }); SFX("swell", tUnIph, -22);
+  const DRAW = (id, t, d) => { const L = $(id).getTotalLength(); gsap.set("#" + id, { strokeDasharray: L });
+    tl.fromTo("#" + id, { strokeDashoffset: L }, { strokeDashoffset: 0, duration: d, ease: "power1.inOut", immediateRender: false }, t); tl.set("#" + id, { strokeDashoffset: L }, 0);
+    tl.set("#" + id, { visibility: "hidden" }, 0); tl.set("#" + id, { visibility: "visible" }, t); };
+  const at = (x, y) => [100 + x, 410 + y]; // repère du graphique → scène
+  const HEAD = (id, [x, y], t) => { gsap.set(id, { left: x, top: y, xPercent: -50, yPercent: -50 }); POP(id, t, 0.4); SFX("pop", t, -22); };
+  HEAD("#hdA", at(60, 120), tUnIph + 0.05);
+  DRAW("lnA", tUnAn - 0.6, 1.0); tl.to("#hdA", { left: at(460, 300)[0], top: at(460, 300)[1], duration: 1.0, ease: "power1.inOut" }, tUnAn - 0.6);
+  IN("#lblDown", tMoins - 0.1, { y: 10, s: 1, b: 6 }); SFX("glitch", tMoins, -24);
+  DRAW("lnB", tDeux - 0.1, 0.9); tl.to("#hdA", { left: at(860, 440)[0], top: at(860, 440)[1], opacity: 0.45, duration: 0.9, ease: "power1.inOut" }, tDeux - 0.1);
+  HEAD("#hdN", at(860, 250), tNouv - 0.05); SFX("bloom", tNouv, -18);
+  IN("#reset", tRecom - 0.1, { y: 30, s: 0.9 }); SFX("error", tRecom, -22);
+  tl.to("#reset .pi", { rotation: -360, duration: 0.6, ease: "power2.inOut" }, tRecom + 0.2);
+  tl.to("#hdN, #lnA, #lnB, #lblDown", { opacity: 0.3, duration: 0.4 }, tBiz - 0.2); tl.to("#hdA", { opacity: 0.15, duration: 0.4 }, tBiz - 0.2);
+  OUT("#reset", tBiz - 0.2);
+  HEAD("#hdS", at(60, 450), tBiz);
+  DRAW("lnC", tTrav - 0.1, 1.9); tl.to("#hdS", { left: at(860, 90)[0], top: at(860, 90)[1], duration: 1.9, ease: "power1.inOut" }, tTrav - 0.1);
+  IN("#lblUp", tValeur - 0.2, { y: 10, s: 1, b: 6 }); SFX("ding2", tValeur, -18);
+  OUT("#chart, #hdA, #hdN, #hdS, #lblDown, #lblUp", tAvec - 0.3);
+
+  // ========== LE PRIX D'UN IPHONE CONTRE UNE BOUTIQUE ==========
+  CHAP(tAvec - 0.1, "// le prix d'un iPhone");
+  show("#bars", tAvec - 0.05);
+  tl.fromTo("#bars .lb", { autoAlpha: 0, x: -30 }, { autoAlpha: 1, x: 0, duration: 0.3, stagger: 0.3, immediateRender: false }, tAvec - 0.05); hide("#bars .lb");
+  hide("#barI"); tl.fromTo("#barI", { autoAlpha: 1, scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out", immediateRender: false }, tSeul - 0.1); SFX("whip", tSeul - 0.1, -20);
+  hide("#track"); tl.fromTo("#track", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, immediateRender: false }, tLancer - 0.1);
+  [["#sg1", tLLC], ["#sg2", tShopi], ["#sg3", tPub]].forEach(([el, t]) => { hide(el); tl.fromTo(el, { autoAlpha: 1, scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "back.out(1.4)", immediateRender: false }, t - 0.1); SFX("tick", t - 0.1, -18); });
+  hide("#marge"); tl.fromTo("#marge", { autoAlpha: 0, scale: 0.8 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: "back.out(2)", immediateRender: false }, tReste - 0.05); SFX("ding1", tReste, -18);
+  tl.to("#marge", { scale: 1.06, duration: 0.2, yoyo: true, repeat: 3, ease: SIN }, tMarge);
+  IN("#margeTag", tMarge - 0.1, { y: 10, s: 1, b: 6 });
+  OUT("#bars", tTel1 - 0.3);
+
+  // ========== PLAISIR CONTRE REVENU ==========
+  CHAP(tTel1 - 0.1, "// plaisir ou revenu");
+  IN("#dW", tTel1, { x: -60, y: 0, s: 0.9 }); SFX("card", tTel1, -22);
+  tl.to("#dW", { opacity: 0.45, scale: 0.94, duration: 0.4 }, tBiz2 - 0.1);
+  IN("#dY", tBiz2 - 0.05, { x: 60, y: 0, s: 0.9 }); SFX("card", tBiz2, -22);
+  tl.set("#yr", { textContent: "2027" }, 0); ROLL("yr", 2027, 2040, tNourrir - 0.1, 1.6, (n) => String(Math.round(n))); SFX("tick", tNourrir, -22);
+  tl.to("#dY", { scale: 1.05, duration: 0.25, yoyo: true, repeat: 1, ease: SIN }, tAnnees);
+  OUT("#dW, #dY", tSais - 0.3);
+
+  // ========== OBJECTION 1 : LE TEMPS ==========
+  CHAP(tSais - 0.1, "// objection n°1");
+  IN("#q1", tPasTemps - 0.15, { y: 30, s: 0.85, e: "back.out(1.6)" }); SFX("pop", tPasTemps, -20);
+  hide("#feed"); tl.fromTo("#feed", { autoAlpha: 0, x: 220, rotation: 8 }, { autoAlpha: 1, x: 0, rotation: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, tScroll - 0.1); SFX("whip", tScroll, -22);
+  IN("#timer", tTikTok - 0.1, { y: 30, s: 0.9 });
+  tl.set("#timerTx", { textContent: "0 min" }, 0); ROLL("timerTx", 0, 134, tTikTok, 1.4, (n) => { n = Math.round(n); return n < 60 ? n + " min" : Math.floor(n / 60) + " h " + String(n % 60).padStart(2, "0"); });
+  tl.to("#timer", { scale: 1.08, duration: 0.2, yoyo: true, repeat: 1 }, tMaint);
+  OUT("#q1, #feed, #timer", tHeure - 0.35);
+  IN("#clock", tHeure - 0.1, { y: 40, s: 0.85 }); POP("#moon", tHeure + 0.1); SFX("swell", tHeure, -22);
+  tl.fromTo("#wedge", { scale: 0, svgOrigin: "190 190" }, { scale: 1, svgOrigin: "190 190", duration: 0.6, ease: "back.out(1.6)", immediateRender: false }, tHeure + 0.2);
+  tl.fromTo("#hand", { rotation: 0, svgOrigin: "190 190" }, { rotation: 30, svgOrigin: "190 190", duration: 0.6, ease: "power2.out", immediateRender: false }, tHeure + 0.2);
+  IN("#hourTag", tCommencer - 0.6, { y: 30, s: 0.9 }); hide("#hourTag .ck"); CHECK("#hourTag .ck", tCommencer, 2);
+  OUT("#clock, #moon, #hourTag", tEtSiCa - 0.3);
+
+  // ========== OBJECTION 2 : ET SI ÇA NE MARCHE PAS ==========
+  CHAP(tEtSiCa - 0.1, "// objection n°2");
+  IN("#q2", tEtSiCa - 0.05, { y: 30, s: 0.85, e: "back.out(1.6)" }); SFX("pop", tEtSiCa, -20);
+  [["#sk1", tMkt], ["#sk2", tVente], ["#sk3", tPubS]].forEach(([el, t]) => { IN(el, t - 0.1, { x: 60, y: 0, s: 0.9, e: "back.out(1.6)" }); SFX("ding1", t, -22); });
+  POP("#lockBig", tComp - 0.05); SFX("lock", tPers, -16);
+  tl.fromTo("#lockBig", { y: 0 }, { y: 10, duration: 0.1, yoyo: true, repeat: 1, immediateRender: false }, tPers);
+  IN("#lockTag", tPers, { y: 10, s: 1, b: 6 });
+  POP("#phoneS", tUnIph2 - 0.05);
+  tl.to("#phoneS", { x: -420, rotation: -50, duration: 0.3, ease: "power3.in" }, tVoler - 0.3); SFX("whip", tVoler - 0.3, -16);
+  STAMP("#volStamp", tVoler - 0.15, -10);
+  OUT("#q2, #sk1, #sk2, #sk3, #lockBig, #lockTag", tRegarde - 0.3); OUT("#volStamp", tRegarde + 0.35);
+
+  // ========== AUTOUR DE TOI ==========
+  CHAP(tRegarde - 0.1, "// autour de toi");
+  show("#crowd", tRegarde - 0.1);
+  tl.fromTo("#crowd .pp", { scale: 0, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.35, ease: "back.out(2)", stagger: 0.07, immediateRender: false }, tRegarde - 0.1); hide("#crowd .pp");
+  hide("#crowd .ph"); tl.fromTo("#crowd .ph", { scale: 0, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.3, ease: "back.out(2.4)", stagger: 0.1, immediateRender: false }, tDernier - 0.1); SFX("pop", tDernier, -20);
+  tl.to("#p1, #p3, #p6, #p8", { borderColor: "#E0402A", duration: 0.2 }, tDernier); tl.set("#p1, #p3, #p6, #p8", { borderColor: "#141414" }, 0);
+  hide("#crowd .mo i"); tl.fromTo("#crowd .mo i", { y: -30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.3, ease: "bounce.out", stagger: 0.06, immediateRender: false }, tGagnent - 0.2); SFX("coins", tGagnent - 0.2, -18);
+  IN("#neq", tForc, { y: 10, s: 1, b: 6 });
+  OUT("#crowd, #neq", tRiches - 0.3);
+
+  // ========== LES RICHES / LES AUTRES ==========
+  CHAP(tRiches - 0.1, "// riche ou l'air riche");
+  IN("#rich", tRiches - 0.05, { x: -60, y: 0, s: 0.9 });
+  tl.fromTo("#rich .it2", { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: 0.25, stagger: 0.2, immediateRender: false }, tRiches + 0.3); hide("#rich .it2");
+  IN("#richFt", tRapport - 0.1, { y: 10, s: 1, b: 6 }); SFX("ding2", tRapport, -18);
+  IN("#poor", tAutres - 0.05, { x: 60, y: 0, s: 0.9 });
+  tl.fromTo("#poor .it2", { autoAlpha: 0, x: 20 }, { autoAlpha: 1, x: 0, duration: 0.25, stagger: 0.2, immediateRender: false }, tAutres + 0.3); hide("#poor .it2");
+  IN("#poorFt", tAirRiche - 0.2, { y: 10, s: 1, b: 6 }); SFX("shimmer", tAirRiche, -20);
+  OUT("#rich, #poor", tFlex - 0.3);
+
+  // ========== LE VRAI FLEX ==========
+  CHAP(tFlex - 0.1, "// le vrai flex");
+  hide("#backPhone"); tl.fromTo("#backPhone", { autoAlpha: 0, x: -200, rotation: -10 }, { autoAlpha: 1, x: 0, rotation: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, tFlex - 0.1); SFX("card", tFlex, -22);
+  show("#flexT", tFlex - 0.05);
+  tl.fromTo("#f1", { autoAlpha: 0, x: 40 }, { autoAlpha: 1, x: 0, duration: 0.3, immediateRender: false }, tFlex - 0.05); hide("#f1");
+  HL("fK", tFlex + 0.35); SFX("bloom", tFlex + 0.35, -18);
+  tl.fromTo("#f2", { autoAlpha: 0, x: 40 }, { autoAlpha: 1, x: 0, duration: 0.3, immediateRender: false }, tLogo - 0.4); hide("#f2");
+  hide("#logoRing"); const LR = $("logoRing").querySelector("path"), LRL = LR.getTotalLength(); gsap.set(LR, { strokeDasharray: LRL });
+  tl.set("#logoRing", { autoAlpha: 1 }, tLogo - 0.1); tl.fromTo(LR, { strokeDashoffset: LRL }, { strokeDashoffset: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, tLogo - 0.1); SFX("strike", tLogo, -20);
+  tl.fromTo("#strikeL", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, tDerriere + 0.2);
+  tl.to("#backPhone", { autoAlpha: 0.35, scale: 0.92, duration: 0.4 }, tRevenu - 0.2);
+  IN("#bank", tRevenu - 0.1, { y: 40, s: 0.85 }); SFX("notif", tRevenu, -18);
+  tl.fromTo("#bank .bars i", { scaleY: 0 }, { scaleY: 1, duration: 0.35, ease: "back.out(1.6)", stagger: 0.08, immediateRender: false }, tRevenu + 0.15);
+  tl.to("#bank b", { scale: 1.08, duration: 0.2, yoyo: true, repeat: 1, transformOrigin: "0% 50%" }, tCompte);
+  OUT("#backPhone, #flexT, #bank", tTel3 - 0.3);
+
+  // ========== PLUS TARD ==========
+  CHAP(tTel3 - 0.1, "// plus tard");
+  IN("#tPhone", tTel3 - 0.05, { x: 60, y: 0, s: 0.9 });
+  STAMP("#laterStamp", tPlusTard - 0.1, 10);
+  IN("#tShop", tArgent - 0.15, { x: -60, y: 0, s: 0.9 });
+  hide("#lArrow"); tl.fromTo("#lArrow", { autoAlpha: 1, scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.4, ease: "power3.out", immediateRender: false }, tArgent + 0.1);
+  ["#fy1", "#fy2", "#fy3"].forEach((el, k) => { show(el, tArgent + 0.3 + k * 0.18, tArgent + 1.1 + k * 0.18);
+    tl.fromTo(el, { left: 380, top: 630 }, { left: 700, top: 630, duration: 0.75, ease: "power1.inOut", immediateRender: false }, tArgent + 0.3 + k * 0.18); });
+  SFX("coins", tArgent + 0.3, -18);
+  IN("#laterTag", tBizEnd - 0.2, { y: 10, s: 1, b: 6 });
+  OUT("#tShop, #lArrow, #tPhone, #laterStamp, #laterTag", tTuVeux - 0.3);
+
+  // ========== CONTACT ==========
+  CHAP(tTuVeux - 0.1, "// on commence ?");
+  IN("#ctaT", tCommencer2 - 0.4, { y: 30, s: 0.9 });
+  IN("#wa", tEcris - 0.05, { y: 30, s: 0.85 }); SFX("notif", tWa, -18);
+  tl.fromTo("#wa", { scale: 1 }, { scale: 1.06, duration: 0.2, yoyo: true, repeat: 1, ease: SIN, immediateRender: false }, tWa);
+  tl.set("#bio", { opacity: 0 }, 0); tl.fromTo("#bio", { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: false }, tLien);
+  POP("#upArrow", tLien); tl.to("#upArrow", { y: -22, duration: 0.3, yoyo: true, repeat: 1, ease: SIN }, tLien + 0.4);
+  OUT("#ctaT, #wa, #upArrow", tEtLa - 0.3);
+
+  // ========== BOUCLE : le nouveau modèle revient, exactement comme à la première image ==========
+  CHAP(tEtLa - 0.1, "// la question");
+  tl.fromTo("#bigPhone, #tagNew", { autoAlpha: 0, x: -200, rotation: -10, filter: B(10) }, { autoAlpha: 1, x: 0, rotation: 0, filter: B(0), duration: 0.6, ease: "power3.out", immediateRender: false }, tRegardes - 0.1);
+  SFX("whip", tRegardes - 0.1, -22);
+  tl.fromTo("#bigPhone", { scale: 1 }, { scale: 1.04, duration: 0.2, yoyo: true, repeat: 1, ease: SIN, immediateRender: false }, tModele2);
+
+  // ---------- jeu d'acteur ----------
+  [[tAttends - 0.1, "insiste", "salue"], [tJuge - 0.05, "content", "salue"], [tMais - 0.05, "malin", "pointe"],
+   [tUnIph - 0.05, "parle", "pointe"], [tMoins - 0.05, "sceptique", "pointe"], [tNouv - 0.1, "surpris", "salue"], [tToi - 0.05, "inquiet", "croise"],
+   [tBiz - 0.05, "content", "pointe"], [tTrav - 0.05, "parle", "pointe"], [tAvec - 0.05, "malin", "pointe"], [tReste - 0.1, "content", "salue"],
+   [tTel1 - 0.05, "parle", "pointe"], [tBiz2 - 0.05, "content", "pointe"], [tSais - 0.05, "malin", "croise"], [tPasTemps - 0.05, "sceptique", "croise"],
+   [tScroll - 0.05, "insiste", "pointe"], [tHeure - 0.05, "parle", "salue"], [tEtSiCa - 0.05, "question", "croise"], [tAlorsTu - 0.05, "parle", "pointe"],
+   [tComp - 0.05, "insiste", "pointe"], [tUnIph2 - 0.05, "malin", "pointe"], [tVoler - 0.1, "surpris", "salue"], [tRegarde - 0.05, "parle", "pointe"],
+   [tForc - 0.05, "sceptique", "croise"], [tRiches - 0.05, "parle", "pointe"], [tAutres - 0.05, "sceptique", "croise"], [tFlex - 0.05, "insiste", "pointe"],
+   [tRevenu - 0.05, "content", "salue"], [tTel3 - 0.05, "parle", "pointe"], [tArgent - 0.05, "content", "salue"], [tTuVeux - 0.05, "parle", "pointe"],
+   [tWa - 0.05, "content", "salue"], [tEtLa - 0.05, "parle", "pointe"], [tPose - 0.05, "question", "croise"]].forEach(([t, e, p]) => ACT(t, e, p));
+
+  gsap.set(".pill, #stopStamp, #volStamp, #laterStamp", { xPercent: -50, yPercent: -50 });
+  tl.set({}, {}, DURATION);
+  window.__duration = DURATION; window.__sfx = CUES.sort((a, b) => a.t - b.t);
+  // window.__seek ne doit rien renvoyer (sinon le rendu essaie de recopier la timeline et bloque)
+  window.__seek = (t) => { tl.seek(t, false); };
+  window.__ready = Promise.all([document.fonts.ready, ...[...document.images].map((im) => (im.complete ? 0 : new Promise((r) => (im.onload = im.onerror = r))))]).then(() => { window.__seek(0); return true; });
+  if (!new URLSearchParams(location.search).has("render")) { const au = new Audio("assets/audio/voix-final.mp3"); window.__ready.then(() => { document.body.onclick = () => { au.currentTime = 0; au.play(); tl.play(0); }; }); }
+})();
+</script>
+</body>
+</html>

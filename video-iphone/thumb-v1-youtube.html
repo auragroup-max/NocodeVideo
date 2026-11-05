@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature YouTube v1 · le duel</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  :root { --encre:#141414; --rouge:#E0402A; --jaune:#F6C21C; }
+  html, body { margin:0; background:#000; }
+  #t { position:relative; width:1280px; height:720px; overflow:hidden; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; color:var(--encre); }
+  .cote { position:absolute; inset:0; }
+  .biz { background-color:var(--jaune); background-image:radial-gradient(#E2AC0B 2.6px, transparent 3.2px); background-size:30px 30px; clip-path:polygon(0 0, 700px 0, 580px 100%, 0 100%); }
+  .tel { background-color:var(--encre); background-image:radial-gradient(#2E2E2E 2.6px, transparent 3.2px); background-size:30px 30px; clip-path:polygon(700px 0, 100% 0, 100% 100%, 580px 100%); }
+  .titre { position:absolute; left:50%; top:34px; transform:translateX(-50%) rotate(-2deg); padding:14px 34px 18px; background:#fff; border:6px solid var(--encre); border-radius:22px; box-shadow:10px 10px 0 var(--encre); white-space:nowrap; }
+  .titre b { font-weight:800; font-size:84px; letter-spacing:-0.045em; }
+  .titre em { margin-left:18px; font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; font-size:86px; color:var(--rouge); }
+  .rond { position:absolute; width:210px; height:210px; border-radius:50%; background:#fff; border:6px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; box-shadow:9px 9px 0 var(--encre); }
+  .rond svg { width:124px; height:124px; }
+  .ico { fill:none; stroke:#141414; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
+  .lbl { position:absolute; padding:8px 18px; border-radius:14px; border:5px solid var(--encre); font-weight:800; font-size:40px; letter-spacing:-0.02em; white-space:nowrap; }
+  .vs { position:absolute; left:560px; top:250px; width:160px; height:160px; border-radius:50%; background:var(--rouge); border:7px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:800; font-size:70px; letter-spacing:-0.05em; transform:rotate(-8deg); box-shadow:8px 8px 0 var(--encre); z-index:3; }
+  #perso { position:absolute; left:380px; top:330px; width:520px; z-index:2; }
+</style>
+</head>
+<body>
+<div id="t">
+  <div class="cote biz"></div>
+  <div class="cote tel"></div>
+  <div class="titre"><b>iPhone</b> <em>ou business ?</em></div>
+  <div class="rond" style="left:110px;top:230px"><svg viewBox="0 0 120 120"><g class="ico"><path d="M16 46 L26 18 L94 18 L104 46 Z"/><path d="M16 46 Q27 60 38 46 Q49 60 60 46 Q71 60 82 46 Q93 60 104 46"/><path d="M24 56 L24 102 L96 102 L96 56 M50 102 L50 74 L70 74 L70 102"/></g></svg></div>
+  <div class="lbl" style="left:70px;top:480px;background:#fff;transform:rotate(-4deg)">ça rapporte <span style="color:#E0402A">↑</span></div>
+  <div class="rond" style="left:960px;top:230px;background:#2A2A2E"><svg viewBox="0 0 120 120"><g class="ico" style="stroke:#F1EEE8"><rect x="34" y="10" width="52" height="100" rx="12"/><path d="M52 94 L68 94"/></g></svg></div>
+  <div class="lbl" style="left:950px;top:480px;background:#2A2A2E;color:#F1EEE8;border-color:#F1EEE8;transform:rotate(4deg)">ça baisse ↓</div>
+  <div class="vs">VS</div>
+  <img id="perso" src="assets/thumb-perso.png" alt="">
+</div>
+</body>
+</html>
