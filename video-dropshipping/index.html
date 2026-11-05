@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Le dropshipping expliqué</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/audio/words-final.js"></script>
+<style>
+  :root { --red:#FF2D2D; --red2:#E8242B; --cyan:#39B6EE; --cyan2:#7FD6FF; --gold:#FFC94D; }
+  html, body { margin:0; background:#000; }
+  #stage { position:relative; width:1080px; height:1920px; overflow:hidden; background:#03060f; color:#fff; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; }
+  .full { position:absolute; inset:0; }
+  #bgFull img { position:absolute; left:0; top:0; width:1080px; height:1920px; object-fit:cover; }
+  #dim { background:#02050d; opacity:.74; }
+  /* le monde : fond flou + bokeh + personnage (révélé par le rond, puis plein écran) */
+  #scene { position:absolute; inset:0; z-index:2; visibility:hidden; }
+  #cam { position:absolute; inset:0; transform-origin:50% 62%; }
+  #bg { position:absolute; inset:0; }
+  #bg img { position:absolute; left:-60px; top:-60px; width:1200px; height:2040px; object-fit:cover; filter:blur(14px) brightness(.8); }
+  #bokeh { position:absolute; inset:0; }
+  #bokeh i { position:absolute; border-radius:50%; mix-blend-mode:screen; }
+  #light { position:absolute; inset:0; pointer-events:none; mix-blend-mode:screen;
+    background:radial-gradient(55% 35% at 0% 62%, rgba(57,182,238,.2), transparent 70%), radial-gradient(50% 35% at 100% 66%, rgba(232,36,43,.22), transparent 70%); }
+  #persoW { position:absolute; left:75px; top:620px; width:960px; height:1500px; transform-origin:50% 40%; }
+  #halo { position:absolute; left:-40px; top:250px; width:1040px; height:1100px; border-radius:50%; background:radial-gradient(closest-side, rgba(2,6,16,.62), rgba(2,6,16,0)); }
+  #perso { position:absolute; left:0; top:0; width:960px; height:1500px; overflow:visible; }
+  #ring { position:absolute; inset:0; z-index:3; pointer-events:none; visibility:hidden; }
+  /* calque des informations (textes, schémas) au-dessus du monde */
+  #ui { position:absolute; inset:0; z-index:10; pointer-events:none; }
+  .u { position:absolute; visibility:hidden; }
+  .card { position:absolute; left:70px; right:70px; top:230px; height:470px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; visibility:hidden; }
+  .ln { display:block; white-space:nowrap; font-weight:700; font-size:86px; line-height:1.08; letter-spacing:-0.045em; text-shadow:0 6px 40px rgba(0,0,0,.6); }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; font-size:1.45em; letter-spacing:-0.02em; color:var(--red); text-shadow:0 0 50px rgba(255,45,45,.55); display:inline-block; }
+  .k { position:relative; display:inline-block; margin:0 .06em; color:#fff; isolation:isolate; }
+  .k i { position:absolute; left:-.1em; right:-.1em; top:.08em; bottom:.02em; z-index:-1; border-radius:.1em; background:var(--red); transform:scaleX(0); transform-origin:left center; box-shadow:0 0 34px rgba(255,45,45,.7); }
+  .glass { background:rgba(10,18,38,.8); border:2px solid rgba(57,182,238,.7); box-shadow:0 0 40px rgba(57,182,238,.3), 0 24px 60px -24px rgba(0,0,0,.85); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); }
+  .glass.r { border-color:rgba(255,59,59,.8); box-shadow:0 0 40px rgba(255,45,45,.3), 0 24px 60px -24px rgba(0,0,0,.85); }
+  .ico { fill:none; stroke:currentColor; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
+  /* tuiles « stock / boutique / entrepôt » barrées */
+  .tile { width:236px; height:250px; margin:-125px 0 0 -118px; border-radius:36px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; color:var(--cyan2); }
+  .tile svg.ic { width:112px; height:112px; }
+  .tile b { color:#fff; font-weight:800; font-size:32px; letter-spacing:.04em; }
+  .tile .x { position:absolute; left:-14px; top:-14px; width:264px; height:278px; overflow:visible; }
+  /* pastilles */
+  .pill { display:flex; align-items:center; gap:22px; padding:22px 36px 22px 26px; border-radius:999px; white-space:nowrap; font-weight:800; font-size:48px; letter-spacing:-0.02em; }
+  .pill .pi { width:74px; height:74px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(57,182,238,.16); color:var(--cyan2); flex:none; }
+  .pill .pi svg { width:48px; height:48px; }
+  .pill .ck { width:54px; height:54px; flex:none; margin-left:6px; }
+  .pill small { display:block; font-weight:600; font-size:28px; color:rgba(255,255,255,.65); letter-spacing:0; }
+  .tag { font-weight:700; font-size:26px; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,255,255,.7); white-space:nowrap; }
+  /* mot géant */
+  #giant { left:0; right:0; top:470px; text-align:center; font-weight:800; font-size:146px; letter-spacing:-0.055em; line-height:1; color:#fff; text-shadow:0 0 60px rgba(255,45,45,.75), 0 0 140px rgba(255,45,45,.45); }
+  .streak { position:absolute; left:540px; width:1500px; height:24px; margin-left:-750px; border-radius:50%; background:radial-gradient(closest-side, #fff 0%, rgba(255,120,110,.95) 30%, rgba(255,45,45,.45) 60%, transparent 100%); filter:blur(4px); mix-blend-mode:screen; visibility:hidden; }
+  /* mots en 3D de l'intro */
+  #k3d { position:absolute; inset:0; perspective:1100px; perspective-origin:50% 45%; z-index:12; }
+  #cam3d { position:absolute; left:540px; top:820px; transform-style:preserve-3d; }
+  .w3 { position:absolute; left:0; top:0; white-space:nowrap; font-weight:700; letter-spacing:-0.045em; text-shadow:0 0 40px rgba(0,0,0,.6); visibility:hidden; }
+  #trail { position:absolute; inset:0; z-index:11; pointer-events:none; overflow:visible; }
+  #hud { position:absolute; inset:0; pointer-events:none; z-index:18; }
+  #hud .rule { position:absolute; right:46px; top:330px; width:20px; height:1260px; background:repeating-linear-gradient(transparent 0 26px, rgba(255,255,255,.35) 26px 28px); transform-origin:top; }
+  #hud .corner { position:absolute; width:70px; height:70px; border:3px solid rgba(255,255,255,.55); }
+  #hud .htag { position:absolute; font-weight:700; font-size:22px; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,255,255,.55); }
+  #hud .line { position:absolute; height:2px; background:rgba(127,214,255,.5); transform-origin:left center; }
+  #fx { position:absolute; inset:0; z-index:30; pointer-events:none; mix-blend-mode:screen; visibility:hidden;
+    background:radial-gradient(40% 30% at 50% 50%, rgba(255,190,150,.95), rgba(255,60,50,.7) 45%, rgba(120,10,20,0) 80%); }
+  /* chargement figé */
+  #loader { left:540px; top:780px; }
+  #spin { width:60px; height:60px; }
+  /* maison vide */
+  #house { left:540px; top:800px; width:250px; height:250px; margin:-125px 0 0 -125px; color:var(--cyan2); }
+  #boxP { left:960px; top:1420px; width:150px; height:150px; margin:-75px 0 0 -75px; }
+  /* le marché */
+  #awn { left:110px; top:520px; width:860px; height:86px; border-radius:14px 14px 0 0; overflow:hidden;
+    background:repeating-linear-gradient(90deg, #E8242B 0 72px, #f1f3f8 72px 144px); box-shadow:0 18px 40px -10px rgba(0,0,0,.7); }
+  #awn::after { content:""; position:absolute; left:0; right:0; bottom:-1px; height:26px; background:radial-gradient(circle at 36px 0, transparent 35px, #060b19 36px) repeat-x; background-size:72px 26px; opacity:.0; }
+  #awn::before { content:""; position:absolute; left:0; right:0; top:0; height:8px; background:#7fd3ff; opacity:.8; }
+  .stall { width:360px; height:250px; margin:-125px 0 0 -180px; border-radius:30px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
+  .stall svg { width:96px; height:96px; }
+  .stall b { font-weight:800; font-size:34px; letter-spacing:.1em; }
+  .stall span { font-weight:600; font-size:32px; color:rgba(255,255,255,.75); }
+  #mArrow { left:540px; top:740px; width:120px; height:60px; margin:-30px 0 0 -60px; color:#fff; }
+  /* les 3 étapes */
+  #steps { left:0; top:330px; width:1080px; height:800px; perspective:1400px; }
+  #plan { position:absolute; inset:0; transform-style:preserve-3d; transform-origin:50% 55%; }
+  .node { position:absolute; width:220px; height:220px; margin:-110px 0 0 -110px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--cyan2); }
+  .node svg { width:104px; height:104px; }
+  .node b { position:absolute; top:236px; left:50%; transform:translateX(-50%); white-space:nowrap; font-weight:800; font-size:32px; letter-spacing:.1em; color:#fff; text-shadow:0 4px 20px rgba(0,0,0,.8); }
+  #nBout { color:#fff; }
+  .badge { position:absolute; width:70px; height:70px; margin:-35px 0 0 -35px; border-radius:50%; background:var(--red); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:40px; box-shadow:0 0 30px rgba(255,45,45,.7); }
+  .badge svg { position:absolute; inset:-4px; width:78px; height:78px; opacity:0; }
+  .tok { position:absolute; left:0; top:0; visibility:hidden; }
+  .tok > div { width:92px; height:92px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; background:rgba(232,36,43,.92); box-shadow:0 0 30px rgba(255,45,45,.8); }
+  .tok svg { width:56px; height:56px; }
+  .cap { left:60px; right:60px; top:218px; height:110px; display:flex; align-items:center; justify-content:center; gap:22px; }
+  .cap .num { width:84px; height:84px; flex:none; border-radius:50%; background:var(--red); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:48px; box-shadow:0 0 30px rgba(255,45,45,.7); }
+  .cap .tx { font-weight:800; font-size:56px; letter-spacing:-0.035em; white-space:nowrap; text-shadow:0 6px 30px rgba(0,0,0,.7); }
+  .coin { position:absolute; left:0; top:0; width:46px; height:46px; margin:-23px 0 0 -23px; border-radius:50%; visibility:hidden;
+    background:radial-gradient(circle at 35% 30%, #fff3c4 0 18%, #ffc94d 19% 60%, #d68a12 61%); box-shadow:0 0 22px rgba(255,201,77,.55); }
+  /* la carte du monde */
+  #map { left:40px; top:430px; width:1000px; height:394px; perspective:1500px; }
+  #mapPlane { position:absolute; inset:0; transform-style:preserve-3d; transform-origin:50% 50%; }
+  #mapPlane svg { position:absolute; left:0; top:0; overflow:visible; }
+  .pin { position:absolute; left:0; top:0; width:0; height:0; visibility:hidden; }
+  .pin .dot { position:absolute; left:-13px; top:-13px; width:26px; height:26px; border-radius:50%; background:var(--cyan); box-shadow:0 0 0 6px rgba(57,182,238,.25), 0 0 26px rgba(57,182,238,.9); }
+  .pin.red .dot { background:var(--red); box-shadow:0 0 0 6px rgba(255,45,45,.25), 0 0 26px rgba(255,45,45,.9); }
+  .pin.me .dot { background:#fff; box-shadow:0 0 0 6px rgba(255,255,255,.22), 0 0 26px rgba(255,255,255,.9); }
+  .pin .pl { position:absolute; white-space:nowrap; padding:8px 16px; border-radius:12px; font-weight:800; font-size:26px; letter-spacing:.08em; text-transform:uppercase; background:rgba(8,16,36,.86); border:2px solid rgba(57,182,238,.75); }
+  .pin.red .pl { border-color:rgba(255,59,59,.85); }
+  .pin.me .pl { border-color:rgba(255,255,255,.8); }
+  #legend { left:0; right:0; top:236px; display:flex; justify-content:center; gap:20px; }
+  .chip { display:flex; align-items:center; gap:12px; padding:12px 22px; border-radius:999px; font-weight:800; font-size:28px; letter-spacing:.12em; background:rgba(8,16,36,.82); border:2px solid rgba(255,255,255,.25); visibility:hidden; }
+  .chip i { width:20px; height:20px; border-radius:50%; background:var(--cyan); box-shadow:0 0 14px var(--cyan); }
+  #nopkg { left:735px; top:745px; display:flex; align-items:center; gap:12px; padding:12px 20px; border-radius:14px; background:rgba(30,6,10,.88); border:3px solid var(--red); color:#FF6B6B; font-weight:800; font-size:28px; white-space:nowrap; box-shadow:0 0 26px rgba(255,45,45,.5); }
+  #nopkg svg { width:40px; height:40px; }
+  /* le téléphone */
+  #phone { left:620px; top:390px; width:390px; height:800px; border-radius:62px; background:#070c1a; box-sizing:border-box; padding:14px;
+    box-shadow:-6px 0 0 -1px rgba(111,211,255,.85), 7px 0 0 -1px rgba(255,59,59,.9), -18px 0 50px -10px rgba(57,182,238,.45), 20px 0 50px -10px rgba(255,45,45,.45), 0 40px 90px -30px rgba(0,0,0,.9); }
+  #screen { position:relative; width:100%; height:100%; border-radius:50px; overflow:hidden; background:linear-gradient(#0f1a36, #0a1128); }
+  #screen .notch { position:absolute; left:50%; top:16px; width:110px; height:32px; margin-left:-55px; border-radius:20px; background:#03060f; z-index:5; }
+  #screen .sb { position:absolute; left:34px; right:30px; top:20px; display:flex; justify-content:space-between; font-weight:700; font-size:20px; color:rgba(255,255,255,.85); z-index:4; }
+  .scr { position:absolute; inset:0; padding:84px 26px 26px; box-sizing:border-box; visibility:hidden; }
+  .scr h4 { margin:0 0 4px; font-weight:700; font-size:20px; letter-spacing:.2em; text-transform:uppercase; color:var(--cyan2); }
+  .scr h3 { margin:0 0 20px; font-weight:800; font-size:34px; letter-spacing:-0.02em; display:flex; align-items:center; gap:12px; }
+  .flag { display:inline-flex; width:42px; height:28px; border-radius:5px; overflow:hidden; box-shadow:0 0 0 2px rgba(255,255,255,.25); }
+  .flag i { flex:1; } .flag i:nth-child(1){background:#2a54d6;} .flag i:nth-child(2){background:#f4f6fb;} .flag i:nth-child(3){background:#e8242b;}
+  .ptile { height:300px; border-radius:30px; display:flex; align-items:center; justify-content:center; background:radial-gradient(70% 60% at 50% 40%, rgba(255,201,77,.3), transparent 70%), linear-gradient(#1b2847, #121b33); border:2px solid rgba(255,255,255,.08); }
+  .ptile svg { width:210px; height:210px; }
+  .pname { margin:18px 0 6px; font-weight:800; font-size:32px; }
+  .stars { color:var(--gold); font-size:26px; letter-spacing:4px; }
+  .btn { margin-top:18px; height:74px; border-radius:20px; background:var(--red); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:28px; box-shadow:0 0 30px rgba(255,45,45,.5); }
+  .trend { margin-top:18px; display:flex; align-items:center; justify-content:space-between; }
+  .trend svg { width:200px; height:96px; overflow:visible; }
+  .trend b { font-weight:800; font-size:26px; color:var(--cyan2); }
+  #toast { position:absolute; left:50%; top:470px; padding:14px 24px; border-radius:999px; background:rgba(8,16,36,.92); border:2px solid var(--cyan); font-weight:800; font-size:26px; display:flex; align-items:center; gap:10px; white-space:nowrap; visibility:hidden; box-shadow:0 0 30px rgba(57,182,238,.5); }
+  #toast svg { width:34px; height:34px; }
+  #notif { position:absolute; left:14px; right:14px; top:62px; padding:18px; border-radius:26px; background:rgba(236,240,248,.96); color:#0b1226; display:flex; gap:16px; align-items:center; z-index:6; visibility:hidden; box-shadow:0 20px 40px -10px rgba(0,0,0,.6); }
+  #notif .ni { width:64px; height:64px; border-radius:18px; background:var(--red); color:#fff; display:flex; align-items:center; justify-content:center; flex:none; }
+  #notif .ni svg { width:40px; height:40px; }
+  #notif b { display:block; font-weight:800; font-size:26px; }
+  #notif span { font-weight:600; font-size:22px; color:#3a4766; display:flex; align-items:center; gap:8px; }
+  #notif .flag { width:30px; height:20px; }
+  .track { position:relative; margin-top:30px; height:480px; }
+  .track .rail { position:absolute; left:47px; top:46px; width:6px; height:390px; border-radius:3px; background:rgba(255,255,255,.14); }
+  .track .fill { position:absolute; left:47px; top:46px; width:6px; height:390px; border-radius:3px; background:var(--cyan); transform-origin:top; transform:scaleY(0); box-shadow:0 0 16px var(--cyan); }
+  .tstep { position:absolute; left:0; display:flex; align-items:center; gap:20px; }
+  .tstep .c { width:100px; height:100px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#1b2847; border:3px solid rgba(127,214,255,.5); color:var(--cyan2); flex:none; }
+  .tstep .c svg { width:54px; height:54px; }
+  .tstep b { display:block; font-weight:800; font-size:28px; }
+  .tstep span { font-weight:600; font-size:22px; color:rgba(255,255,255,.6); }
+  #truckT { position:absolute; left:50px; top:46px; width:0; height:0; }
+  #truckT div { position:absolute; left:-36px; top:-36px; width:72px; height:72px; border-radius:50%; background:var(--red); display:flex; align-items:center; justify-content:center; box-shadow:0 0 24px rgba(255,45,45,.8); }
+  #truckT svg { width:44px; height:44px; color:#fff; }
+  #zero { left:300px; top:830px; }
+  #zero .pi { background:rgba(255,201,77,.16); color:var(--gold); }
+  /* attention + porte */
+  #warn { left:540px; top:320px; width:150px; height:150px; margin:-75px 0 0 -75px; color:var(--red); filter:drop-shadow(0 0 24px rgba(255,45,45,.7)); }
+  #door { left:405px; top:540px; width:270px; height:380px; perspective:900px; }
+  #door .frame { position:absolute; inset:-14px; border-radius:16px 16px 4px 4px; border:14px solid #26375f; box-shadow:-5px 0 0 rgba(111,211,255,.85), 6px 0 0 rgba(255,59,59,.85), 0 30px 60px -20px rgba(0,0,0,.8); }
+  #door .lit { position:absolute; inset:0; background:radial-gradient(90% 70% at 50% 60%, #ffffff 0%, #bff0ff 30%, #39b6ee 70%, #1b4f86 100%); }
+  #door .panel { position:absolute; inset:0; transform-origin:left center; background:linear-gradient(90deg, #1b2847, #121b33); border:3px solid #2a3c66; box-sizing:border-box; }
+  #door .panel::before { content:""; position:absolute; left:28px; right:28px; top:30px; height:130px; border:3px solid #2a3c66; border-radius:6px; }
+  #door .panel::after { content:""; position:absolute; left:28px; right:28px; bottom:30px; height:150px; border:3px solid #2a3c66; border-radius:6px; }
+  #door .knob { position:absolute; right:26px; top:190px; width:22px; height:22px; border-radius:50%; background:#FFC94D; box-shadow:0 0 12px rgba(255,201,77,.8); z-index:2; }
+  #rays { left:240px; top:880px; width:600px; height:260px; background:radial-gradient(60% 100% at 50% 0%, rgba(160,230,255,.55), rgba(57,182,238,.18) 55%, transparent 80%); filter:blur(6px); mix-blend-mode:screen; transform-origin:50% 0; }
+  #wa .pi { background:#25d366; color:#fff; }
+  #upArrow { left:540px; top:560px; width:70px; height:70px; margin:-35px 0 0 -35px; color:#fff; }
+  /* sous-titres courts */
+  #subs { position:absolute; left:60px; right:60px; top:1650px; height:200px; z-index:20; }
+  .sub { position:absolute; left:0; right:0; top:0; text-align:center; font-weight:800; font-size:64px; letter-spacing:-0.035em; line-height:1.05; text-shadow:0 4px 24px rgba(0,0,0,.85), 0 0 2px #000; visibility:hidden; }
+  /* barre de progression à chapitres */
+  #prog { position:absolute; left:70px; right:70px; top:74px; z-index:25; }
+  #prog .segs { display:flex; gap:12px; }
+  #prog .seg { position:relative; height:10px; border-radius:5px; background:rgba(255,255,255,.16); overflow:hidden; }
+  #prog .seg b { position:absolute; inset:0; background:var(--red); transform-origin:left center; transform:scaleX(0); box-shadow:0 0 16px rgba(255,45,45,.8); }
+  #prog .lab { position:relative; margin-top:18px; height:34px; }
+  #prog .lab div { position:absolute; left:0; top:0; white-space:nowrap; font-weight:700; font-size:24px; letter-spacing:.16em; text-transform:uppercase; color:#fff; visibility:hidden; }
+  #prog .lab span { color:rgba(255,255,255,.45); }
+  #vig { position:absolute; inset:0; pointer-events:none; z-index:22; background:radial-gradient(120% 85% at 50% 50%, transparent 55%, rgba(2,5,14,.7) 100%); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="rim" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="dots" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="4.5" cy="4.5" r="2.5" fill="#6cc4f0"/></pattern>
+  </defs>
+  <!-- icônes au trait : couleur = currentColor -->
+  <symbol id="i-check" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#39B6EE"/><path d="M19 33l9 9 17-19" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-box" viewBox="0 0 120 120"><g class="ico"><path d="M20 42 L60 22 L100 42 L100 92 L60 112 L20 92 Z"/><path d="M20 42 L60 62 L100 42 M60 62 L60 112 M40 32 L80 52"/></g></symbol>
+  <symbol id="i-shop" viewBox="0 0 120 120"><g class="ico"><path d="M16 46 L26 18 L94 18 L104 46 Z"/><path d="M16 46 Q27 60 38 46 Q49 60 60 46 Q71 60 82 46 Q93 60 104 46"/><path d="M24 56 L24 102 L96 102 L96 56 M50 102 L50 74 L70 74 L70 102"/></g></symbol>
+  <symbol id="i-ware" viewBox="0 0 120 120"><g class="ico"><path d="M12 50 L60 20 L108 50 L108 104 L12 104 Z"/><path d="M32 104 L32 62 L88 62 L88 104 M32 76 L88 76 M32 90 L88 90"/></g></symbol>
+  <symbol id="i-person" viewBox="0 0 120 120"><g class="ico"><circle cx="60" cy="40" r="18"/><path d="M24 104 Q24 68 60 68 Q96 68 96 104"/></g></symbol>
+  <symbol id="i-factory" viewBox="0 0 120 120"><g class="ico"><path d="M12 104 L12 56 L38 70 L38 56 L64 70 L64 28 L84 28 L84 70 L108 70 L108 104 Z"/><path d="M28 88 L40 88 M54 88 L66 88 M80 88 L92 88"/></g></symbol>
+  <symbol id="i-cart" viewBox="0 0 120 120"><g class="ico"><path d="M12 24 L30 24 L42 78 L94 78 L106 40 L34 40"/><circle cx="48" cy="96" r="8"/><circle cx="88" cy="96" r="8"/></g></symbol>
+  <symbol id="i-receipt" viewBox="0 0 120 120"><g class="ico"><path d="M30 14 L90 14 L90 106 L80 98 L70 106 L60 98 L50 106 L40 98 L30 106 Z"/><path d="M44 38 L76 38 M44 56 L76 56 M44 74 L64 74"/></g></symbol>
+  <symbol id="i-phone" viewBox="0 0 120 120"><g class="ico"><rect x="34" y="10" width="52" height="100" rx="12"/><path d="M52 94 L68 94"/></g></symbol>
+  <symbol id="i-wifi" viewBox="0 0 120 120"><g class="ico"><path d="M16 50 Q60 10 104 50 M32 66 Q60 40 88 66 M47 82 Q60 70 73 82"/></g><circle cx="60" cy="98" r="8" fill="currentColor"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 120 120"><g class="ico"><path d="M60 12 L100 26 L100 58 Q100 94 60 110 Q20 94 20 58 L20 26 Z"/><path d="M42 60 L56 74 L80 46"/></g></symbol>
+  <symbol id="i-truck" viewBox="0 0 120 120"><g class="ico"><path d="M8 32 L72 32 L72 86 L8 86 Z M72 50 L94 50 L110 68 L110 86 L72 86"/><circle cx="30" cy="92" r="10"/><circle cx="90" cy="92" r="10"/></g></symbol>
+  <symbol id="i-note" viewBox="0 0 120 120"><g class="ico"><rect x="24" y="14" width="72" height="94" rx="10"/><path d="M42 40 L78 40 M42 58 L78 58 M42 76 L60 76"/><path d="M68 84 L76 92 L92 72" stroke="#FF6B6B"/></g></symbol>
+  <symbol id="i-house" viewBox="0 0 120 120"><g class="ico"><path d="M12 58 L60 16 L108 58 M24 48 L24 106 L96 106 L96 48"/></g></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 120 120"><g class="ico"><path d="M32 12 L88 12 L88 108 L60 86 L32 108 Z"/></g></symbol>
+  <symbol id="i-share" viewBox="0 0 120 120"><g class="ico"><path d="M68 20 L106 54 L68 88 L68 68 Q30 66 14 100 Q18 48 68 40 Z"/></g></symbol>
+  <symbol id="i-chat" viewBox="0 0 120 120"><path d="M60 12 A48 48 0 1 1 30 97 L12 108 L20 86 A48 48 0 0 1 60 12 Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M44 38 Q38 52 50 68 Q64 84 80 82 L86 72 L74 64 L67 70 Q57 64 52 54 L58 47 L50 36 Z" fill="currentColor"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 120 120"><path d="M60 12 L110 102 L10 102 Z" fill="rgba(255,45,45,.14)" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M60 44 L60 72" stroke="currentColor" stroke-width="9" stroke-linecap="round"/><circle cx="60" cy="88" r="6" fill="currentColor"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 120 120"><g class="ico"><path d="M22 40 L98 40 L92 106 L28 106 Z"/><path d="M42 50 L42 34 Q42 16 60 16 Q78 16 78 34 L78 50"/></g></symbol>
+  <symbol id="i-arrow" viewBox="0 0 120 60"><g class="ico"><path d="M8 30 L104 30 M80 8 L106 30 L80 52"/></g></symbol>
+  <symbol id="i-up" viewBox="0 0 120 120"><g class="ico" style="stroke-width:9"><path d="M60 104 L60 18 M26 50 L60 16 L94 50"/></g></symbol>
+  <symbol id="i-lamp" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="74" rx="40" ry="10" fill="rgba(255,214,120,.35)"/>
+    <path d="M24 64 Q24 22 60 22 Q96 22 96 64 Z" fill="#39B6EE"/><path d="M60 22 Q96 22 96 64 L72 64 Q76 34 60 22 Z" fill="#E8242B" opacity=".9"/>
+    <path d="M24 64 L96 64" stroke="#bff0ff" stroke-width="4" stroke-linecap="round"/>
+    <rect x="55" y="64" width="10" height="30" rx="4" fill="#d9e2f2"/><ellipse cx="60" cy="98" rx="26" ry="8" fill="#d9e2f2"/><ellipse cx="60" cy="96" rx="26" ry="6" fill="#f4f7fc"/>
+  </symbol>
+  <symbol id="i-cube" viewBox="0 0 120 120">
+    <path d="M60 14 L104 36 L60 58 L16 36 Z" fill="#d79a52"/><path d="M16 36 L60 58 L60 110 L16 88 Z" fill="#a8692e"/><path d="M104 36 L60 58 L60 110 L104 88 Z" fill="#8a4f1e"/>
+    <path d="M38 25 L82 47 L82 62" fill="none" stroke="#f2d3a0" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M16 36 L16 88 L60 110" fill="none" stroke="#6fd3ff" stroke-width="3" opacity=".8"/><path d="M104 36 L104 88 L60 110" fill="none" stroke="#ff3b3b" stroke-width="3" opacity=".9"/>
+  </symbol>
+</svg>
+
+<div id="stage">
+  <div class="full" id="bgFull"><img src="assets/fond-nuit-bleue.jpg" alt=""></div>
+  <div class="full" id="dim"></div>
+
+  <!-- le monde : fond, bokeh, personnage -->
+  <div id="scene"><div id="cam">
+    <div id="bg"><img src="assets/fond-nuit-bleue.jpg" alt=""></div>
+    <div id="bokeh"></div>
+    <div id="light"></div>
+    <div id="persoW">
+      <div id="halo"></div>
+      <svg id="perso" viewBox="0 0 640 1000">
+        <g id="corps">
+          <g id="busteW"><g id="buste">
+            <path d="M132 620 Q150 568 236 548 L310 600 L384 548 Q470 568 488 620 L528 1000 L92 1000 Z" fill="#1b2847"/>
+            <path d="M310 600 L384 548 Q470 568 488 620 L528 1000 L380 1000 Q400 760 340 640 Z" fill="#121b33" opacity=".7"/>
+            <path d="M132 620 Q150 568 236 548" fill="none" stroke="#6fd3ff" stroke-width="7" filter="url(#rim)"/>
+            <path d="M384 548 Q470 568 488 620 L528 1000" fill="none" stroke="#ff3b3b" stroke-width="8" filter="url(#rim)" opacity=".95"/>
+            <path d="M240 546 L310 610 L288 652 L226 588 Z M380 546 L310 610 L332 652 L394 588 Z" fill="#26375f"/>
+            <path d="M310 610 L310 1000" stroke="#0f1830" stroke-width="4"/>
+            <circle cx="310" cy="700" r="6" fill="#0f1830"/><circle cx="310" cy="780" r="6" fill="#0f1830"/>
+            <path d="M355 640 L425 640 L421 705 Q390 715 359 705 Z" fill="#141e38" stroke="#2a3c66" stroke-width="4"/>
+          </g></g>
+          <!-- bras gauche le long du corps -->
+          <g id="brasG">
+            <path d="M150 604 Q100 700 94 1000 L178 1000 Q176 770 208 652 Z" fill="#1b2847"/>
+            <path d="M150 604 Q100 700 94 1000" fill="none" stroke="#6fd3ff" stroke-width="7" filter="url(#rim)" opacity=".9"/>
+            <path d="M178 1000 Q176 770 208 652" fill="none" stroke="#0f1830" stroke-width="4"/>
+          </g>
+          <!-- cou -->
+          <path d="M276 470 L344 470 L348 560 Q310 590 272 560 Z" fill="#8a5536"/>
+          <path d="M276 500 Q310 540 344 500 L346 548 Q310 570 274 548 Z" fill="#5a3220" opacity=".6"/>
+          <g id="teteW"><g id="tete">
+            <ellipse cx="210" cy="388" rx="18" ry="30" fill="#7a4a2f"/>
+            <ellipse cx="410" cy="388" rx="18" ry="30" fill="#7a2a24"/>
+            <path d="M218 335 Q218 250 310 245 Q402 250 402 335 L404 410 Q400 470 310 500 Q220 470 216 410 Z" fill="#8a5536"/>
+            <path d="M345 252 Q402 262 402 335 L404 410 Q400 470 310 500 Q365 448 360 380 Z" fill="#5a3220" opacity=".45"/>
+            <path d="M218 335 Q218 250 310 245" fill="none" stroke="#6fd3ff" stroke-width="5" filter="url(#rim)" opacity=".9"/>
+            <path d="M402 300 L404 410 Q400 470 330 495" fill="none" stroke="#ff3b3b" stroke-width="6" filter="url(#rim)" opacity=".9"/>
+            <path d="M312 370 Q306 408 296 424 Q310 434 326 424" fill="none" stroke="#5a3220" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+            <g id="yeux">
+              <ellipse cx="268" cy="372" rx="16" ry="10" fill="#f3ece4"/><ellipse cx="352" cy="372" rx="16" ry="10" fill="#f3ece4"/>
+              <g id="pupilles"><circle cx="270" cy="372" r="8" fill="#1a0f0b"/><circle cx="273" cy="369" r="2.6" fill="#fff"/><circle cx="354" cy="372" r="8" fill="#1a0f0b"/><circle cx="357" cy="369" r="2.6" fill="#fff"/></g>
+              <path d="M250 366 Q268 356 286 366 M334 366 Q352 356 370 366" stroke="#1a0f0b" stroke-width="5" fill="none" stroke-linecap="round"/>
+            </g>
+            <path id="sg" d="M244 346 Q266 330 292 340" stroke="#17110e" stroke-width="12" stroke-linecap="round" fill="none"/>
+            <path id="sd" d="M328 340 Q354 330 376 346" stroke="#17110e" stroke-width="12" stroke-linecap="round" fill="none"/>
+            <path d="M216 395 Q212 486 258 524 Q310 552 362 524 Q408 486 404 395 Q390 444 362 452 Q336 440 310 444 Q284 440 258 452 Q230 444 216 395 Z" fill="#17110e"/>
+            <path d="M226 470 Q236 500 250 512 M394 470 Q384 500 370 512" stroke="#2c201a" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M216 395 Q212 486 258 524" fill="none" stroke="#6fd3ff" stroke-width="4" filter="url(#rim)" opacity=".7"/>
+            <path d="M268 452 Q310 432 352 452 Q330 462 310 456 Q290 462 268 452 Z" fill="#17110e"/>
+            <ellipse id="bouchev" cx="310" cy="478" rx="28" ry="7" fill="#3a1012"/>
+            <rect id="dents" x="292" y="471" width="36" height="5" rx="2" fill="#efe6dc" opacity=".3"/>
+            <path id="smile" d="M280 468 Q310 498 340 468" stroke="#3a1012" stroke-width="6" fill="none" stroke-linecap="round" opacity="0"/>
+            <path d="M206 360 Q192 270 238 232 Q270 204 310 206 Q356 204 388 232 Q426 270 412 360 Q406 312 388 296 Q392 276 368 272 Q348 256 326 270 Q306 254 282 270 Q258 260 246 280 Q220 292 206 360 Z" fill="#17110e"/>
+            <g fill="#17110e"><circle cx="246" cy="246" r="30"/><circle cx="288" cy="222" r="32"/><circle cx="334" cy="222" r="31"/><circle cx="376" cy="246" r="29"/><circle cx="222" cy="290" r="22"/><circle cx="398" cy="290" r="22"/></g>
+            <path d="M228 270 Q240 236 270 228 M206 340 Q200 300 220 280" stroke="#3f8fc0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
+            <path d="M360 226 Q392 236 404 268 M412 330 Q414 300 400 284" stroke="#c0262c" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
+          </g></g>
+          <!-- bras droit : il explique, compte, montre -->
+          <g id="brasW"><g id="bras">
+            <path d="M470 610 Q520 700 506 790 L446 794 Q450 712 432 650 Z" fill="#1b2847"/>
+            <path d="M488 620 Q520 700 506 790" fill="none" stroke="#ff3b3b" stroke-width="7" filter="url(#rim)" opacity=".9"/>
+            <g id="avantbras">
+              <path d="M446 800 Q528 772 552 660 L598 674 Q584 790 500 818 Z" fill="#16213d"/>
+              <path d="M552 660 L598 674 Q584 790 500 818" fill="none" stroke="#ff3b3b" stroke-width="6" filter="url(#rim)" opacity=".8"/>
+              <g id="mainO">
+                <rect x="546" y="626" width="74" height="42" rx="20" fill="#8a5536"/>
+                <rect x="604" y="628" width="54" height="30" rx="14" fill="#94603f"/>
+                <rect x="560" y="592" width="20" height="44" rx="10" fill="#7a4a2f" transform="rotate(-18 570 630)"/>
+                <path d="M618 632 L640 632 M618 643 L644 643 M618 653 L638 653" stroke="#6a3f27" stroke-width="3" stroke-linecap="round"/>
+                <path d="M612 668 Q640 666 656 656" fill="none" stroke="#ff3b3b" stroke-width="4" filter="url(#rim)"/>
+              </g>
+              <g id="mainI" opacity="0">
+                <rect id="f1" x="556" y="560" width="16" height="64" rx="8" fill="#94603f"/>
+                <rect id="f2" x="574" y="552" width="16" height="72" rx="8" fill="#94603f"/>
+                <rect id="f3" x="592" y="560" width="16" height="64" rx="8" fill="#8a5536"/>
+                <rect x="552" y="606" width="60" height="64" rx="22" fill="#8a5536"/>
+                <path d="M560 618 L604 618" stroke="#6a3f27" stroke-width="3" stroke-linecap="round"/>
+                <rect x="534" y="624" width="26" height="40" rx="13" fill="#7a4a2f" transform="rotate(-24 547 644)"/>
+                <path d="M610 612 Q618 640 608 668" fill="none" stroke="#ff3b3b" stroke-width="4" filter="url(#rim)"/>
+              </g>
+            </g>
+          </g></g>
+        </g>
+      </svg>
+    </div>
+  </div></div>
+  <svg id="ring" viewBox="0 0 1080 1920"><circle id="ringC" cx="540" cy="1190" r="344" fill="none" stroke="#7FD6FF" stroke-width="3" stroke-dasharray="18 14" opacity=".8"/></svg>
+
+  <!-- intro : trait de lumière et mots en 3D -->
+  <svg id="trail" viewBox="0 0 1080 1920"><path id="trailP" d="M-80 1500 C 260 1380, 200 1000, 540 960 S 920 640, 1180 700" fill="none" stroke="#FF3B3B" stroke-width="10" stroke-linecap="round" filter="url(#glow)"/></svg>
+  <div id="k3d"><div id="cam3d">
+    <div class="w3" id="a1" style="font-size:74px">Tu veux lancer</div>
+    <div class="w3" id="a2" style="font-size:150px;font-weight:800;text-shadow:0 0 60px rgba(255,45,45,.6),0 0 120px rgba(255,45,45,.35)">ton business</div>
+    <div class="w3" id="a3" style="font-size:96px;color:rgba(255,255,255,.82)">en ligne.</div>
+  </div></div>
+  <div class="streak" id="streak1" style="top:808px;z-index:13"></div>
+
+  <div id="ui">
+    <!-- 1 · le problème -->
+    <div class="card" id="c1"><span class="ln">Tu n'as pas d'argent</span><span class="ln">pour le <span class="k"><i></i>stock.</span></span></div>
+    <div class="u tile glass" id="tStock" style="left:230px;top:740px"><svg class="ic"><use href="#i-box"/></svg><b>STOCK</b><svg class="x" viewBox="0 0 264 278"><path d="M30 30 L234 248 M234 30 L30 248" stroke="#FF2D2D" stroke-width="12" stroke-linecap="round" filter="url(#glow)"/></svg></div>
+    <div class="u tile glass" id="tBout" style="left:540px;top:740px"><svg class="ic"><use href="#i-shop"/></svg><b>BOUTIQUE</b><svg class="x" viewBox="0 0 264 278"><path d="M30 30 L234 248 M234 30 L30 248" stroke="#FF2D2D" stroke-width="12" stroke-linecap="round" filter="url(#glow)"/></svg></div>
+    <div class="u tile glass" id="tWare" style="left:850px;top:740px"><svg class="ic"><use href="#i-ware"/></svg><b>ENTREPÔT</b><svg class="x" viewBox="0 0 264 278"><path d="M30 30 L234 248 M234 30 L30 248" stroke="#FF2D2D" stroke-width="12" stroke-linecap="round" filter="url(#glow)"/></svg></div>
+    <div class="card" id="c2"><span class="ln">Alors tu <span class="it">attends…</span></span><span class="ln">et rien ne bouge.</span></div>
+    <div class="u pill glass" id="loader"><svg id="spin" viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="7"/><path d="M30 6 A24 24 0 0 1 54 30" fill="none" stroke="#39B6EE" stroke-width="7" stroke-linecap="round"/></svg><span><small>Ton business</small>0 %</span></div>
+
+    <!-- 2 · c'est quoi -->
+    <div class="card" id="c3"><span class="ln">Il existe une autre</span><span class="ln"><span class="it">façon</span> de faire :</span></div>
+    <div class="u" id="giant">dropshipping</div>
+    <div class="streak" id="streak2" style="top:530px"></div>
+    <div class="card" id="c4"><span class="ln">Tu vends un <span class="k"><i></i>produit…</span></span><span class="ln">que tu n'as <span class="it">pas</span> chez toi.</span></div>
+    <svg class="u" id="boxP"><use href="#i-cube"/></svg>
+    <div class="u" id="house"><svg viewBox="0 0 120 120" width="250" height="250"><use href="#i-house"/><rect x="42" y="62" width="36" height="34" rx="4" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="4" stroke-dasharray="7 6"/><circle cx="96" cy="30" r="16" fill="#FF2D2D"/><path d="M89 23 L103 37 M103 23 L89 37" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></div>
+    <div class="card" id="c5" style="top:200px;height:300px"><span class="ln">C'est comme au <span class="it">marché.</span></span></div>
+    <div class="u" id="awn"></div>
+    <div class="u stall glass" id="pToi" style="left:300px;top:745px;color:var(--cyan2)"><svg><use href="#i-note"/></svg><b style="color:#fff">TOI</b><span>prends la commande</span></div>
+    <svg class="u" id="mArrow" viewBox="0 0 120 60"><use href="#i-arrow"/></svg>
+    <div class="u stall glass r" id="pGros" style="left:780px;top:745px;color:#FF6B6B"><svg id="truckM"><use href="#i-truck"/></svg><b class="k" style="color:#fff"><i></i>GROSSISTE</b><span>livre</span></div>
+
+    <!-- 3 · les 3 étapes -->
+    <div class="card" id="c6"><span class="ln">Ça marche en</span><span class="ln"><span class="it">trois</span> étapes.</span></div>
+    <div class="u cap" id="cap1"><div class="num">1</div><div class="tx">Le client commande</div></div>
+    <div class="u cap" id="cap2"><div class="num">2</div><div class="tx">Tu commandes au fournisseur</div></div>
+    <div class="u cap" id="cap3"><div class="num">3</div><div class="tx">Il livre <span class="k"><i></i>directement</span></div></div>
+    <div class="u cap" id="cap4"><div class="tx">Toi, tu gardes la <span class="it">différence.</span></div></div>
+    <div class="u" id="steps"><div id="plan">
+      <svg id="stepsSvg" viewBox="0 0 1080 800" width="1080" height="800" style="position:absolute;left:0;top:0;overflow:visible">
+        <path id="A1" d="M232 448 Q262 250 420 196" fill="none" stroke="#7FD6FF" stroke-width="7" stroke-linecap="round" filter="url(#glow)"/>
+        <path id="A2" d="M660 196 Q818 250 848 448" fill="none" stroke="#7FD6FF" stroke-width="7" stroke-linecap="round" filter="url(#glow)"/>
+        <path id="A3" d="M760 640 Q540 780 320 640" fill="none" stroke="#FF3B3B" stroke-width="8" stroke-linecap="round" filter="url(#glow)"/>
+      </svg>
+      <div class="node glass" id="nBout" style="left:540px;top:170px"><svg><use href="#i-shop"/></svg><b>TA BOUTIQUE</b></div>
+      <div class="node glass" id="nCli" style="left:220px;top:560px"><svg><use href="#i-person"/></svg><b>CLIENT</b></div>
+      <div class="node glass r" id="nFou" style="left:860px;top:560px;color:#FF6B6B"><svg><use href="#i-factory"/></svg><b>FOURNISSEUR</b></div>
+      <div class="badge u" id="b1">1<svg><use href="#i-check"/></svg></div>
+      <div class="badge u" id="b2">2<svg><use href="#i-check"/></svg></div>
+      <div class="badge u" id="b3">3<svg><use href="#i-check"/></svg></div>
+      <div class="tok" id="tok1"><div><svg><use href="#i-cart"/></svg></div></div>
+      <div class="tok" id="tok2"><div><svg><use href="#i-receipt"/></svg></div></div>
+      <div class="tok" id="tok3"><div><svg><use href="#i-box"/></svg></div></div>
+      <div id="coins"></div>
+    </div></div>
+
+    <!-- 4 · depuis Madagascar -->
+    <div class="card" id="c7"><span class="ln">Pourquoi c'est</span><span class="ln">intéressant depuis</span><span class="ln"><span class="it">Madagascar ?</span></span></div>
+    <div class="u" id="legend"><div class="chip" id="chMe"><i style="background:#fff;box-shadow:0 0 14px #fff"></i>TOI</div><div class="chip" id="chCli"><i></i>CLIENTS</div><div class="chip" id="chFou"><i style="background:var(--red);box-shadow:0 0 14px var(--red)"></i>FOURNISSEUR</div></div>
+    <div class="u" id="map"><div id="mapPlane">
+      <svg id="mapSvg" viewBox="0 0 1000 394" width="1000" height="394"><g id="grat"></g><g id="land"></g><g id="arcs"></g></svg>
+      <div id="pins"></div>
+      <div class="tok" id="tokMap"><div style="width:70px;height:70px"><svg style="width:44px;height:44px"><use href="#i-box"/></svg></div></div>
+    </div></div>
+    <div class="u" id="nopkg"><svg viewBox="0 0 120 120"><use href="#i-box"/><path d="M14 106 L106 14" stroke="#FF2D2D" stroke-width="9" stroke-linecap="round"/></svg>Aucun colis chez toi</div>
+    <div class="u tag" id="needTag" style="left:0;right:0;top:236px;text-align:center">Il te faut</div>
+    <div class="u pill glass" id="n1" style="left:540px;top:400px"><div class="pi"><svg><use href="#i-phone"/></svg></div>Un téléphone<svg class="ck"><use href="#i-check"/></svg></div>
+    <div class="u pill glass" id="n2" style="left:540px;top:560px"><div class="pi"><svg><use href="#i-wifi"/></svg></div>Internet<svg class="ck"><use href="#i-check"/></svg></div>
+    <div class="u pill glass r" id="n3" style="left:540px;top:720px"><div class="pi" style="background:rgba(255,45,45,.16);color:#FF6B6B"><svg><use href="#i-shield"/></svg></div>Et du <span class="k"><i></i>sérieux</span><svg class="ck"><use href="#i-check"/></svg></div>
+
+    <!-- 5 · un exemple -->
+    <div class="card" id="c8"><span class="ln">Un <span class="it">exemple.</span></span></div>
+    <div class="u" id="phone"><div id="screen">
+      <div class="notch"></div><div class="sb"><span>9:41</span><span>●●● ▮</span></div>
+      <div class="scr" id="scrA"><h4>Tendances</h4><h3>En France <span class="flag"><i></i><i></i><i></i></span></h3>
+        <div class="ptile" id="lampA"><svg><use href="#i-lamp"/></svg></div>
+        <div class="pname">Petite lampe</div>
+        <div class="trend"><svg viewBox="0 0 200 96"><path d="M0 90 L200 90" stroke="rgba(255,255,255,.15)" stroke-width="3"/><path id="trendP" d="M4 84 L40 74 L70 78 L104 56 L134 60 L164 30 L196 10" fill="none" stroke="#39B6EE" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/></svg><b>↑ demandée</b></div>
+      </div>
+      <div class="scr" id="scrB"><h4>Ta boutique</h4><h3>Nouveau produit</h3>
+        <div class="ptile"><svg><use href="#i-lamp"/></svg></div>
+        <div class="pname">Petite lampe</div><div class="stars">★★★★★</div>
+        <div class="btn">Ajouter au panier</div>
+      </div>
+      <div class="scr" id="scrC"><h4>Suivi du colis</h4><h3>Commande en route</h3>
+        <div class="track"><div class="rail"></div><div class="fill" id="tfill"></div>
+          <div class="tstep" style="top:0"><div class="c" style="border-color:#FF6B6B;color:#FF6B6B"><svg><use href="#i-factory"/></svg></div><div><b>Fournisseur</b><span>Colis préparé</span></div></div>
+          <div class="tstep" style="top:190px"><div class="c"><svg><use href="#i-truck"/></svg></div><div><b>En route</b><span>Envoi direct</span></div></div>
+          <div class="tstep" style="top:380px"><div class="c" id="lyonC"><svg><use href="#i-house"/></svg></div><div><b>Lyon</b><span>Chez la cliente</span></div></div>
+          <div id="truckT"><div><svg viewBox="0 0 120 120"><use href="#i-box"/></svg></div></div>
+        </div>
+      </div>
+      <div id="toast"><svg><use href="#i-check"/></svg>En ligne</div>
+      <div id="notif"><div class="ni"><svg><use href="#i-bag"/></svg></div><div><b>Nouvelle commande</b><span>Une cliente à Lyon <span class="flag"><i></i><i></i><i></i></span></span></div></div>
+    </div></div>
+    <div class="u pill glass" id="zero"><div class="pi"><svg><use href="#i-box"/></svg></div><span><small>Acheté à l'avance</small>0 Ar</span><svg class="ck"><use href="#i-check"/></svg></div>
+
+    <!-- 6 · à retenir -->
+    <svg class="u" id="warn"><use href="#i-warn"/></svg>
+    <div class="card" id="c9" style="top:420px;height:360px"><span class="ln">Ce n'est pas de</span><span class="ln">l'argent <span class="it">facile.</span></span></div>
+    <div class="u pill glass" id="r1" style="left:540px;top:420px"><div class="pi"><svg><use href="#i-box"/></svg></div>Le bon produit<svg class="ck"><use href="#i-check"/></svg></div>
+    <div class="u pill glass" id="r2" style="left:540px;top:590px"><div class="pi"><svg><use href="#i-person"/></svg></div>Des clients bien servis<svg class="ck"><use href="#i-check"/></svg></div>
+    <div class="card" id="c10" style="top:190px;height:330px"><span class="ln">Mais la porte est</span><span class="ln"><span class="it">ouverte.</span></span></div>
+    <div class="u" id="rays"></div>
+    <div class="u" id="door"><div class="lit"></div><div class="frame"></div><div class="panel"><div class="knob"></div></div></div>
+    <div class="u pill glass" id="cta1" style="left:540px;top:400px"><div class="pi"><svg id="bmk" viewBox="0 0 120 120"><path id="bmkP" d="M32 12 L88 12 L88 108 L60 86 L32 108 Z" fill="rgba(127,214,255,0)" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/></svg></div>Enregistre</div>
+    <div class="u pill glass" id="cta2" style="left:540px;top:570px"><div class="pi"><svg id="shr"><use href="#i-share"/></svg></div>Envoie-la à un ami</div>
+    <svg class="u" id="upArrow" viewBox="0 0 120 120" style="top:690px"><use href="#i-up"/></svg>
+    <div class="u pill glass" id="wa" style="left:540px;top:820px;border-color:rgba(37,211,102,.8);box-shadow:0 0 40px rgba(37,211,102,.35)"><div class="pi"><svg><use href="#i-chat"/></svg></div><span>WhatsApp<small id="bio">Le lien est dans la bio</small></span></div>
+  </div>
+
+  <div id="hud">
+    <div class="rule" id="rule"></div>
+    <div class="corner" style="left:46px;top:300px;border-right:0;border-bottom:0"></div>
+    <div class="corner" style="right:46px;bottom:150px;border-left:0;border-top:0"></div>
+    <div class="htag" id="tagA" style="left:60px;top:250px">Épisode 01 · Le dropshipping</div>
+    <div class="htag" id="tagB" style="left:60px;bottom:110px">Madagascar → le monde</div>
+    <div class="line" id="lnA" style="left:60px;top:288px;width:300px"></div>
+  </div>
+  <div id="subs"></div>
+  <div id="fx"></div>
+  <div id="vig"></div>
+  <div id="prog"><div class="segs" id="segs"></div><div class="lab" id="lab"></div></div>
+</div>
+<script>
+(function () {
+  const WORDS = window.WORDS, END = window.VOICE_END, DURATION = +(END + 1.1).toFixed(2), $ = (id) => document.getElementById(id);
+  const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+  const NW = WORDS.map((w) => norm(w.text));
+  // repère une expression exacte (évite les homonymes : « commande », « un », « boutique »…)
+  const find = (phrase, from = 0) => { const p = phrase.split(/\s+/).map(norm).filter(Boolean);
+    for (let i = from; i <= NW.length - p.length; i++) if (p.every((x, k) => NW[i + k] === x)) return i; throw new Error("expression absente : " + phrase); };
+  const S = (phrase, k = 0, from = 0) => WORDS[find(phrase, from) + k].start;
+  const E = (phrase, from = 0) => { const n = phrase.split(/\s+/).map(norm).filter(Boolean).length; return WORDS[find(phrase, from) + n - 1].end; };
+  const tl = gsap.timeline({ paused: true }), CUES = [], B = (px) => `blur(${px}px)`, SIN = "sine.inOut";
+  const SFX = (file, t, g = -20) => CUES.push({ n: "sfx", file: "syn-" + file, t: +Math.max(0, t).toFixed(3), g });
+  const hide = (sel) => tl.set(sel, { autoAlpha: 0 }, 0);
+  const show = (sel, a, b) => { hide(sel); tl.set(sel, { autoAlpha: 1 }, a); if (b != null) tl.set(sel, { autoAlpha: 0 }, b); };
+  const IN = (sel, t, o = {}) => { hide(sel); tl.fromTo(sel, { autoAlpha: 0, y: o.y ?? 40, scale: o.s ?? 0.94, filter: B(o.b ?? 14) }, { autoAlpha: 1, y: 0, scale: 1, filter: B(0), duration: o.d ?? 0.5, ease: o.e ?? "power3.out", immediateRender: false, stagger: o.st ?? 0 }, t); };
+  const OUT = (sel, t, d = 0.35) => tl.to(sel, { autoAlpha: 0, y: "-=40", filter: B(12), duration: d, ease: "power2.in" }, t);
+  const POP = (sel, t, d = 0.45) => { hide(sel); tl.fromTo(sel, { autoAlpha: 0, scale: 0.5, filter: B(8) }, { autoAlpha: 1, scale: 1, filter: B(0), duration: d, ease: "back.out(1.8)", immediateRender: false }, t); };
+  // la phrase entière arrive du flou au net, dérive lentement, le mot-clé est balayé en rouge, le mot fort grossit
+  const CARD = (id, a, b, o = {}) => { const el = "#" + id; hide(el);
+    tl.fromTo(el, { y: 40, scale: 0.94, filter: B(14), autoAlpha: 0 }, { y: 0, scale: 1, filter: B(0), autoAlpha: 1, duration: 0.5, ease: "power3.out", immediateRender: false }, a);
+    if (b - a > 1.1) tl.to(el, { y: -18, duration: b - a - 0.85, ease: "none" }, a + 0.5);
+    tl.to(el, { y: "-=36", filter: B(12), autoAlpha: 0, duration: 0.35, ease: "power2.in" }, b - 0.35);
+    if (o.k != null) { tl.fromTo(`${el} .k i`, { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power3.inOut", immediateRender: false }, o.k); SFX("tick", o.k, -20); }
+    if (o.it != null) tl.fromTo(`${el} .it`, { scale: 0.6, filter: B(10), opacity: 0 }, { scale: 1, filter: B(0), opacity: 1, duration: 0.45, ease: "power4.out", immediateRender: false }, o.it - 0.05);
+    SFX("pop", a, -24); };
+  const KEY = (sel, t) => { tl.fromTo(sel + " .k i, " + sel + ".k i", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power3.inOut", immediateRender: false }, t); SFX("tick", t, -20); };
+  const CHECK = (sel, t, k = 1) => { hide(sel); tl.fromTo(sel, { scale: 0, rotation: -40, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.4, ease: "back.out(2.4)", immediateRender: false }, t); SFX("ding" + k, t, -20); };
+
+  // ---------- repères de la voix ----------
+  const t0Mais = S("mais tu nas"), tStock = S("du stock", 1), tPasB = S("pas de boutique"), tBout = S("pas de boutique", 2), tWare = S("pas dentrepot", 1);
+  const tAlors = S("alors tu attends"), tAtt = S("tu attends", 1), tRien = S("et rien ne bouge", 1), tIl = S("il existe"), tFacon = S("une autre facon", 2), tDrop = S("le dropshipping", 1);
+  const tSimple = S("cest simple"), tVends = S("tu vends un produit"), tProd = S("un produit", 1), tPasChez = S("nas pas chez toi", 1), tChez = S("pas chez toi", 1);
+  const tComme = S("cest comme au marche"), tMarche = S("au marche", 1), tPrends = S("tu prends la commande"), tGros = S("le grossiste qui livre", 1), tLivre = S("qui livre", 1);
+  const tCa = S("ca marche en trois"), tTrois = S("en trois etapes", 1);
+  const tUn = S("un un client"), tCliCmd = S("un client commande", 2), tSur = S("sur ta boutique en ligne"), tDeux = S("deux tu passes"), tPasses = S("tu passes la commande"), tFour1 = S("chez ton fournisseur", 2);
+  const tTroisB = S("trois le fournisseur"), tEnvoie = S("le fournisseur envoie", 2), tDirect = S("directement"), tClient2 = S("chez le client", 2), tToi = S("toi tu gardes"), tDiff = S("la difference", 1);
+  const tPourq = S("et pourquoi"), tMada = S("depuis madagascar", 1), tParce = S("parce que"), tClients = S("tes clients", 1), tFr = S("en france au canada", 1), tCa2 = S("au canada", 1), tUs = S("aux etatsunis", 1);
+  const tTonF = S("ton fournisseur en chine"), tChine = S("en chine", 1), tColis = S("le colis ne passe"), tJamais = S("ne passe jamais", 2), tChezToi = S("par chez toi", 2);
+  const tFaut = S("il te faut"), tTel = S("un telephone", 1), tNet = S("internet"), tSer = S("du serieux", 1);
+  const tEx = S("un exemple"), tRep = S("tu reperes"), tLampe = S("petite lampe", 1), tPlait = S("qui plait en france", 3), tMets = S("tu la mets"), tSaB = S("sur ta boutique", 2, find("tu la mets"));
+  const tCliente = S("une cliente"), tLyon = S("a lyon", 1), tLenv = S("ton fournisseur lenvoie"), tElle = S("chez elle", 1), tEtToi = S("et toi tu nas rien"), tRienA = S("rien achete", 0), tAvance = S("a lavance", 1);
+  const tAtt2 = S("attention"), tCeN = S("ce nest pas de largent"), tFacile = S("largent facile", 1), tIlFaut = S("il faut le bon produit"), tBon = S("le bon produit", 1), tDes = S("et des clients bien servis", 1), tServis = S("bien servis", 1);
+  const tMaisP = S("mais la porte"), tPorte = S("la porte est", 1), tOuv = S("est ouverte", 1), tEnr = S("enregistre cette video"), tEnv = S("envoiela a un ami"), tEtSi = S("et si tu veux de laide"), tWa = S("sur whatsapp", 1), tLien = S("le lien est dans la bio"), tBio = S("la bio", 1);
+
+  // ---------- barre de progression : 6 chapitres, rouge = en cours, blanc = fini ----------
+  const CH = [["Le problème", 0], ["C'est quoi", tIl - 0.1], ["Les 3 étapes", tCa - 0.1], ["Depuis Madagascar", tPourq - 0.1], ["Un exemple", tEx - 0.1], ["À retenir", tAtt2 - 0.1]];
+  CH.forEach(([name, a], k) => { const b = k < CH.length - 1 ? CH[k + 1][1] : END, d = document.createElement("div"); d.className = "seg"; d.style.flex = String(b - a); d.innerHTML = "<b></b>"; $("segs").appendChild(d);
+    tl.fromTo(d.firstChild, { scaleX: 0 }, { scaleX: 1, duration: b - a, ease: "none", immediateRender: false }, Math.max(0.02, a));
+    if (k < CH.length - 1) tl.to(d.firstChild, { backgroundColor: "#ffffff", boxShadow: "0 0 0 rgba(0,0,0,0)", duration: 0.3 }, b);
+    const l = document.createElement("div"); l.innerHTML = `${k + 1} · ${name} <span>· 6 parties</span>`; $("lab").appendChild(l);
+    hide(l); tl.fromTo(l, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power3.out", immediateRender: false }, Math.max(0.3, a + 0.05));
+    if (k < CH.length - 1) tl.to(l, { autoAlpha: 0, y: -10, duration: 0.25 }, b - 0.1); });
+  tl.fromTo("#prog", { autoAlpha: 0, y: -20 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out", immediateRender: false }, 0.2);
+
+  // ---------- le personnage : vie continue (respiration, tête, clignements, bouche) calculée à chaque image ----------
+  const SYL = WORDS.map((w) => Math.max(1, Math.round(norm(w.text).length / 2.8)));
+  const mouthAt = (t) => { for (let i = 0; i < WORDS.length; i++) { const w = WORDS[i]; if (t < w.start) break; if (t <= w.end) {
+      const d = Math.max(0.08, w.end - w.start), u = (t - w.start) / d, env = Math.max(0, Math.min(1, u / 0.14, (1 - u) / 0.14));
+      return env * (0.35 + 0.65 * Math.abs(Math.sin(Math.PI * SYL[i] * u))); } } return 0; };
+  let sd = 11; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+  const BLINK = []; for (let t = 1.6; t < DURATION; t += 2.9 + rnd() * 1.6) BLINK.push(t);
+  const BOK = []; const COLS = [[255, 59, 59], [57, 182, 238], [140, 200, 255], [255, 120, 110]];
+  while (BOK.length < 24) { const s = 40 + rnd() * 190, x = rnd() * 1080, y = 220 + rnd() * 1560;
+    if (x > 150 && x < 930 && y > 880) continue; // zone du personnage : on la laisse dégagée
+    const [r, g, b] = COLS[Math.floor(rnd() * COLS.length)], o = 0.22 + rnd() * 0.33, i = document.createElement("i");
+    Object.assign(i.style, { left: x - s / 2 + "px", top: y - s / 2 + "px", width: s + "px", height: s + "px", filter: `blur(${2 + (s / 230) * 10}px)`,
+      background: `radial-gradient(circle, rgba(${r},${g},${b},.35) 0 58%, rgba(${r},${g},${b},.8) 66%, rgba(${r},${g},${b},0) 71%)` });
+    $("bokeh").appendChild(i); BOK.push({ i, o, a: 25 + rnd() * 45, p: 2.6 + rnd() * 2.4, ph: rnd() * 6.28 }); }
+  const life = (t) => {
+    const br = 0.5 + 0.5 * Math.sin((2 * Math.PI * t) / 3.2), sway = 1.8 * Math.sin((2 * Math.PI * t) / 4.8 + 0.6);
+    $("busteW").setAttribute("transform", `translate(310 1000) scale(1 ${(1 + 0.012 * br).toFixed(4)}) translate(-310 -1000)`);
+    $("teteW").setAttribute("transform", `translate(0 ${(-5 * br).toFixed(2)}) rotate(${sway.toFixed(2)} 310 520)`);
+    $("brasW").setAttribute("transform", `translate(0 ${(-3 * br).toFixed(2)})`); $("brasG").setAttribute("transform", `translate(0 ${(-3 * br).toFixed(2)})`);
+    let sy = 1; for (const b of BLINK) if (t >= b && t < b + 0.16) sy = 1 - 0.92 * Math.sin((Math.PI * (t - b)) / 0.16);
+    $("yeux").setAttribute("transform", `translate(0 372) scale(1 ${sy.toFixed(3)}) translate(0 -372)`);
+    const v = mouthAt(t); $("bouchev").setAttribute("ry", (6 + v * 13).toFixed(2)); $("dents").setAttribute("opacity", (0.25 + v * 0.7).toFixed(2));
+    for (const b of BOK) { const s = Math.sin((2 * Math.PI * t) / b.p + b.ph); b.i.style.transform = `translateY(${(-b.a * (0.5 + 0.5 * s)).toFixed(1)}px)`; b.i.style.opacity = (b.o * (0.7 + 0.3 * s)).toFixed(3); }
+    $("spin").style.transform = `rotate(${(t * 240) % 360}deg)`;
+  };
+  const LIFE = { t: 0 }; tl.fromTo(LIFE, { t: 0 }, { t: DURATION, duration: DURATION, ease: "none", immediateRender: false, onUpdate: () => life(LIFE.t) }, 0);
+
+  // poses (gestes lents, 0,85 s) et expressions
+  gsap.set("#bras", { svgOrigin: "470 612" }); gsap.set("#avantbras", { svgOrigin: "476 800" }); gsap.set("#tete", { svgOrigin: "310 520" });
+  const POSES = { rest: [0, 112, 0], explain: [0, 0, 0], explain2: [-4, -10, 0], point: [-16, -30, 1], count1: [-6, -14, 1], count2: [-6, -14, 2], count3: [-6, -14, 3] };
+  tl.set("#avantbras", { rotation: 112 }, 0); tl.set("#mainI", { opacity: 0 }, 0);
+  const POSE = (t, name, d = 0.85) => { const [sh, fa, n] = POSES[name];
+    tl.to("#bras", { rotation: sh, duration: d, ease: SIN }, t); tl.to("#avantbras", { rotation: fa, duration: d, ease: SIN }, t);
+    const m = t + d * 0.35; tl.set("#mainO", { opacity: n ? 0 : 1 }, m); tl.set("#mainI", { opacity: n ? 1 : 0 }, m);
+    if (n) { tl.set("#f1", { opacity: 1 }, m); tl.set("#f2", { opacity: n > 1 ? 1 : 0 }, m); tl.set("#f3", { opacity: n > 2 ? 1 : 0 }, m); } };
+  const BROWS = { neutral: ["M244 346 Q266 330 292 340", "M328 340 Q354 330 376 346"], worried: ["M244 348 Q268 336 292 330", "M328 330 Q352 336 376 348"],
+    raised: ["M244 334 Q266 316 292 328", "M328 328 Q354 316 376 334"], frown: ["M244 340 Q268 340 292 352", "M328 352 Q352 340 376 340"] };
+  const FACE = (t, name) => { tl.to("#sg", { attr: { d: BROWS[name][0] }, duration: 0.35, ease: SIN }, t); tl.to("#sd", { attr: { d: BROWS[name][1] }, duration: 0.35, ease: SIN }, t); };
+  const LOOK = (t, x, y, tilt = 0) => { tl.to("#pupilles", { x, y, duration: 0.4, ease: SIN }, t); tl.to("#tete", { rotation: tilt, duration: 0.8, ease: SIN }, t); };
+  const SMILE = (a, b) => { tl.to("#smile", { opacity: 0.85, duration: 0.3 }, a); tl.to("#smile", { opacity: 0, duration: 0.3 }, b); };
+  const PLACES = { center: [0, 0, 1], low: [0, 250, 0.8], left: [-250, 70, 0.9] };
+  const PLACE = (t, name, d = 0.9) => { const [x, y, s] = PLACES[name]; tl.to("#persoW", { x, y, scale: s, duration: d, ease: "power3.inOut" }, t); SFX("whip", t, -28); };
+
+  gsap.set(".pill, #nopkg", { xPercent: -50, yPercent: -50 }); gsap.set("#toast", { xPercent: -50 }); tl.set("#scene", { filter: "saturate(1) brightness(1)" }, 0);
+  // ---------- fond : poussée lente et parallaxe ----------
+  tl.fromTo("#cam", { scale: 1.0 }, { scale: 1.05, duration: DURATION, ease: "none", immediateRender: false }, 0);
+  tl.fromTo("#bg", { x: 0, scale: 1.04 }, { x: -40, scale: 1.1, duration: DURATION, ease: "none", immediateRender: false }, 0);
+  tl.fromTo("#bokeh", { x: 0 }, { x: -80, duration: DURATION, ease: "none", immediateRender: false }, 0);
+  tl.fromTo("#bgFull img", { scale: 1.15 }, { scale: 1.04, duration: 6, ease: "none", immediateRender: false }, 0);
+
+  // ========== 1 · LE PROBLÈME ==========
+  tl.fromTo("#stage", { filter: B(24) }, { filter: B(0), duration: 0.9, ease: "power2.out", immediateRender: false }, 0.02); SFX("swell", 0.02, -24);
+  tl.fromTo("#rule", { scaleY: 0 }, { scaleY: 1, duration: 1.2, ease: "power3.out", immediateRender: false }, 0.1);
+  tl.fromTo("#lnA", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power3.out", immediateRender: false }, 0.3);
+  IN("#tagA, #tagB, #hud .corner", 0.25, { y: 0, s: 1, b: 6 });
+  tl.to("#hud", { autoAlpha: 0, filter: B(8), duration: 0.5 }, tPasB - 0.2);
+  // mots en 3D : la caméra avance au milieu d'eux, puis les traverse
+  const P3 = { a1: [-170, -330, -260, 0.02], a2: [40, -140, -110, S("ton business") - 0.05], a3: [-150, 40, -320, S("en ligne") - 0.05] };
+  Object.entries(P3).forEach(([id, [x, y, z, t]]) => { tl.set("#" + id, { x, y, z, xPercent: -50, yPercent: -50 }, 0); show("#" + id, t);
+    tl.fromTo("#" + id, { opacity: 0, filter: B(18), scale: id === "a2" ? 1.5 : 0.8 }, { opacity: 1, filter: B(id === "a2" ? 0 : 2), scale: 1, duration: 0.5, ease: id === "a2" ? "power4.out" : "power3.out", immediateRender: false }, t);
+    SFX(id === "a2" ? "bloom" : "tick", t, id === "a2" ? -16 : -24); });
+  tl.fromTo("#cam3d", { z: -200, rotationY: 8 }, { z: 160, rotationY: -4, duration: t0Mais - 0.3, ease: "none", immediateRender: false }, 0);
+  tl.to("#cam3d", { z: 1250, duration: 0.55, ease: "power3.in" }, t0Mais - 0.35); tl.to("#k3d", { filter: B(10), opacity: 0, duration: 0.3 }, t0Mais - 0.05); SFX("whip", t0Mais - 0.3, -22);
+  const tB = S("ton business", 1); show("#streak1", tB - 0.1, t0Mais); tl.fromTo("#streak1", { scaleX: 0.1, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.5, ease: "power3.out", immediateRender: false }, tB - 0.1); tl.to("#streak1", { opacity: 0, scaleX: 1.3, duration: 0.4 }, t0Mais - 0.4);
+  const len = $("trailP").getTotalLength(); gsap.set("#trailP", { strokeDasharray: len, strokeDashoffset: len });
+  tl.fromTo("#trailP", { strokeDashoffset: len }, { strokeDashoffset: 0, duration: 1.4, ease: "power2.inOut", immediateRender: false }, tB - 0.1); tl.to("#trail", { opacity: 0, duration: 0.3 }, t0Mais - 0.1); SFX("shimmer", tB, -24);
+  // le rond : le personnage apparaît dans un cercle, puis le cercle s'ouvre en plein écran
+  show("#scene", t0Mais - 0.1);
+  tl.fromTo("#scene", { clipPath: "circle(0px at 540px 1190px)" }, { clipPath: "circle(344px at 540px 1190px)", duration: 0.6, ease: "back.out(1.6)", immediateRender: false }, t0Mais - 0.1);
+  tl.fromTo("#persoW", { scale: 1.12 }, { scale: 1, duration: 2.4, ease: "power1.out", immediateRender: false }, t0Mais - 0.1);
+  show("#ring", t0Mais, tPasB + 0.4); tl.fromTo("#ringC", { attr: { r: 300 }, opacity: 0 }, { attr: { r: 344 }, opacity: 0.8, duration: 0.6, ease: "back.out(1.6)", immediateRender: false }, t0Mais - 0.05);
+  tl.fromTo("#ringC", { rotation: 0 }, { rotation: 40, svgOrigin: "540 1190", duration: 3, ease: "none", immediateRender: false }, t0Mais);
+  tl.to("#ringC", { attr: { r: 1400 }, opacity: 0, duration: 0.7, ease: "power3.in" }, tPasB - 0.25);
+  tl.to("#scene", { clipPath: "circle(1400px at 540px 1190px)", duration: 0.75, ease: "power3.inOut" }, tPasB - 0.25); SFX("swell", tPasB - 0.25, -22);
+  CARD("c1", t0Mais + 0.05, tAlors - 0.15, { k: tStock });
+  POSE(t0Mais + 0.3, "explain"); FACE(S("dargent"), "worried");
+  [["#tStock", tStock], ["#tBout", tBout], ["#tWare", tWare]].forEach(([el, t]) => { IN(el, t - 0.1, { y: 30, s: 0.8, b: 10, d: 0.45 }); SFX("card", t - 0.1, -22);
+    const xp = $(el.slice(1)).querySelector(".x path"), L = xp.getTotalLength(); gsap.set(xp, { strokeDasharray: L, strokeDashoffset: L });
+    tl.fromTo(xp, { strokeDashoffset: L }, { strokeDashoffset: 0, duration: 0.35, ease: "power2.out", immediateRender: false }, t + 0.35); SFX("strike", t + 0.35, -20); });
+  OUT("#tStock, #tBout, #tWare", tAlors - 0.25);
+  CARD("c2", tAlors - 0.05, tIl - 0.15, { it: tAtt });
+  IN("#loader", tAtt, { y: 20, s: 0.85, b: 8 }); OUT("#loader", tIl - 0.2);
+  POSE(tAlors, "rest", 1.0); LOOK(tAtt, 0, 4, 3);
+  tl.to("#scene", { filter: "saturate(0.45) brightness(0.8)", duration: 1.2, ease: SIN }, tRien - 0.2);
+
+  // ========== la seule transition marquée : lueur rouge de lentille sur « dropshipping » ==========
+  CARD("c3", tIl - 0.05, tDrop - 0.3, { it: tFacon });
+  FACE(tIl, "neutral"); LOOK(tIl, 0, 0, 0);
+  show("#fx", tDrop - 0.35, tDrop + 0.45);
+  tl.fromTo("#fx", { opacity: 0, scale: 0.6, xPercent: -40 }, { opacity: 1, scale: 1.8, xPercent: 0, duration: 0.35, ease: "power2.in", immediateRender: false }, tDrop - 0.35);
+  tl.to("#fx", { opacity: 0, scale: 2.4, xPercent: 30, duration: 0.45, ease: "power2.out" }, tDrop);
+  tl.to("#scene", { filter: "saturate(1) brightness(1)", duration: 0.2 }, tDrop - 0.05); SFX("swell", tDrop - 0.35, -18); SFX("bloom", tDrop, -14);
+  hide("#giant"); tl.fromTo("#giant", { autoAlpha: 0, scale: 1.6, filter: B(18) }, { autoAlpha: 1, scale: 1, filter: B(0), duration: 0.45, ease: "power4.out", immediateRender: false }, tDrop - 0.02);
+  tl.to("#giant", { scale: 1.06, duration: tVends - tDrop - 0.4, ease: "none" }, tDrop + 0.45); OUT("#giant", tVends - 0.3);
+  show("#streak2", tDrop - 0.05, tVends); tl.fromTo("#streak2", { scaleX: 0.1, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.5, ease: "power3.out", immediateRender: false }, tDrop - 0.05); tl.to("#streak2", { opacity: 0, scaleX: 1.3, duration: 0.5 }, tSimple);
+  tl.to("#persoW", { filter: B(3), duration: 0.3 }, tDrop); tl.to("#persoW", { filter: B(0), duration: 0.4 }, tSimple - 0.1);
+  POSE(tDrop + 0.1, "explain"); FACE(tDrop, "raised"); SMILE(tDrop + 0.2, tVends - 0.1);
+
+  // ========== 2 · C'EST QUOI ==========
+  FACE(tVends, "neutral");
+  CARD("c4", tVends - 0.05, tComme - 0.15, { k: tProd, it: tPasChez });
+  hide("#boxP"); tl.fromTo("#boxP", { autoAlpha: 0, y: 40, scale: 0.4, rotation: -14 }, { autoAlpha: 1, y: 0, scale: 1, rotation: 0, duration: 0.5, ease: "back.out(1.8)", immediateRender: false }, tProd - 0.05); SFX("pop", tProd, -20);
+  tl.to("#boxP", { y: -14, duration: 0.8, ease: SIN, yoyo: true, repeat: 1 }, tProd + 0.5); OUT("#boxP", tComme - 0.2);
+  IN("#house", tChez - 0.15, { y: 30, s: 0.8 }); SFX("card", tChez - 0.1, -22); gsap.set("#house circle, #house path:last-child", { svgOrigin: "96 30" }); tl.fromTo("#house circle, #house path:last-child", { scale: 0 }, { scale: 1, duration: 0.35, ease: "back.out(2.6)", immediateRender: false }, tChez + 0.3); SFX("error", tChez + 0.3, -26);
+  OUT("#house", tComme - 0.2);
+  CARD("c5", tComme - 0.05, E("qui livre") + 0.25, { it: tMarche });
+  POSE(tComme, "point"); POSE(tPrends, "explain");
+  hide("#awn"); tl.fromTo("#awn", { autoAlpha: 0, y: -60, scaleY: 0.3, transformOrigin: "50% 0" }, { autoAlpha: 1, y: 0, scaleY: 1, duration: 0.55, ease: "back.out(1.6)", immediateRender: false }, tMarche - 0.05); SFX("card", tMarche, -22);
+  IN("#pToi", tPrends - 0.05, { y: 40, s: 0.85 }); SFX("pop", tPrends, -22);
+  IN("#mArrow", tGros - 0.4, { y: 0, s: 0.6, b: 6, d: 0.35 });
+  IN("#pGros", tGros - 0.1, { y: 40, s: 0.85 }); KEY("#pGros", tGros);
+  tl.to("#truckM", { x: 26, duration: 0.25, ease: "power2.out", yoyo: true, repeat: 3 }, tLivre - 0.05); SFX("whip", tLivre, -22);
+  OUT("#awn, #pToi, #pGros, #mArrow", E("qui livre") + 0.1);
+
+  // ========== 3 · LES 3 ÉTAPES ==========
+  CARD("c6", tCa - 0.05, tUn - 0.1, { it: tTrois });
+  POSE(tCa, "count3"); PLACE(tCa + 0.3, "low");
+  hide("#steps"); tl.fromTo("#steps", { autoAlpha: 0, y: 120 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: "power3.out", immediateRender: false }, tUn - 0.35);
+  tl.fromTo("#plan", { rotationX: 26, rotationY: -10 }, { rotationX: 10, rotationY: 6, duration: tPourq - tUn, ease: "none", immediateRender: false }, tUn - 0.35);
+  IN("#nCli", tUn - 0.2, { y: 40, s: 0.8 }); IN("#nBout", tUn - 0.05, { y: 40, s: 0.8 }); IN("#nFou", tUn + 0.1, { y: 40, s: 0.8 }); SFX("card", tUn - 0.2, -22);
+  [["A1", tCliCmd - 0.1], ["A2", tPasses], ["A3", tEnvoie - 0.1]].forEach(([id, t]) => { const p = $(id), L = p.getTotalLength(); gsap.set(p, { strokeDasharray: L, strokeDashoffset: L });
+    tl.fromTo(p, { strokeDashoffset: L }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut", immediateRender: false }, t); });
+  const mid = (id) => { const p = $(id), q = p.getPointAtLength(p.getTotalLength() / 2); return q; };
+  [["b1", "A1"], ["b2", "A2"], ["b3", "A3"]].forEach(([b, a]) => { const q = mid(a); $(b).style.left = q.x + (a === "A3" ? 0 : a === "A1" ? -40 : 40) + "px"; $(b).style.top = q.y + (a === "A3" ? 40 : -30) + "px"; });
+  POP("#b1", tUn); POP("#b2", tDeux); POP("#b3", tTroisB);
+  const along = (tok, path, a, d) => { const p = $(path), L = p.getTotalLength(), o = { u: 0 }; const el = $(tok);
+    show(el, a, a + d + 0.3); tl.fromTo(el.firstElementChild, { scale: 0.3 }, { scale: 1, duration: 0.3, ease: "back.out(2)", immediateRender: false }, a);
+    tl.fromTo(o, { u: 0 }, { u: 1, duration: d, ease: "power2.inOut", immediateRender: false, onUpdate: () => { const q = p.getPointAtLength(o.u * L); el.style.transform = `translate(${q.x - 46}px, ${q.y - 46}px)`; } }, a);
+    tl.to(el.firstElementChild, { scale: 0.3, duration: 0.25, ease: "power2.in" }, a + d + 0.05); };
+  const pulse = (sel, t, k) => { tl.fromTo(sel, { scale: 1 }, { scale: 1.12, duration: 0.18, yoyo: true, repeat: 1, ease: SIN, immediateRender: false }, t); CHECK(`#b${k} svg`, t, k - 1); };
+  CARD("cap1", tUn - 0.05, tDeux - 0.15); POSE(tUn, "count1");
+  along("tok1", "A1", tCliCmd + 0.1, 1.0); pulse("#nBout", tCliCmd + 1.15, 1);
+  CARD("cap2", tDeux - 0.05, tTroisB - 0.15); POSE(tDeux, "count2");
+  along("tok2", "A2", tPasses + 0.3, 1.0); pulse("#nFou", tPasses + 1.35, 2);
+  CARD("cap3", tTroisB - 0.05, tToi - 0.15, { k: tDirect }); POSE(tTroisB, "count3");
+  along("tok3", "A3", tEnvoie + 0.2, 1.4); pulse("#nCli", tEnvoie + 1.65, 3);
+  CARD("cap4", tToi - 0.05, tPourq - 0.15, { it: tDiff }); POSE(tToi, "explain"); SMILE(tDiff, tPourq - 0.1);
+  for (let i = 0; i < 10; i++) { const c = document.createElement("div"); c.className = "coin"; $("coins").appendChild(c); const t = tDiff - 0.1 + i * 0.06, x0 = 540 + (i - 4.5) * 46;
+    show(c, t, t + 0.9); tl.fromTo(c, { x: x0, y: -60, scale: 0.6 }, { keyframes: [{ x: (x0 + 540) / 2, y: 60, scale: 1, duration: 0.35, ease: "power2.out" }, { x: 540, y: 170, scale: 0.4, duration: 0.3, ease: "power2.in" }], immediateRender: false }, t); }
+  SFX("coins", tDiff, -14);
+  tl.fromTo("#nBout", { boxShadow: "0 0 40px rgba(57,182,238,.3)" }, { boxShadow: "0 0 80px 10px rgba(255,201,77,.7)", duration: 0.3, yoyo: true, repeat: 1, immediateRender: false }, tDiff + 0.5);
+  tl.to("#steps", { autoAlpha: 0, y: 60, filter: B(12), duration: 0.4, ease: "power2.in" }, tPourq - 0.3);
+
+  // ========== 4 · DEPUIS MADAGASCAR ==========
+  PLACE(tPourq - 0.3, "center"); POSE(tPourq - 0.2, "rest"); FACE(tPourq, "raised"); LOOK(tPourq + 0.2, -4, -4, -4);
+  CARD("c7", tPourq - 0.05, tParce - 0.15, { it: tMada });
+  PLACE(tParce - 0.2, "low"); FACE(tParce, "neutral"); LOOK(tParce, 0, -4, 0); POSE(tParce + 0.2, "explain");
+  // carte du monde dessinée en code (polygones simplifiés, projection équirectangulaire)
+  const PX = (lon, lat) => [((lon + 180) / 360) * 1000, ((84 - lat) / 142) * 394];
+  const LAND = [
+    [[-168,65],[-162,70],[-155,71],[-141,70],[-128,70],[-115,69],[-95,72],[-85,70],[-82,67],[-89,64],[-94,59],[-92,57],[-82,55],[-79,52],[-77,57],[-78,62],[-72,62],[-65,60],[-62,57],[-58,53],[-56,50],[-60,47],[-64,45],[-70,43],[-70,41],[-74,40],[-76,37],[-76,35],[-80,32],[-81,29],[-80,25],[-82,27],[-83,29],[-85,30],[-89,30],[-94,29],[-97,27],[-97,23],[-96,19],[-91,19],[-90,21],[-87,21],[-88,16],[-84,15],[-83,11],[-80,9],[-78,8],[-80,7],[-83,8],[-86,12],[-88,13],[-92,15],[-97,16],[-105,20],[-109,24],[-113,30],[-117,33],[-120,35],[-122,37],[-124,40],[-124,46],[-125,49],[-128,51],[-133,55],[-137,58],[-142,60],[-148,60],[-152,59],[-158,57],[-164,55],[-158,59],[-162,60],[-166,62]],
+    [[-73,78],[-60,82],[-40,83],[-22,80],[-18,75],[-22,70],[-32,68],[-42,61],[-48,61],[-52,65],[-54,70],[-58,75],[-68,77]],
+    [[-78,8],[-72,12],[-62,11],[-55,6],[-50,2],[-48,-1],[-40,-3],[-35,-7],[-38,-13],[-40,-20],[-44,-23],[-48,-26],[-50,-31],[-53,-34],[-58,-38],[-62,-39],[-65,-42],[-66,-47],[-69,-51],[-68,-55],[-72,-53],[-75,-47],[-73,-40],[-71,-30],[-70,-20],[-75,-15],[-77,-12],[-81,-5],[-80,0],[-78,2],[-77,7]],
+    [[-9,37],[-9,43],[-1,44],[-4,48],[2,51],[5,53],[9,54],[8,57],[11,59],[5,61],[7,63],[14,68],[20,70],[28,71],[33,69],[41,67],[44,68],[54,69],[60,70],[69,73],[80,73],[88,76],[100,78],[112,76],[122,73],[132,71],[142,72],[152,71],[162,70],[170,70],[180,68],[178,64],[172,61],[163,59],[160,55],[156,51],[156,58],[150,59],[142,59],[137,54],[141,52],[140,47],[135,43],[130,42],[129,37],[126,35],[126,38],[121,40],[118,38],[122,31],[120,25],[115,22],[110,21],[108,17],[109,12],[106,9],[103,10],[100,13],[99,8],[101,3],[104,1],[102,5],[98,9],[98,16],[94,17],[92,22],[88,22],[86,20],[80,15],[80,10],[77,8],[73,16],[72,21],[68,23],[62,25],[57,25],[56,27],[52,28],[50,30],[48,30],[50,26],[52,24],[56,24],[58,23],[59,22],[57,18],[52,16],[45,13],[43,13],[39,21],[35,28],[34,31],[35,33],[36,36],[34,36],[28,37],[26,39],[26,41],[23,40],[23,37],[21,38],[19,41],[16,41],[18,40],[16,38],[15,40],[12,42],[10,44],[7,44],[3,43],[3,42],[0,39],[-1,37],[-5,36]],
+    [[-6,36],[-1,35],[10,37],[11,33],[20,31],[25,32],[32,31],[34,28],[37,22],[39,16],[43,12],[51,12],[51,10],[48,5],[43,-1],[40,-5],[40,-10],[40,-15],[35,-20],[35,-24],[33,-27],[30,-31],[25,-34],[20,-35],[18,-32],[15,-27],[12,-18],[13,-12],[9,-2],[9,4],[5,5],[-2,5],[-8,4],[-13,8],[-17,14],[-17,21],[-13,27],[-10,30],[-9,33]],
+    [[49.3,-12],[50.5,-15.5],[49.5,-18],[47.2,-25],[45,-25.4],[43.6,-22],[44.2,-17],[46.5,-15.7],[48,-13.6]],
+    [[114,-22],[116,-20],[122,-17],[126,-14],[130,-12],[136,-12],[137,-16],[140,-17],[142,-11],[144,-14],[146,-19],[150,-22],[153,-26],[153,-30],[150,-37],[146,-39],[140,-38],[137,-35],[132,-32],[124,-34],[116,-35],[115,-31],[114,-26]],
+    [[-5.7,50],[1.4,51.2],[0.2,52.8],[-1.6,55],[-2,57],[-3.2,58.6],[-5,58.6],[-6.2,56.5],[-4.8,55],[-3.2,54],[-4.6,52.8],[-5.2,51.7],[-3,51.4]],
+    [[130,31],[131.5,34],[135,34.5],[140,36],[141,38],[141.5,41],[140,40],[139,38],[137,37],[133,35.5],[130.5,33.5]],
+    [[95,5],[98,4],[104,-2],[106,-6],[102,-4],[97,2]], [[109,1],[117,7],[119,1],[116,-4],[110,-3]], [[131,-1],[141,-3],[150,-10],[141,-9],[134,-4]]];
+  const NS = "http://www.w3.org/2000/svg", mk = (tag, at) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); return e; };
+  for (let lon = -180; lon <= 180; lon += 30) { const [x] = PX(lon, 0); $("grat").appendChild(mk("path", { d: `M${x} 0 L${x} 394`, stroke: "rgba(255,255,255,.07)", "stroke-width": 2 })); }
+  for (let lat = 60; lat >= -50; lat -= 30) { const [, y] = PX(0, lat); $("grat").appendChild(mk("path", { d: `M0 ${y} L1000 ${y}`, stroke: "rgba(255,255,255,.07)", "stroke-width": 2 })); }
+  LAND.forEach((poly) => { const d = poly.map(([a, b], k) => (k ? "L" : "M") + PX(a, b).map((v) => v.toFixed(1)).join(" ")).join(" ") + " Z";
+    $("land").appendChild(mk("path", { d, fill: "rgba(57,182,238,.07)", stroke: "rgba(127,214,255,.35)", "stroke-width": 1.5, "stroke-linejoin": "round" }));
+    $("land").appendChild(mk("path", { d, fill: "url(#dots)", opacity: 0.6 })); });
+  const PINS = { fr: [2.3, 46.6, "France", "", -100, -62], ca: [-100, 57, "Canada", "", -60, -66], us: [-98, 39, "États-Unis", "", -40, 22], cn: [104, 34, "Chine", "red", -40, -64], mg: [47, -19, "Toi", "me", 24, -18] };
+  Object.entries(PINS).forEach(([id, [lon, lat, name, cls, lx, ly]]) => { const [x, y] = PX(lon, lat), p = document.createElement("div"); p.className = "pin " + cls; p.id = "pin-" + id;
+    p.style.left = x + "px"; p.style.top = y + "px"; p.innerHTML = `<div class="dot"></div><div class="pl" style="left:${lx}px;top:${ly}px">${name}</div>`; $("pins").appendChild(p); });
+  const arc = (a, b, h) => { const [x1, y1] = PX(...a), [x2, y2] = PX(...b), mx = (x1 + x2) / 2, my = (y1 + y2) / 2 - h; return `M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}`; };
+  const ARCS = { fr: arc([104, 34], [2.3, 46.6], 110), ca: arc([104, 34], [-100, 57], 210), us: arc([104, 34], [-98, 39], 170) };
+  Object.entries(ARCS).forEach(([id, d]) => $("arcs").appendChild(mk("path", { id: "arc-" + id, d, fill: "none", stroke: "#FF3B3B", "stroke-width": 4, "stroke-linecap": "round", filter: "url(#glow)", opacity: 0.9 })));
+  hide("#map"); tl.fromTo("#map", { autoAlpha: 0, y: 80, filter: B(12) }, { autoAlpha: 1, y: 0, filter: B(0), duration: 0.7, ease: "power3.out", immediateRender: false }, tParce - 0.1);
+  tl.fromTo("#mapPlane", { rotationX: 34, rotationY: -8, scale: 1.02 }, { rotationX: 16, rotationY: 6, scale: 1.12, duration: tFaut - tParce, ease: "none", immediateRender: false }, tParce - 0.1);
+  hide("#legend"); tl.set("#legend", { autoAlpha: 1 }, tParce - 0.1);
+  const pinIn = (id, t, k = "pop") => { const el = "#pin-" + id; show(el, t); tl.fromTo(el + " .dot", { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(2.4)", immediateRender: false }, t);
+    tl.fromTo(el + " .pl", { autoAlpha: 0, y: 10, filter: B(6) }, { autoAlpha: 1, y: 0, filter: B(0), duration: 0.35, ease: "power3.out", immediateRender: false }, t + 0.08); SFX(k, t, -22); };
+  pinIn("mg", tParce + 0.2); IN("#chMe", tParce + 0.2, { y: 10, s: 0.8, b: 6, d: 0.35 });
+  IN("#chCli", tClients - 0.05, { y: 10, s: 0.8, b: 6, d: 0.35 }); pinIn("fr", tFr); pinIn("ca", tCa2); pinIn("us", tUs);
+  IN("#chFou", S("ton fournisseur en chine", 1) - 0.05, { y: 10, s: 0.8, b: 6, d: 0.35 }); pinIn("cn", tChine - 0.05, "ding0");
+  ["fr", "ca", "us"].forEach((id, k) => { const p = $("arc-" + id), L = p.getTotalLength(); gsap.set(p, { strokeDasharray: L, strokeDashoffset: L });
+    tl.fromTo(p, { strokeDashoffset: L }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut", immediateRender: false }, tChine + 0.15 + k * 0.15); });
+  SFX("shimmer", tChine + 0.15, -24);
+  // le colis part de Chine vers la France sans passer par Madagascar
+  (() => { const p = $("arc-fr"), L = p.getTotalLength(), o = { u: 0 }, el = $("tokMap"); show(el, tColis, tChezToi + 0.6);
+    tl.fromTo(el.firstElementChild, { scale: 0.3 }, { scale: 1, duration: 0.3, ease: "back.out(2)", immediateRender: false }, tColis);
+    tl.fromTo(o, { u: 0 }, { u: 1, duration: 1.3, ease: "power2.inOut", immediateRender: false, onUpdate: () => { const q = p.getPointAtLength(o.u * L); el.style.transform = `translate(${q.x - 35}px, ${q.y - 35}px)`; } }, tColis);
+    SFX("whip", tColis, -22); })();
+  POP("#nopkg", tJamais - 0.05); SFX("error", tJamais, -24);
+  tl.fromTo("#pin-mg .dot", { boxShadow: "0 0 0 6px rgba(255,255,255,.22), 0 0 26px rgba(255,255,255,.9)" }, { boxShadow: "0 0 0 26px rgba(255,255,255,0), 0 0 40px rgba(255,255,255,1)", duration: 0.6, repeat: 1, immediateRender: false }, tJamais);
+  OUT("#map, #legend, #nopkg", tFaut - 0.25, 0.4);
+  // ce qu'il faut
+  PLACE(tFaut - 0.3, "center"); LOOK(tFaut, 0, 0, 0);
+  IN("#needTag", tFaut - 0.05, { y: 10, s: 1, b: 6 });
+  [["#n1", tTel, "count1", 0], ["#n2", tNet, "count2", 1], ["#n3", tSer - 0.05, "count3", 2]].forEach(([el, t, pose, k]) => { IN(el, t - 0.1, { y: 30, s: 0.85, b: 10 }); SFX("pop", t - 0.1, -22); POSE(t - 0.25, pose); CHECK(el + " .ck", t + 0.35, k); });
+  KEY("#n3", tSer + 0.05);
+  OUT("#needTag, #n1, #n2, #n3", tEx - 0.3);
+
+  // ========== 5 · UN EXEMPLE ==========
+  CARD("c8", tEx - 0.05, tRep - 0.05, { it: S("un exemple", 1) });
+  POSE(tEx, "point"); PLACE(tEx + 0.3, "left"); LOOK(tEx + 0.4, 4, 0, 2);
+  hide("#phone"); tl.fromTo("#phone", { autoAlpha: 0, x: 260, rotation: 8, filter: B(14) }, { autoAlpha: 1, x: 0, rotation: 0, filter: B(0), duration: 0.7, ease: "power3.out", immediateRender: false }, tRep - 0.25); SFX("card", tRep - 0.25, -20);
+  tl.to("#phone", { y: -16, duration: 1.6, ease: SIN, yoyo: true, repeat: 4 }, tRep + 0.5);
+  POSE(tRep, "explain");
+  show("#scrA", tRep - 0.2, tMets + 0.1); tl.fromTo("#lampA", { scale: 0.85, filter: B(8) }, { scale: 1, filter: B(0), duration: 0.5, ease: "back.out(1.6)", immediateRender: false }, tLampe - 0.1); SFX("pop", tLampe, -22);
+  (() => { const p = $("trendP"), L = p.getTotalLength(); gsap.set(p, { strokeDasharray: L, strokeDashoffset: L }); tl.fromTo(p, { strokeDashoffset: L }, { strokeDashoffset: 0, duration: 0.9, ease: "power2.out", immediateRender: false }, tPlait - 0.4); })();
+  SFX("reveal", tPlait, -24);
+  hide("#scrB"); tl.fromTo("#scrB", { autoAlpha: 0, x: 60 }, { autoAlpha: 1, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, tMets - 0.05); tl.set("#scrB", { autoAlpha: 0 }, tLenv);
+  hide("#toast"); tl.fromTo("#toast", { autoAlpha: 0, y: 20, scale: 0.7 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(2)", immediateRender: false }, tSaB); SFX("ding1", tSaB, -20); tl.to("#toast", { autoAlpha: 0, duration: 0.3 }, tCliente + 0.4);
+  hide("#notif"); tl.fromTo("#notif", { autoAlpha: 0, y: -120 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "back.out(1.4)", immediateRender: false }, tCliente - 0.05); SFX("notif", tCliente, -16);
+  tl.to("#notif", { autoAlpha: 0, y: -120, duration: 0.4, ease: "power2.in" }, tLenv - 0.2);
+  hide("#scrC"); tl.fromTo("#scrC", { autoAlpha: 0, x: 60 }, { autoAlpha: 1, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, tLenv);
+  tl.fromTo("#tfill", { scaleY: 0 }, { scaleY: 1, duration: 1.4, ease: "power2.inOut", immediateRender: false }, tLenv + 0.4);
+  tl.fromTo("#truckT", { y: 0 }, { y: 380, duration: 1.4, ease: "power2.inOut", immediateRender: false }, tLenv + 0.4); SFX("whip", tLenv + 0.4, -24);
+  tl.to("#lyonC", { borderColor: "#39B6EE", backgroundColor: "#1d4f7a", duration: 0.3 }, tElle + 0.3); SFX("ding2", tElle + 0.3, -20);
+  IN("#zero", tRienA - 0.1, { y: 30, s: 0.8 }); SFX("pop", tRienA, -20); CHECK("#zero .ck", tAvance, 1);
+  POSE(tEtToi, "explain2"); LOOK(tEtToi, 0, 0, 0); SMILE(tAvance + 0.3, tAtt2 - 0.1);
+  tl.to("#phone", { autoAlpha: 0, x: 200, filter: B(12), duration: 0.45, ease: "power2.in" }, tAtt2 - 0.35); OUT("#zero", tAtt2 - 0.35);
+
+  // ========== 6 · À RETENIR ==========
+  PLACE(tAtt2 - 0.35, "center"); POSE(tAtt2 - 0.1, "point"); FACE(tAtt2, "frown");
+  POP("#warn", tAtt2 - 0.05, 0.4); SFX("error", tAtt2, -22); tl.to("#warn", { scale: 1.08, duration: 0.3, yoyo: true, repeat: 3, ease: SIN }, tAtt2 + 0.4); OUT("#warn", tIlFaut - 0.2);
+  CARD("c9", tCeN - 0.05, tIlFaut - 0.1, { it: tFacile });
+  FACE(tIlFaut, "neutral");
+  [["#r1", tBon, "count1", 1], ["#r2", tDes, "count2", 2]].forEach(([el, t, pose, k]) => { IN(el, t - 0.1, { y: 30, s: 0.85, b: 10 }); SFX("pop", t - 0.1, -22); POSE(t - 0.25, pose); CHECK(el + " .ck", t + 0.45, k); });
+  OUT("#r1, #r2", tMaisP - 0.2);
+  CARD("c10", tMaisP - 0.05, tEnr - 0.15, { it: tOuv });
+  POSE(tMaisP, "explain"); FACE(tPorte, "raised"); SMILE(tOuv, tEnr);
+  IN("#door", tMaisP + 0.05, { y: 40, s: 0.9 });
+  tl.fromTo("#door .panel", { rotationY: 0 }, { rotationY: -76, duration: 0.9, ease: "power3.inOut", immediateRender: false }, tPorte); SFX("swell", tPorte, -20); SFX("shimmer", tOuv, -20);
+  hide("#rays"); tl.fromTo("#rays", { autoAlpha: 0, scaleY: 0.2 }, { autoAlpha: 1, scaleY: 1, duration: 0.8, ease: "power2.out", immediateRender: false }, tPorte + 0.3);
+  tl.fromTo("#door .lit", { filter: "brightness(.6)" }, { filter: "brightness(1.25)", duration: 0.8, immediateRender: false }, tPorte + 0.2);
+  OUT("#door, #rays", tEnr - 0.2);
+  FACE(tEnr, "neutral");
+  IN("#cta1", tEnr - 0.1, { y: 30, s: 0.85 }); SFX("pop", tEnr, -20); POSE(tEnr - 0.2, "point");
+  tl.to("#bmkP", { attr: { fill: "rgba(127,214,255,1)" }, duration: 0.25 }, S("cette video", 1)); tl.fromTo("#cta1 .pi", { scale: 1 }, { scale: 1.2, duration: 0.15, yoyo: true, repeat: 1, immediateRender: false }, S("cette video", 1)); SFX("lock", S("cette video", 1), -20);
+  IN("#cta2", tEnv - 0.1, { y: 30, s: 0.85 }); SFX("pop", tEnv, -20); POSE(tEnv, "explain");
+  tl.fromTo("#shr", { x: 0 }, { x: 10, duration: 0.2, yoyo: true, repeat: 3, ease: SIN, immediateRender: false }, tEnv + 0.4);
+  IN("#wa", tEtSi + 0.3, { y: 30, s: 0.85 }); SFX("notif", tWa, -20); POSE(tEtSi + 0.2, "explain2");
+  tl.fromTo("#wa", { boxShadow: "0 0 40px rgba(37,211,102,.35)" }, { boxShadow: "0 0 80px 10px rgba(37,211,102,.7)", duration: 0.3, yoyo: true, repeat: 1, immediateRender: false }, tWa);
+  tl.fromTo("#bio", { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: false }, tLien); tl.set("#bio", { opacity: 0 }, 0);
+  POP("#upArrow", tLien); tl.to("#upArrow", { y: -24, duration: 0.35, yoyo: true, repeat: 3, ease: SIN }, tLien + 0.4); POSE(tLien - 0.1, "point"); SMILE(tBio + 0.3, DURATION);
+  tl.to("#stage", { filter: B(16), opacity: 0, duration: 0.7, ease: "power2.in" }, DURATION - 0.7);
+
+  // ---------- sous-titres courts : seulement quand aucun grand texte ne dit déjà la même chose ----------
+  const ON = [[tSimple - 0.05, tVends - 0.2], [tRep - 0.1, tEtToi - 0.1]];
+  const chunks = []; let cur = [];
+  WORDS.forEach((w, i) => { const on = ON.some(([a, b]) => w.start >= a && w.start < b);
+    if (!on) { if (cur.length) chunks.push(cur), (cur = []); return; }
+    cur.push(i); if (cur.length >= 3 || /[,.…?!:]$/.test(w.text)) chunks.push(cur), (cur = []); });
+  if (cur.length) chunks.push(cur);
+  chunks.forEach((c, k) => { const d = document.createElement("div"); d.className = "sub"; d.textContent = c.map((i) => WORDS[i].text).join(" "); $("subs").appendChild(d);
+    const a = WORDS[c[0]].start - 0.05, nx = chunks[k + 1] ? WORDS[chunks[k + 1][0]].start - 0.05 : DURATION, b = Math.min(nx, WORDS[c[c.length - 1]].end + 0.4);
+    show(d, a, b); tl.fromTo(d, { y: 16, opacity: 0.2, filter: B(6) }, { y: 0, opacity: 1, filter: B(0), duration: 0.16, ease: "power2.out", immediateRender: false }, a); });
+
+  tl.set({}, {}, DURATION);
+  window.__duration = DURATION; window.__sfx = CUES.sort((a, b) => a.t - b.t);
+  // window.__seek ne doit rien renvoyer (sinon le rendu essaie de recopier la timeline et bloque)
+  window.__seek = (t) => { tl.seek(t, false); };
+  window.__ready = Promise.all([document.fonts.ready, ...[...document.images].map((im) => (im.complete ? 0 : new Promise((r) => (im.onload = im.onerror = r))))]).then(() => { window.__seek(0); return true; });
+  if (!new URLSearchParams(location.search).has("render")) { const au = new Audio("assets/audio/voix-final.mp3"); window.__ready.then(() => { document.body.onclick = () => { au.currentTime = 0; au.play(); tl.play(0); }; }); }
+})();
+</script>
+</body>
+</html>

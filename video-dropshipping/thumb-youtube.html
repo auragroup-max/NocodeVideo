@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature YouTube</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  :root { --red:#FF2D2D; --cyan:#39B6EE; }
+  html, body { margin:0; background:#000; }
+  #t { position:relative; width:1280px; height:720px; overflow:hidden; background:#060b19; color:#fff; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; }
+  .bg { position:absolute; left:-40px; top:-380px; width:1360px; height:1480px; object-fit:cover; filter:blur(10px) brightness(.85); }
+  .light { position:absolute; inset:0; mix-blend-mode:screen; background:radial-gradient(45% 60% at 0% 60%, rgba(57,182,238,.22), transparent 70%), radial-gradient(45% 60% at 100% 70%, rgba(232,36,43,.3), transparent 70%); }
+  .halo { position:absolute; left:640px; top:120px; width:700px; height:700px; border-radius:50%; background:radial-gradient(closest-side, rgba(2,6,16,.6), rgba(2,6,16,0)); }
+  #perso { position:absolute; left:610px; top:30px; width:714px; }
+  .tag { position:absolute; left:80px; top:150px; font-weight:700; font-size:22px; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,255,255,.75); }
+  .tag::before { content:""; display:inline-block; width:50px; height:2px; margin-right:16px; vertical-align:middle; background:rgba(127,214,255,.7); }
+  h1 { position:absolute; left:74px; top:196px; margin:0; font-weight:800; letter-spacing:-0.05em; line-height:1.02; text-shadow:0 8px 40px rgba(0,0,0,.6); }
+  h1 .a { display:block; font-size:100px; }
+  h1 .b { display:block; font-size:132px; }
+  .k { position:relative; display:inline-block; isolation:isolate; padding:0 .06em; }
+  .k i { position:absolute; left:-.06em; right:-.06em; top:.1em; bottom:.04em; z-index:-1; border-radius:.08em; background:var(--red); box-shadow:0 0 50px rgba(255,45,45,.8); }
+  .sub { position:absolute; left:80px; top:500px; font-weight:700; font-size:48px; letter-spacing:-0.04em; text-shadow:0 6px 30px rgba(0,0,0,.6); }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; font-size:1.45em; letter-spacing:-0.02em; color:var(--red); text-shadow:0 0 40px rgba(255,45,45,.6); }
+  .vig { position:absolute; inset:0; background:radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(2,5,14,.65) 100%); }
+</style>
+</head>
+<body>
+<div id="t">
+  <img class="bg" src="assets/fond-nuit-bleue.jpg" alt="">
+  <div class="light"></div>
+  <div class="halo"></div>
+  <img id="perso" src="assets/thumb-perso.png" alt="">
+  <div class="vig"></div>
+  <div class="tag">Le dropshipping</div>
+  <h1><span class="a">Vendre sans</span><span class="b"><span class="k"><i></i>stock</span> ?</span></h1>
+  <div class="sub">expliqué <span class="it">simplement.</span></div>
+</div>
+</body>
+</html>

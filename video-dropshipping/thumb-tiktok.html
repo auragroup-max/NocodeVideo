@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature TikTok</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  :root { --red:#FF2D2D; --cyan:#39B6EE; }
+  html, body { margin:0; background:#000; }
+  #t { position:relative; width:1080px; height:1920px; overflow:hidden; background:#060b19; color:#fff; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; }
+  .bg { position:absolute; left:-60px; top:-60px; width:1200px; height:2040px; object-fit:cover; filter:blur(10px) brightness(.85); }
+  .light { position:absolute; inset:0; mix-blend-mode:screen; background:radial-gradient(55% 35% at 0% 62%, rgba(57,182,238,.22), transparent 70%), radial-gradient(50% 35% at 100% 66%, rgba(232,36,43,.26), transparent 70%); }
+  .bok { position:absolute; border-radius:50%; mix-blend-mode:screen; }
+  #perso { position:absolute; left:-40px; top:760px; width:1160px; }
+  .halo { position:absolute; left:40px; top:1000px; width:1000px; height:1000px; border-radius:50%; background:radial-gradient(closest-side, rgba(2,6,16,.6), rgba(2,6,16,0)); }
+  .tag { position:absolute; left:0; right:0; top:300px; text-align:center; font-weight:700; font-size:30px; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,255,255,.75); }
+  .tag::before, .tag::after { content:""; display:inline-block; width:70px; height:2px; margin:0 22px; vertical-align:middle; background:rgba(127,214,255,.7); }
+  h1 { position:absolute; left:0; right:0; top:380px; margin:0; text-align:center; font-weight:800; letter-spacing:-0.05em; line-height:1.02; text-shadow:0 8px 50px rgba(0,0,0,.6); }
+  h1 .a { display:block; font-size:156px; }
+  h1 .b { display:block; font-size:196px; }
+  .k { position:relative; display:inline-block; isolation:isolate; padding:0 .06em; }
+  .k i { position:absolute; left:-.06em; right:-.06em; top:.1em; bottom:.04em; z-index:-1; border-radius:.08em; background:var(--red); box-shadow:0 0 60px rgba(255,45,45,.8); }
+  .sub { position:absolute; left:0; right:0; top:830px; text-align:center; font-weight:700; font-size:70px; letter-spacing:-0.04em; text-shadow:0 6px 40px rgba(0,0,0,.6); }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; font-size:1.45em; letter-spacing:-0.02em; color:var(--red); text-shadow:0 0 50px rgba(255,45,45,.6); }
+  .cube { position:absolute; left:770px; top:1080px; width:190px; height:190px; filter:drop-shadow(0 0 30px rgba(255,201,77,.35)); transform:rotate(8deg); }
+  .x { position:absolute; left:905px; top:1060px; width:76px; height:76px; border-radius:50%; background:var(--red); box-shadow:0 0 30px rgba(255,45,45,.8); }
+  .x::before, .x::after { content:""; position:absolute; left:20px; top:34px; width:36px; height:8px; border-radius:4px; background:#fff; transform:rotate(45deg); }
+  .x::after { transform:rotate(-45deg); }
+  .vig { position:absolute; inset:0; background:radial-gradient(120% 85% at 50% 50%, transparent 55%, rgba(2,5,14,.7) 100%); }
+</style>
+</head>
+<body>
+<div id="t">
+  <img class="bg" src="assets/fond-nuit-bleue.jpg" alt="">
+  <div class="light"></div>
+  <div class="bok" style="left:60px;top:250px;width:150px;height:150px;filter:blur(9px);background:radial-gradient(circle, rgba(255,59,59,.3) 0 58%, rgba(255,59,59,.75) 66%, transparent 71%);opacity:.5"></div>
+  <div class="bok" style="left:880px;top:180px;width:190px;height:190px;filter:blur(11px);background:radial-gradient(circle, rgba(57,182,238,.3) 0 58%, rgba(57,182,238,.75) 66%, transparent 71%);opacity:.5"></div>
+  <div class="bok" style="left:40px;top:1080px;width:120px;height:120px;filter:blur(8px);background:radial-gradient(circle, rgba(140,200,255,.3) 0 58%, rgba(140,200,255,.75) 66%, transparent 71%);opacity:.45"></div>
+  <div class="halo"></div>
+  <img id="perso" src="assets/thumb-perso.png" alt="">
+  <svg class="cube" viewBox="0 0 120 120">
+    <path d="M60 14 L104 36 L60 58 L16 36 Z" fill="#d79a52"/><path d="M16 36 L60 58 L60 110 L16 88 Z" fill="#a8692e"/><path d="M104 36 L60 58 L60 110 L104 88 Z" fill="#8a4f1e"/>
+    <path d="M38 25 L82 47 L82 62" fill="none" stroke="#f2d3a0" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M16 36 L16 88 L60 110" fill="none" stroke="#6fd3ff" stroke-width="3" opacity=".8"/><path d="M104 36 L104 88 L60 110" fill="none" stroke="#ff3b3b" stroke-width="3" opacity=".9"/>
+  </svg>
+  <div class="x"></div>
+  <div class="vig"></div>
+  <div class="tag">Le dropshipping</div>
+  <h1><span class="a">Vendre sans</span><span class="b"><span class="k"><i></i>stock</span> ?</span></h1>
+  <div class="sub">expliqué <span class="it">simplement.</span></div>
+</div>
+</body>
+</html>

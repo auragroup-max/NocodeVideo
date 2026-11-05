@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature TikTok v2</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  #t { position:relative; width:1080px; height:1920px; overflow:hidden; color:var(--encre); font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased;
+    background-color:var(--papier); background-image:radial-gradient(#CFC9BE 3px, transparent 3.6px); background-size:36px 36px; }
+  .label { position:absolute; left:80px; top:290px; font:600 30px/1 var(--mono); letter-spacing:.04em; color:var(--gris); }
+  .cnt { position:absolute; right:80px; top:290px; font:600 30px/1 var(--mono); letter-spacing:.12em; color:var(--gris); }
+  .cnt b { color:var(--rouge); }
+  h1 { position:absolute; left:74px; top:360px; margin:0; font-weight:800; letter-spacing:-0.045em; line-height:1.02; }
+  h1 .a { display:block; font-size:150px; }
+  h1 .b { display:block; font-size:196px; }
+  .k { position:relative; display:inline-block; isolation:isolate; padding:0 .05em; color:#fff; }
+  .k i { position:absolute; left:-.05em; right:-.05em; top:.1em; bottom:.04em; z-index:-1; border-radius:.08em; background:var(--rouge); }
+  .sub { position:absolute; left:80px; top:740px; font-weight:800; font-size:64px; letter-spacing:-0.035em; }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; font-size:1.45em; letter-spacing:-0.01em; color:var(--rouge); }
+  #perso { position:absolute; left:0; top:760px; width:1080px; }
+</style>
+</head>
+<body>
+<div id="t">
+  <div class="label">// épisode 01 — le dropshipping</div>
+  <h1><span class="a">Vendre sans</span><span class="b"><span class="k"><i></i>stock</span> ?</span></h1>
+  <div class="sub">expliqué <span class="it">simplement.</span></div>
+  <img id="perso" src="assets/thumb-v2-perso.png" alt="">
+</div>
+</body>
+</html>
