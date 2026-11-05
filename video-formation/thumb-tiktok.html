@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature TikTok</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  #t { position:relative; width:1080px; height:1920px; overflow:hidden; color:var(--encre); font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased;
+    background-color:var(--papier); background-image:radial-gradient(#CFC9BE 3px, transparent 3.6px); background-size:36px 36px; }
+  .label { position:absolute; left:80px; top:290px; font:600 30px/1 var(--mono); letter-spacing:.04em; color:var(--gris); }
+  h1 { position:absolute; left:74px; top:350px; margin:0; font-weight:800; letter-spacing:-0.045em; line-height:1.04; }
+  h1 .a { display:block; font-size:114px; color:var(--gris); }
+  h1 .b { display:block; font-size:120px; }
+  .strike { position:relative; display:inline-block; }
+  .strike i { position:absolute; left:-.03em; right:-.03em; top:50%; height:.12em; border-radius:.06em; background:var(--rouge); }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; font-size:1.5em; letter-spacing:-0.01em; color:var(--rouge); }
+  .stamp { position:absolute; left:560px; top:760px; padding:12px 24px; border:7px solid var(--rouge); border-radius:14px; color:var(--rouge); background:#fff; font-weight:800; font-size:40px; letter-spacing:.06em; transform:rotate(-7deg); white-space:nowrap; }
+  #perso { position:absolute; left:0; top:760px; width:1080px; }
+</style>
+</head>
+<body>
+<div id="t">
+  <div class="label">// claudio — formation dropshipping</div>
+  <h1><span class="a">Plus <span class="strike">spectateur<i></i></span></span><span class="b">mais <span class="it">acteur.</span></span></h1>
+  <img id="perso" src="assets/thumb-perso.png" alt="">
+  <div class="stamp">PLACES LIMITÉES</div>
+</div>
+</body>
+</html>

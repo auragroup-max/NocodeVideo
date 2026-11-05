@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature YouTube</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  #t { position:relative; width:1280px; height:720px; overflow:hidden; color:var(--encre); font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased;
+    background-color:var(--papier); background-image:radial-gradient(#CFC9BE 2.4px, transparent 3px); background-size:28px 28px; }
+  .label { position:absolute; left:72px; top:110px; font:600 24px/1 var(--mono); letter-spacing:.04em; color:var(--gris); }
+  h1 { position:absolute; left:66px; top:160px; margin:0; font-weight:800; letter-spacing:-0.045em; line-height:1.04; }
+  h1 .a { display:block; font-size:88px; color:var(--gris); }
+  h1 .b { display:block; font-size:88px; }
+  .strike { position:relative; display:inline-block; }
+  .strike i { position:absolute; left:-.03em; right:-.03em; top:50%; height:.12em; border-radius:.06em; background:var(--rouge); }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; font-size:1.5em; letter-spacing:-0.01em; color:var(--rouge); }
+  .stamp { position:absolute; left:78px; top:500px; padding:10px 20px; border:6px solid var(--rouge); border-radius:12px; color:var(--rouge); background:#fff; font-weight:800; font-size:32px; letter-spacing:.06em; transform:rotate(-5deg); white-space:nowrap; }
+  #perso { position:absolute; left:560px; top:-30px; width:726px; }
+</style>
+</head>
+<body>
+<div id="t">
+  <div class="label">// claudio — formation dropshipping</div>
+  <h1><span class="a">Plus <span class="strike">spectateur<i></i></span></span><span class="b">mais <span class="it">acteur.</span></span></h1>
+  <div class="stamp">PLACES LIMITÉES</div>
+  <img id="perso" src="assets/thumb-perso.png" alt="">
+</div>
+</body>
+</html>
