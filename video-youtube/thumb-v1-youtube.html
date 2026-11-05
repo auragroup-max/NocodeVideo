@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Miniature YouTube</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<style>
+  /* concept : un vrai chiffre en très grand, le présentateur surpris qui le montre, et le vote « LIVE ou PRIVÉ ? » */
+  :root { --papier:#F1EEE8; --encre:#141414; --gris:#6B675F; --rouge:#E0402A; --jaune:#F6C21C; --mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace; }
+  html, body { margin:0; background:#000; }
+  .dots { background-color:var(--papier); background-image:radial-gradient(#CFC9BE 2.4px, transparent 2.9px); background-size:28px 28px; }
+  .it { font-family:"Instrument Serif", serif; font-style:italic; font-weight:400; color:var(--rouge); letter-spacing:-0.01em; }
+  .k { position:relative; display:inline-block; color:#fff; isolation:isolate; padding:0 .08em; }
+  .k::before { content:""; position:absolute; left:-.04em; right:-.04em; top:.1em; bottom:.04em; z-index:-1; border-radius:.08em; background:var(--rouge); }
+  .ink { position:absolute; isolation:isolate; }
+  .ink::before { content:""; position:absolute; inset:0; border-radius:inherit; transform:translate(10px, 8px); z-index:-1; background:radial-gradient(circle, #161616 2px, transparent 2.6px) 0 0 / 7px 7px; }
+  .ink::after { content:""; position:absolute; inset:0; border-radius:inherit; background:#fff; border:5px solid var(--encre); z-index:-1; }
+
+  #t { position:relative; width:1280px; height:720px; overflow:hidden; font-family:"Inter", sans-serif; -webkit-font-smoothing:antialiased; color:var(--encre); }
+  .pq { position:absolute; left:70px; top:52px; font-size:84px; line-height:1; }
+  .num { position:absolute; left:58px; top:126px; font-weight:800; font-size:204px; letter-spacing:-0.07em; line-height:1; }
+  .num small { font-size:.4em; letter-spacing:-0.04em; }
+  .yt { position:absolute; left:66px; top:360px; font-weight:800; font-size:86px; letter-spacing:-0.05em; line-height:1; }
+  .vote { display:flex; align-items:center; gap:14px; height:96px; padding:0 30px; border-radius:48px; font-weight:800; font-size:54px; letter-spacing:-0.035em; top:520px; }
+  .vote .dot { width:32px; height:32px; border-radius:50%; background:var(--rouge); border:5px solid var(--encre); box-sizing:border-box; }
+  .vote svg { width:54px; height:54px; }
+  #v1 { left:70px; transform:rotate(-3deg); }
+  #v2 { left:390px; transform:rotate(3deg); }
+  .ou { position:absolute; left:300px; top:530px; width:76px; height:76px; border-radius:50%; background:var(--jaune); border:5px solid var(--encre); box-sizing:border-box; display:flex; align-items:center; justify-content:center; font:800 30px/1 "Inter", sans-serif; z-index:2; }
+  #perso { position:absolute; left:690px; top:10px; width:640px; }
+</style>
+</head>
+<body>
+<div id="t" class="dots">
+  <div class="pq it">presque</div>
+  <div class="num">250 €<small>/mois</small></div>
+  <div class="yt">avec <span class="k">YouTube</span>.</div>
+  <div class="ink vote" id="v1"><i class="dot"></i>LIVE</div>
+  <div class="ou">ou</div>
+  <div class="ink vote" id="v2"><svg viewBox="0 0 120 120"><path d="M36 54 L36 38 A24 24 0 0 1 84 38 L84 54" fill="none" stroke="#141414" stroke-width="9"/><rect x="22" y="52" width="76" height="58" rx="12" fill="#F6C21C" stroke="#141414" stroke-width="7"/><circle cx="60" cy="77" r="8" fill="#141414"/></svg>PRIVÉ ?</div>
+  <img id="perso" src="assets/thumb-perso.png" alt="" />
+</div>
+</body>
+</html>
